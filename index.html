@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ambilog — Ambient RNA Contamination Tool Comparison</title>
+  <title>Ambilog — Ambient RNA Contamination Method Comparison</title>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/css/tabulator.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/js/tabulator.min.js"></script>
@@ -17,7 +17,7 @@
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: #f0f4f8;
+      background: #eef2f8;
       color: #1e293b;
       display: flex;
       flex-direction: column;
@@ -26,7 +26,8 @@
 
     /* ── Header ── */
     header {
-      background: #1e3a5f;
+      background: linear-gradient(135deg, #162d4c 0%, #1f4472 100%);
+      border-bottom: 3px solid #38bdf8;
       color: #fff;
       padding: 1rem 2rem;
       flex-shrink: 0;
@@ -39,7 +40,7 @@
     .subtitle {
       margin-top: 0.15rem;
       font-size: 0.85rem;
-      color: #bfdbfe;
+      color: #93c5fd;
     }
 
     /* ── Controls bar ── */
@@ -49,8 +50,8 @@
       gap: 1rem;
       padding: 0.55rem 2rem;
       background: #fff;
-      border-bottom: 1px solid #e2e8f0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border-bottom: 1px solid #dde4ef;
+      box-shadow: 0 2px 8px rgba(15,40,80,0.07);
       flex-shrink: 0;
     }
     .search-group {
@@ -62,29 +63,31 @@
     #global-search {
       flex: 1;
       max-width: 380px;
-      padding: 0.4rem 0.7rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      border: 1.5px solid #c8d3e6;
+      border-radius: 8px;
       font-size: 0.86rem;
       outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #f8fafc;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
     #global-search:focus {
-      border-color: #1e3a5f;
-      box-shadow: 0 0 0 3px rgba(30,58,95,0.12);
+      border-color: #2563eb;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
     }
     #clear-all {
-      padding: 0.4rem 0.75rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      background: #f8fafc;
-      color: #475569;
+      padding: 0.4rem 0.8rem;
+      border: 1.5px solid #c8d3e6;
+      border-radius: 8px;
+      background: #f3f6fb;
+      color: #4b6080;
       font-size: 0.8rem;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.12s;
+      transition: background 0.12s, color 0.12s;
     }
-    #clear-all:hover { background: #e2eef9; }
+    #clear-all:hover { background: #e2ecf8; color: #1e3a5f; }
     #row-count {
       font-size: 0.8rem;
       color: #64748b;
@@ -105,9 +108,9 @@
     footer {
       padding: 0.5rem 2rem;
       font-size: 0.75rem;
-      color: #64748b;
-      border-top: 1px solid #e2e8f0;
-      background: #fff;
+      color: #6b7f96;
+      border-top: 1px solid #dde4ef;
+      background: #f5f8fc;
       flex-shrink: 0;
     }
     footer a { color: #1e3a5f; text-decoration: none; }
@@ -121,32 +124,32 @@
       height: 100% !important;
     }
     .tabulator .tabulator-header {
-      background: #eef2f7;
+      background: #e8eef8;
       border-bottom: 2px solid #1e3a5f;
     }
     .tabulator .tabulator-col-title {
       font-weight: 600;
-      color: #1e3a5f;
+      color: #1a3356;
       font-size: 0.77rem;
       text-align: left !important;
     }
     /* Column group header */
     .tabulator .tabulator-col-group .tabulator-col-title {
       font-style: italic;
-      color: #1e3a5f;
+      color: #1a3356;
     }
     .tabulator .tabulator-col-group-cols > .tabulator-col {
-      background: #f4f7fb;
+      background: #f0f5fc;
     }
 
-    .tabulator .tabulator-row { border-bottom: 1px solid #f1f5f9; background: #fff; }
-    .tabulator .tabulator-row.tabulator-row-even { background: #fafcff; }
-    .tabulator .tabulator-row:hover { background: #eff6ff !important; }
+    .tabulator .tabulator-row { border-bottom: 1px solid #e8edf6; background: #fff; }
+    .tabulator .tabulator-row.tabulator-row-even { background: #f6f9ff; }
+    .tabulator .tabulator-row:hover { background: #e8f2ff !important; }
 
     .tabulator .tabulator-cell {
       padding: 5px 8px;
       line-height: 1.45;
-      border-right: 1px solid #f1f5f9;
+      border-right: 1px solid #e8edf6;
       vertical-align: top;
       white-space: normal !important;
       word-break: break-word;
@@ -177,10 +180,10 @@
     /* Frozen column */
     .tabulator .tabulator-col.tabulator-frozen,
     .tabulator .tabulator-row .tabulator-cell.tabulator-frozen {
-      background: #f0f6ff !important;
+      background: #edf4ff !important;
     }
     .tabulator .tabulator-row:hover .tabulator-cell.tabulator-frozen {
-      background: #dbeafe !important;
+      background: #d6eaff !important;
     }
 
     /* Header filter inputs */
@@ -375,7 +378,7 @@
     }
     .modal-pub-btn:hover { background: #2d5080; }
     .tabulator-row { cursor: pointer; }
-    .tabulator-row:hover { background: #f8fafc !important; }
+    .tabulator-row:hover { background: #e8f2ff !important; }
 
     /* ── Error ── */
     .load-error {
