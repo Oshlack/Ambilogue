@@ -701,7 +701,7 @@ function setRowCount(n) {
 }
 
 /* ── Load CSV and build table ── */
-Papa.parse('Ambilog.csv', {
+Papa.parse('Ambilogue.csv', {
   header: true,
   download: true,
   skipEmptyLines: true,
@@ -1009,7 +1009,7 @@ Papa.parse('Ambilog.csv', {
   error: function(err) {
     document.getElementById('ambilog-table').innerHTML =
       '<p class="load-error">'
-      + '⚠️ Could not load <strong>Ambilog.csv</strong>.<br>'
+      + '⚠️ Could not load <strong>Ambilogue.csv</strong>.<br>'
       + 'If testing locally, open via a local server rather than directly from the filesystem:<br>'
       + '<code>python -m http.server</code> then visit <code>http://localhost:8000</code><br>'
       + '<small style="color:#64748b">' + escHtml(String(err)) + '</small>'
