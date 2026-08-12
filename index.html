@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ambilog — Ambient RNA Contamination Tool Comparison</title>
+  <title>Ambilogue — Ambient RNA Contamination Tool Comparison</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/css/tabulator.min.css" rel="stylesheet" />
@@ -29,36 +29,42 @@
     header {
       background: #ffffff;
       color: #37352F;
-      padding: 1rem 2rem;
+      padding: 0.75rem 2rem 0.25rem;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 2px solid #37352F;
+      box-shadow: 0 2px 8px rgba(55,53,47,0.08);
+      overflow: hidden; /* clip negative margins */
     }
-    header h1 {
-      font-size: 1.65rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    .site-logo {
+      height: 260px;
+      width: auto;
+      flex-shrink: 0;
+      /* trim whitespace embedded in the PNG canvas */
+      margin: -50px -10px -60px -45px;
+    }
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.5rem;
+      flex: 1;
     }
     .subtitle {
-      margin-top: 0.15rem;
       font-size: 0.85rem;
       color: #555555;
     }
 
-    /* ── Controls bar ── */
+    /* ── Controls bar (now embedded in header) ── */
     .controls-bar {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.55rem 2rem;
-      background: #fff;
-      border-bottom: 2px solid #37352F;
-      box-shadow: 0 2px 8px rgba(55,53,47,0.08);
-      flex-shrink: 0;
+      display: contents; /* unwrapped — children participate directly in header flex */
     }
     .search-group {
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      flex: 1;
     }
     #global-search {
       flex: 1;
@@ -137,13 +143,13 @@
       border-left: 1px solid #EDEDED !important;
     }
     .tabulator .tabulator-col-title {
-      font-weight: 600;
+      font-weight: 700;
       color: #37352F;
       font-size: 0.77rem;
       text-align: left !important;
     }
     /* Column group header */
-    .tabulator .tabulator-col-group .tabulator-col-title {
+    .tabulator .tabulator-col-group > .tabulator-col-title {
       font-style: normal;
       color: #37352F;
     }
@@ -263,7 +269,7 @@
 
     /* ── Technology Suitability colours ── */
     .tag-tech-scrna    { background: #dbeafe; color: #1d4ed8; }  /* Droplet scRNA-seq → blue      */
-    .tag-tech-snrna    { background: #e0e7ff; color: #4338ca; }  /* Droplet snRNA-seq → indigo    */
+    .tag-tech-snrna    { background: #ede9fe; color: #7c3aed; }  /* Droplet snRNA-seq → purple    */
     .tag-tech-cite     { background: #ffedd5; color: #c2410c; }  /* CITE-seq → orange             */
     .tag-tech-atac     { background: #fce7f3; color: #9d174d; }  /* scATAC-seq → pink             */
     .tag-tech-crispr   { background: #fee2e2; color: #b91c1c; }  /* scCRISPR-seq → red            */
@@ -313,11 +319,24 @@
 
     /* ── DOI link ── */
     a.doi-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      padding: 0 9px;
+      height: 24px;
+      min-width: 108px;
       color: #37352F;
+      background: #fff;
+      border: 1.5px solid #37352F;
+      border-radius: 999px;
       text-decoration: none;
-      font-size: 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: background 0.15s, color 0.15s;
     }
-    a.doi-link:hover { color: #808080; }
+    a.doi-link:hover { background: #37352F; color: #fff; }
 
     /* ── Approach modal ── */
     .approach-overlay {
@@ -348,9 +367,9 @@
       border-bottom: 1px solid #EDEDED;
     }
     .approach-modal-header h2 {
-      font-size: 1.05rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #37352F;
+      color: #1a1a1a;
       margin: 0;
     }
     .approach-modal-close {
@@ -365,12 +384,12 @@
     }
     .approach-modal-close:hover { background: #EFEFEF; color: #37352F; }
     .approach-modal-section-heading {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.9rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #808080;
-      margin: 0 0 8px 0;
+      color: #37352F;
+      margin: 0 0 2px 0;
     }
     .approach-modal-body {
       padding: 16px 20px 20px;
@@ -383,19 +402,19 @@
     .modal-pub-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      background: #37352F;
-      color: #fff;
-      font-size: 0.82rem;
+      gap: 5px;
+      padding: 4px 12px;
+      background: #fff;
+      color: #37352F;
+      font-size: 0.75rem;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: 999px;
+      border: 1.5px solid #37352F;
       text-decoration: none;
       letter-spacing: 0.02em;
-      transition: background 0.15s;
+      transition: background 0.15s, color 0.15s;
     }
-    .modal-pub-btn:hover { background: #000000; }
-    .tabulator-row { cursor: pointer; }
+    .modal-pub-btn:hover { background: #37352F; color: #fff; }
     .tabulator-row:hover { background: #EFEFEF !important; }
 
     /* ── Error ── */
@@ -416,17 +435,16 @@
 <body>
 
 <header>
-  <h1>Ambilog</h1>
-  <p class="subtitle">A comparison of methods to address ambient RNA contamination</p>
-</header>
-
-<div class="controls-bar">
-  <div class="search-group">
-    <input type="search" id="global-search" placeholder="Search all columns…" autocomplete="off" />
-    <button id="clear-all">✕ Clear all filters</button>
+  <img src="AmbilogueAmbigramLogo.png" alt="Ambilogue" class="site-logo" />
+  <div class="header-right">
+    <p class="subtitle">A comparison of methods that address ambient RNA contamination</p>
+    <div class="search-group">
+      <input type="search" id="global-search" placeholder="Search all columns…" autocomplete="off" />
+      <button id="clear-all">✕ Clear all filters</button>
+      <span id="row-count"></span>
+    </div>
   </div>
-  <span id="row-count"></span>
-</div>
+</header>
 
 <div id="table-wrap">
   <div id="ambilog-table"></div>
@@ -434,7 +452,7 @@
 
 <footer>
   <span>Citation counts updated daily via the <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API.</span>
-  <span>Compiled by Calandra Grima · <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a> · Peter MacCallum Cancer Centre.</span>
+  <span>Calandra Grima · <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a></span>
 </footer>
 
 <script>
@@ -504,9 +522,9 @@ function tagFormatter(cell) {
 function badgeFormatter(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
   if (!val) return '';
-  var clsMap = { 'Yes': 'badge-yes', 'No': 'badge-no', 'Optional': 'badge-optional', 'Selected Genes Only': 'badge-partial' };
+  var clsMap = { 'Yes': 'badge-yes', 'No': 'badge-no', 'Optional': 'badge-optional', 'Selected genes only': 'badge-partial' };
   var cls = clsMap[val] || '';
-  var label = val === 'Selected Genes Only' ? 'Selected<br>Genes Only' : escHtml(val);
+  var label = val === 'Selected genes only' ? 'Selected<br>genes only' : escHtml(val);
   return '<span class="badge ' + cls + '">' + label + '</span>';
 }
 
@@ -524,7 +542,7 @@ function doiFormatter(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
   if (!val) return '';
   var href = val.startsWith('http') ? val : 'https://doi.org/' + val;
-  return '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">🔗</a>';
+  return '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>';
 }
 
 function dateYear(val) {
@@ -722,14 +740,35 @@ Papa.parse('Ambilog.csv', {
         formatter: function(cell) { return '<strong>' + escHtml(cell.getValue()) + '</strong>'; },
       },
       {
-        title: 'Author(s)', field: 'Author', width: 160,
-        headerFilter: 'input', tooltip: true,
-        formatter: truncFmt(40),
-      },
-      {
-        title: 'DOI', field: 'Publication_DOI', width: 50,
+        title: 'DOI', field: 'Publication_DOI', width: 70,
         headerFilter: false, formatter: doiFormatter, visible: false,
         hozAlign: 'center', headerHozAlign: 'center', sorter: false,
+      },
+      {
+        title: 'Publication', field: 'Author', width: 160,
+        headerFilter: 'input', tooltip: true,
+        formatter: function(cell) {
+          var d = cell.getRow().getData();
+          var author = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+          var doi   = String(d.Publication_DOI   || '').trim();
+          var bioc  = String(d.Bioconductor_Link || '').trim();
+          var gh    = String(d.GitHub_Link       || '').trim();
+          var extIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+          var html = author ? escHtml(author) : '';
+          var btnWrap = '';
+          if (doi) {
+            var href = doi.startsWith('http') ? doi : 'https://doi.org/' + doi;
+            btnWrap += '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">' + extIcon + 'Publication</a> ';
+          }
+          if (bioc) {
+            btnWrap += '<a class="doi-link" href="' + escHtml(bioc) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(bioc) + '">' + extIcon + 'Bioconductor</a> ';
+          }
+          if (gh) {
+            btnWrap += '<a class="doi-link" href="' + escHtml(gh) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(gh) + '">' + extIcon + 'GitHub</a>';
+          }
+          if (btnWrap) html += '<br><span style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">' + btnWrap + '</span>';
+          return html;
+        },
       },
       {
         title: 'Year published', field: 'Publication_Date', width: 140,
@@ -742,59 +781,55 @@ Papa.parse('Ambilog.csv', {
         hozAlign: 'right', headerHozAlign: 'right', headerFilter: false,
       },
       {
-        title: 'Methodology category', field: 'Method_Category', width: 165,
+        title: 'Method category', field: 'Method_Category', width: 165,
         formatter: tagFormatter,
         headerFilter: 'list',
         headerFilterParams: { values: methodCatVals, multiselect: true },
         headerFilterFunc: multiValFilter,
       },
       {
-        title: 'Software ecosystem', field: 'Ecosystem', width: 135,
-        formatter: tagFormatter,
-        headerFilter: 'list',
-        headerFilterParams: { values: ecosystemVals, multiselect: true },
-        headerFilterFunc: multiValFilter,
-      },
-      {
-        title: 'Software availability', field: 'Availability', width: 175,
-        formatter: tagFormatter,
-        headerFilter: 'list',
-        headerFilterParams: { values: availabilityVals, multiselect: true },
-        headerFilterFunc: multiValFilter,
+        title: 'Software details',
+        columns: [
+          {
+            title: 'Ecosystem', field: 'Ecosystem', width: 135,
+            formatter: tagFormatter,
+            headerFilter: 'list',
+            headerFilterParams: { values: ecosystemVals, multiselect: true },
+            headerFilterFunc: multiValFilter,
+          },
+          {
+            title: 'Availability', field: 'Availability', width: 175,
+            formatter: tagFormatter,
+            headerFilter: 'list',
+            headerFilterParams: { values: availabilityVals, multiselect: true },
+            headerFilterFunc: multiValFilter,
+          },
+        ],
       },
 
       /* Requirements */
       {
-        title: 'Requires empty droplets?', field: 'Requires_Empties', width: 115,
-        formatter: requiresBadgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-        headerFilter: 'list',
-        headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'], multiselect: true },
-        headerFilterFunc: multiValFilter,
-      },
-      {
-        title: 'Additional requirements?', field: 'Additional_Requirements', width: 180,
-        formatter: bulletFmt, headerFilter: 'input',
-      },
-      {
-        title: 'Supported data types', field: 'Technology_Suitability', width: 175,
-        formatter: tagFormatter,
-        headerFilter: 'list',
-        headerFilterParams: { values: techSuitVals, multiselect: true },
-        headerFilterFunc: multiValFilter,
-      },
-
-      /* Method description */
-      {
-        title: 'Ambient Basis', field: 'Ambient_Basis', width: 185,
-        formatter: ambientBasisFmt, headerFilter: 'input', visible: false,
-      },
-      {
-        title: 'Approach', field: 'Approach_Description', width: 205,
-        formatter: truncFmt(90), headerFilter: 'input', tooltip: true, visible: false,
-      },
-      {
-        title: 'Summary of benchmarking results', field: 'Benchmarking_Summary', width: 185,
-        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+        title: 'Input requirements',
+        columns: [
+          {
+            title: 'Supported data types', field: 'Technology_Suitability', width: 175,
+            formatter: tagFormatter,
+            headerFilter: 'list',
+            headerFilterParams: { values: techSuitVals, multiselect: true },
+            headerFilterFunc: multiValFilter,
+          },
+          {
+            title: 'Requires empty droplets?', field: 'Requires_Empties', width: 115,
+            formatter: requiresBadgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list',
+            headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'], multiselect: true },
+            headerFilterFunc: multiValFilter,
+          },
+          {
+            title: 'Additional requirements?', field: 'Additional_Requirements', width: 180,
+            formatter: bulletFmt, headerFilter: 'input',
+          },
+        ],
       },
 
       /* ── Column group ── */
@@ -817,7 +852,7 @@ Papa.parse('Ambilog.csv', {
             title: 'Ambient correction of counts matrix', field: 'Can_Ambient_Correct', width: 160,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list',
-            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected Genes Only'], multiselect: true },
+            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected genes only'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
@@ -839,11 +874,23 @@ Papa.parse('Ambilog.csv', {
             headerFilterParams: { values: otherFeaturesVals, multiselect: true },
             headerFilterFunc: multiValFilter,
           },
+          {
+            title: 'Notes', field: 'Notes', width: 185,
+            formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+          },
         ],
       },
       {
-        title: 'Notes', field: 'Notes', width: 185,
-        formatter: truncFmt(80), headerFilter: 'input', tooltip: true, visible: false,
+        title: 'Summary of benchmarking results', field: 'Benchmarking_Summary', width: 185,
+        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+      },
+      {
+        title: 'Overview of method approach', field: 'Approach_Description', width: 205,
+        formatter: truncFmt(90), headerFilter: 'input', tooltip: true,
+      },
+      {
+        title: 'Basis of ambient contamination profile', field: 'Ambient_Basis', width: 185,
+        formatter: ambientBasisFmt, headerFilter: 'input',
       },
     ];
 
@@ -1013,7 +1060,12 @@ clearBtn.addEventListener('click', function() {
     <div class="approach-modal-body">
       <div id="approach-modal-doi-wrap" style="margin-bottom:16px;">
         <a id="approach-modal-doi" target="_blank" rel="noopener noreferrer" class="modal-pub-btn">
-          🔗 Publication
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Publication
         </a>
       </div>
       <p class="approach-modal-section-heading">Overview of method</p>
@@ -1112,19 +1164,6 @@ clearBtn.addEventListener('click', function() {
     if (e.key === 'Escape') closeModal();
   });
 
-  /* Attach row click after table is built */
-  function attachRowClick() {
-    if (!window.table) { setTimeout(attachRowClick, 200); return; }
-    window.table.on('rowClick', function(e, row) {
-      /* Don't open if user clicked a filter input or header */
-      if (e.target.closest('.tabulator-header')) return;
-      var d = row.getData();
-      var approach = (d.Approach_Description || '').trim();
-      if (!approach) return;
-      openModal(d.Method || 'Approach', approach, d.Ambient_Basis || '', d.Publication_DOI || '', d.Notes || '');
-    });
-  }
-  attachRowClick();
 })();
 </script>
 
