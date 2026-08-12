@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Ambilogue — Ambient RNA Contamination Tool Comparison</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/css/tabulator.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/js/tabulator.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: #f0f4f8;
+      color: #1e293b;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1e3a5f;
+      color: #fff;
+      padding: 1rem 2rem;
+      flex-shrink: 0;
+    }
+    header h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      margin-top: 0.15rem;
+      font-size: 0.85rem;
+      color: #bfdbfe;
+    }
+
+    /* ── Controls bar ── */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.55rem 2rem;
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+    }
+    .search-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex: 1;
+    }
+    #global-search {
+      flex: 1;
+      max-width: 380px;
+      padding: 0.4rem 0.7rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #global-search:focus {
+      border-color: #1e3a5f;
+      box-shadow: 0 0 0 3px rgba(30,58,95,0.12);
+    }
+    #clear-all {
+      padding: 0.4rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s;
+    }
+    #clear-all:hover { background: #e2eef9; }
+    #row-count {
+      font-size: 0.8rem;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    /* ── Table wrapper ── */
+    #table-wrap {
+      flex: 1 1 auto;
+      overflow: hidden;
+      min-height: 0;
+    }
+    #ambilog-table {
+      height: 100%;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 0.5rem 2rem;
+      font-size: 0.75rem;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    footer a { color: #1e3a5f; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Tabulator overrides ── */
+    .tabulator {
+      font-size: 0.82rem;
+      border: none;
+      background: transparent;
+      height: 100% !important;
+    }
+    .tabulator .tabulator-header {
+      background: #eef2f7;
+      border-bottom: 2px solid #1e3a5f;
+    }
+    .tabulator .tabulator-col-title {
+      font-weight: 600;
+      color: #1e3a5f;
+      font-size: 0.77rem;
+    }
+    /* Column group header */
+    .tabulator .tabulator-col-group .tabulator-col-title {
+      font-style: italic;
+      color: #1e3a5f;
+    }
+    .tabulator .tabulator-col-group-cols > .tabulator-col {
+      background: #f4f7fb;
+    }
+
+    .tabulator .tabulator-row { border-bottom: 1px solid #f1f5f9; background: #fff; }
+    .tabulator .tabulator-row.tabulator-row-even { background: #fafcff; }
+    .tabulator .tabulator-row:hover { background: #eff6ff !important; }
+
+    .tabulator .tabulator-cell {
+      padding: 5px 8px;
+      line-height: 1.45;
+      border-right: 1px solid #f1f5f9;
+      vertical-align: top;
+      white-space: normal !important;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Frozen column */
+    .tabulator .tabulator-col.tabulator-frozen,
+    .tabulator .tabulator-row .tabulator-cell.tabulator-frozen {
+      background: #f0f6ff !important;
+    }
+    .tabulator .tabulator-row:hover .tabulator-cell.tabulator-frozen {
+      background: #dbeafe !important;
+    }
+
+    /* Header filter inputs */
+    .tabulator .tabulator-header-filter input,
+    .tabulator .tabulator-header-filter select {
+      width: 100%;
+      padding: 3px 5px;
+      font-size: 0.74rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+      color: #334155;
+    }
+    .tabulator .tabulator-header-filter input:focus,
+    .tabulator .tabulator-header-filter select:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.74rem;
+      font-weight: 500;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .badge-yes      { background: #dcfce7; color: #15803d; }
+    .badge-no       { background: #f1f5f9; color: #9ca3af; }
+    .badge-optional { background: #e0e7ff; color: #4338ca; }
+    .badge-partial  { background: #fef3c7; color: #92400e; }
+    /* Requires Empties column: No = good (green), Yes = constraint (blue) */
+    .badge-req-no   { background: #dcfce7; color: #15803d; }
+    .badge-req-yes  { background: #fef9c3; color: #854d0e; }
+
+    /* ── Tags ── */
+    .tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 10px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.73rem;
+      margin: 1px 2px 1px 0;
+
+      white-space: nowrap;
+    }
+    /* Per-value tag colours */
+    .tag-r          { background: #d1fae5; color: #065f46; }  /* R → teal-green (matches Bioconductor) */
+    .tag-python     { background: #fef9c3; color: #854d0e; }  /* Python → yellow    */
+    .tag-bioc       { background: #d1fae5; color: #065f46; }  /* Bioconductor → teal-green */
+    .tag-cran       { background: #d1fae5; color: #065f46; }  /* CRAN → teal-green (matches Bioconductor) */
+    .tag-pypi       { background: #fef9c3; color: #854d0e; }  /* PyPI → amber       */
+    .tag-github     { background: #fce7f3; color: #9d174d; }  /* GitHub → pink      */
+    .tag-bash       { background: #ede9fe; color: #5b21b6; }  /* Bash → purple      */
+    .tag-conda      { background: #ede9fe; color: #5b21b6; }  /* Conda → purple     */
+
+    /* ── Technology Suitability colours ── */
+    .tag-tech-scrna    { background: #dbeafe; color: #1d4ed8; }  /* Droplet scRNA-seq → blue      */
+    .tag-tech-snrna    { background: #e0e7ff; color: #4338ca; }  /* Droplet snRNA-seq → indigo    */
+    .tag-tech-cite     { background: #ffedd5; color: #c2410c; }  /* CITE-seq → orange             */
+    .tag-tech-atac     { background: #fce7f3; color: #9d174d; }  /* scATAC-seq → pink             */
+    .tag-tech-crispr   { background: #fee2e2; color: #b91c1c; }  /* scCRISPR-seq → red            */
+    .tag-tech-multiome { background: #ccfbf1; color: #0f766e; }  /* scRNA+ATAC multiome → teal    */
+    .tag-tech-omics    { background: #f1f5f9; color: #475569; }  /* single-cell omics → slate     */
+    .tag-tech-spatial  { background: #fef3c7; color: #92400e; }  /* Spatial transcriptomics → amber */
+    .tag-tech-well     { background: #d9f99d; color: #3f6212; }  /* Well-based scRNA-seq → lime   */
+
+    /* ── Other Features colours ── */
+    .tag-feat-sgrna   { background: #ffe4e6; color: #be123c; }  /* Assign sgRNAs → rose           */
+    .tag-feat-barcode { background: #cffafe; color: #0e7490; }  /* Correct barcode swapping → cyan */
+    .tag-feat-demux   { background: #fce7f3; color: #9d174d; }  /* Demultiplexing → pink          */
+    .tag-feat-doublet { background: #fed7aa; color: #9a3412; }  /* Doublet detection → orange     */
+    .tag-feat-filter  { background: #fee2e2; color: #991b1b; }  /* Filter damaged cells → red     */
+    .tag-feat-donor   { background: #f3e8ff; color: #7e22ce; }  /* Find donor proportions → violet */
+
+    /* ── Method Category colours ── */
+    .tag-methcat-empty { background: #dbeafe; color: #1e40af; }  /* Empty droplet-like → blue      */
+    .tag-methcat-demux { background: #fce7f3; color: #9d174d; }  /* Demultiplexing-like → pink     */
+    .tag-methcat-expr  { background: #ede9fe; color: #5b21b6; }  /* Expression profiling-like → purple */
+
+    /* ── Citations ── */
+    .citation-num { font-weight: 400; }
+    .preprint-tag {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      color: #64748b;
+      font-size: 0.7rem;
+      font-style: italic;
+      vertical-align: middle;
+    }
+
+    /* ── Truncated text ── */
+    .ellipsis { color: #94a3b8; }
+
+    /* ── Bullet list (Additional Requirements) ── */
+    .bullet-list {
+      margin: 2px 0 2px 14px;
+      padding: 0;
+      list-style: disc;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .bullet-list li { margin-bottom: 1px; }
+
+    /* ── DOI link ── */
+    a.doi-link {
+      color: #1e3a5f;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    a.doi-link:hover { color: #3b82f6; }
+
+    /* ── Error ── */
+    .load-error {
+      padding: 2rem;
+      color: #b91c1c;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .load-error code {
+      background: #f1f5f9;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>The Ambilogue</h1>
+  <p class="subtitle">A comparison of ambient RNA contamination tools for droplet-based scRNA-seq</p>
+</header>
+
+<div class="controls-bar">
+  <div class="search-group">
+    <input type="search" id="global-search" placeholder="Search all columns…" autocomplete="off" />
+    <button id="clear-all">✕ Clear all filters</button>
+  </div>
+  <span id="row-count"></span>
+</div>
+
+<div id="table-wrap">
+  <div id="ambilog-table"></div>
+</div>
+
+<footer>
+  <p>
+    Citation counts updated daily via the
+    <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API.
+    Compiled by Calandra Grima · OshlackLab · Peter MacCallum Cancer Centre.
+  </p>
+</footer>
+
+<script>
+"use strict";
+
+/* ── Utility ── */
+function escHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ── Formatters ── */
+
+/* Map tag text → extra CSS class for colour coding */
+var TAG_COLOURS = {
+  'r':             'tag-r',
+  'python':        'tag-python',
+  'pip':           'tag-python',
+  'bioconductor':  'tag-bioc',
+  'cran':          'tag-cran',
+  'pypi':          'tag-pypi',
+  'github':        'tag-github',
+  'bash':          'tag-bash',
+  'conda':         'tag-conda',
+  /* Technology Suitability */
+  'droplet-based scrna-seq':           'tag-tech-scrna',
+  'droplet-based snrna-seq':           'tag-tech-snrna',
+  'droplet-based cite-seq':            'tag-tech-cite',
+  'droplet-based scatac-seq':          'tag-tech-atac',
+  'droplet-based sccrispr-seq':        'tag-tech-crispr',
+  'droplet-based scrna+atac multiome': 'tag-tech-multiome',
+  'droplet-based single-cell omics':   'tag-tech-omics',
+  'spatial transcriptomics':           'tag-tech-spatial',
+  'well-based scrna-seq':              'tag-tech-well',
+  /* Other Features */
+  'assign sgrnas to cells':           'tag-feat-sgrna',
+  'correct barcode swapping':         'tag-feat-barcode',
+  'demultiplexing':                   'tag-feat-demux',
+  'doublet detection':                'tag-feat-doublet',
+  'filter damaged cells':             'tag-feat-filter',
+  'find donor proportions':           'tag-feat-donor',
+  /* Method Category */
+  'empty droplet-like':               'tag-methcat-empty',
+  'demultiplexing-like':              'tag-methcat-demux',
+  'expression profiling-like':        'tag-methcat-expr',
+};
+function tagClass(val) {
+  return TAG_COLOURS[val.toLowerCase()] || '';
+}
+
+function tagFormatter(cell) {
+  var val = cell.getValue();
+  if (!val) return '';
+  return String(val).split(';')
+    .map(function(v) { return v.trim(); })
+    .filter(Boolean)
+    .map(function(v) {
+      var extra = tagClass(v);
+      return '<span class="tag ' + extra + '">' + escHtml(v) + '</span>';
+    })
+    .join('');
+}
+
+function badgeFormatter(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  var clsMap = { 'Yes': 'badge-yes', 'No': 'badge-no', 'Optional': 'badge-optional', 'Selected Genes Only': 'badge-partial' };
+  var cls = clsMap[val] || '';
+  var label = val === 'Selected Genes Only' ? 'Selected<br>Genes Only' : escHtml(val);
+  return '<span class="badge ' + cls + '">' + label + '</span>';
+}
+
+/* Requires Empties column: Not Required = green, Required = yellow */
+function requiresBadgeFormatter(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  if (val === 'Not required') return '<span class="badge badge-req-no">Not required</span>';
+  if (val === 'Required')     return '<span class="badge badge-req-yes">Required</span>';
+  if (val === 'Optional')     return '<span class="badge badge-optional">Optional</span>';
+  return '<span class="badge">' + escHtml(val) + '</span>';
+}
+
+function doiFormatter(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  var href = val.startsWith('http') ? val : 'https://doi.org/' + val;
+  return '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">🔗</a>';
+}
+
+function citationFormatter(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  var isPreprint = val.indexOf('(preprint)') !== -1;
+  var num = val.replace('(preprint)', '').trim();
+  return isPreprint
+    ? '<span class="citation-num">' + escHtml(num) + '</span>&thinsp;<span class="preprint-tag">preprint</span>'
+    : '<span class="citation-num">' + escHtml(num) + '</span>';
+}
+
+function citationSorter(a, b) {
+  function parse(v) { return parseInt(String(v == null ? '' : v).replace(/\(.*?\)/, ''), 10) || 0; }
+  return parse(a) - parse(b);
+}
+
+/* Wrap full text — rows auto-expand to fit */
+function truncFmt(maxLen) {
+  return function(cell) {
+    var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+    if (!val) return '';
+    return escHtml(val);
+  };
+}
+
+/* Bullet list: splits on ; and renders as <ul> */
+function bulletFmt(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  var items = val.split(';').map(function(v) { return v.trim(); }).filter(Boolean);
+  return '<ul class="bullet-list">'
+    + items.map(function(v) { return '<li>' + escHtml(v) + '</li>'; }).join('')
+    + '</ul>';
+}
+
+/* Ambient Basis: bullet list, with conditional-prefix phrases styled as preprint-tag labels */
+var AMBIENT_LABELS = ['With empty droplets:', 'No empty droplets:'];
+function ambientBasisFmt(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  var items = val.split(';').map(function(v) { return v.trim(); }).filter(Boolean);
+  var lis = items.map(function(item) {
+    var html = null;
+    for (var i = 0; i < AMBIENT_LABELS.length; i++) {
+      if (item.indexOf(AMBIENT_LABELS[i]) === 0) {
+        var rest = item.slice(AMBIENT_LABELS[i].length).trim();
+        html = '<span class="preprint-tag">' + escHtml(AMBIENT_LABELS[i]) + '</span>'
+             + (rest ? ' ' + escHtml(rest) : '');
+        break;
+      }
+    }
+    return '<li>' + (html !== null ? html : escHtml(item)) + '</li>';
+  });
+  return '<ul class="bullet-list">' + lis.join('') + '</ul>';
+}
+
+/* ── Filter helpers ── */
+/* Matches a single selected value against a semicolon-separated cell */
+function multiValFilter(headerValue, rowValue) {
+  if (!headerValue) return true;
+  return String(rowValue == null ? '' : rowValue).split(';')
+    .map(function(v) { return v.trim().toLowerCase(); })
+    .indexOf(String(headerValue).toLowerCase()) !== -1;
+}
+
+/* Extract sorted unique individual values (split on sep) from a field */
+function getUniqueVals(data, field) {
+  var set = new Set();
+  data.forEach(function(row) {
+    var val = row[field];
+    if (val) {
+      String(val).split(';').forEach(function(v) {
+        var t = v.trim();
+        if (t) set.add(t);
+      });
+    }
+  });
+  return [''].concat(Array.from(set).sort());
+}
+
+/* ── Global search state ── */
+var globalSearchVal = '';
+var table = null;
+
+function globalFilter(data) {
+  if (!globalSearchVal) return true;
+  var q = globalSearchVal.toLowerCase();
+  return Object.values(data).some(function(v) {
+    return String(v == null ? '' : v).toLowerCase().indexOf(q) !== -1;
+  });
+}
+
+function setRowCount(n) {
+  document.getElementById('row-count').textContent = n + ' tool' + (n === 1 ? '' : 's');
+}
+
+/* ── Load CSV and build table ── */
+Papa.parse('Ambilog.csv', {
+  header: true,
+  download: true,
+  skipEmptyLines: true,
+  complete: function(results) {
+
+    /* Sanitise stray nan/None values from CSV exports */
+    var data = results.data.map(function(row) {
+      var out = {};
+      Object.keys(row).forEach(function(k) {
+        var v = row[k];
+        out[k] = (v === 'nan' || v === 'NaN' || v === 'None' || v === null) ? '' : v;
+      });
+      return out;
+    });
+
+    /* Pre-compute unique values for dropdown (list) header filters */
+    var ecosystemVals    = getUniqueVals(data, 'Ecosystem');
+    var techSuitVals     = getUniqueVals(data, 'Technology_Suitability');
+    var methodCatVals    = getUniqueVals(data, 'Method_Category');
+    var availabilityVals = getUniqueVals(data, 'Availability');
+
+    /* ── Column definitions ── */
+    var columns = [
+
+      /* Identity */
+      {
+        title: 'Method', field: 'Method', frozen: true, width: 130,
+        headerFilter: 'input',
+        formatter: function(cell) { return '<strong>' + escHtml(cell.getValue()) + '</strong>'; },
+      },
+      {
+        title: 'Author', field: 'Author', width: 160,
+        headerFilter: 'input', tooltip: true,
+        formatter: truncFmt(40),
+      },
+      {
+        title: 'DOI', field: 'Publication_DOI', width: 50,
+        headerFilter: false, formatter: doiFormatter,
+        hozAlign: 'center', headerHozAlign: 'center', sorter: false,
+      },
+      {
+        title: 'Published', field: 'Publication_Date', width: 100,
+        sorter: 'date', sorterParams: { format: 'YYYY-MM-DD', alignEmptyValues: 'bottom' },
+        headerFilter: 'input',
+      },
+      {
+        title: 'Ecosystem', field: 'Ecosystem', width: 135,
+        formatter: tagFormatter,
+        headerFilter: 'list',
+        headerFilterParams: { values: ecosystemVals },
+        headerFilterFunc: multiValFilter,
+      },
+      {
+        title: 'Availability', field: 'Availability', width: 175,
+        formatter: tagFormatter,
+        headerFilter: 'list',
+        headerFilterParams: { values: availabilityVals },
+        headerFilterFunc: multiValFilter,
+      },
+      {
+        title: 'Citations', field: 'Citations', width: 100,
+        formatter: citationFormatter, sorter: citationSorter,
+        hozAlign: 'right', headerHozAlign: 'right', headerFilter: false,
+      },
+
+      /* Requirements */
+      {
+        title: 'Requires Empties', field: 'Requires_Empties', width: 115,
+        formatter: requiresBadgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+        headerFilter: 'list',
+        headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'] },
+      },
+      {
+        title: 'Additional Requirements', field: 'Additional_Requirements', width: 180,
+        formatter: bulletFmt, headerFilter: 'input',
+      },
+      {
+        title: 'Technology Suitability', field: 'Technology_Suitability', width: 175,
+        formatter: tagFormatter,
+        headerFilter: 'list',
+        headerFilterParams: { values: techSuitVals },
+        headerFilterFunc: multiValFilter,
+      },
+
+      /* Method description */
+      {
+        title: 'Ambient Basis', field: 'Ambient_Basis', width: 185,
+        formatter: ambientBasisFmt, headerFilter: 'input',
+      },
+      {
+        title: 'Method Category', field: 'Method_Category', width: 165,
+        formatter: tagFormatter,
+        headerFilter: 'list',
+        headerFilterParams: { values: methodCatVals },
+        headerFilterFunc: multiValFilter,
+      },
+      {
+        title: 'Approach', field: 'Approach_Description', width: 205,
+        formatter: truncFmt(90), headerFilter: 'input', tooltip: true,
+      },
+      {
+        title: 'Benchmarking', field: 'Benchmarking_Summary', width: 185,
+        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+      },
+
+      /* ── Column group ── */
+      {
+        title: 'Method features of interest',
+        columns: [
+          {
+            title: 'Filter Empties', field: 'Can_Filter_Empties', width: 82,
+            formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+          },
+          {
+            title: 'Ambient Estimate', field: 'Can_Ambient_Estimate', width: 97,
+            formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+          },
+          {
+            title: 'Ambient Correct', field: 'Can_Ambient_Correct', width: 107,
+            formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list',
+            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected Genes Only'] },
+          },
+          {
+            title: 'QC Plot', field: 'Can_Ambient_QC_Plot', width: 76,
+            formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+          },
+          {
+            title: 'Simulate', field: 'Can_Ambient_Simulate', width: 82,
+            formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+          },
+        ],
+      },
+
+      /* Extras */
+      {
+        title: 'Other Features', field: 'Other_Features', width: 185,
+        formatter: tagFormatter, headerFilter: 'input',
+      },
+      {
+        title: 'Notes', field: 'Notes', width: 185,
+        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+      },
+    ];
+
+    /* ── Initialise Tabulator ── */
+    table = new Tabulator('#ambilog-table', {
+      data: data,
+      columns: columns,
+      layout: 'fitDataFill',
+      height: '100%',
+      virtualDom: false,
+      movableColumns: true,
+      resizableColumns: true,
+      headerFilterLiveFilterDelay: 200,
+      columnHeaderVertAlign: 'bottom',
+      initialSort: [{ column: 'Method', dir: 'asc' }],
+    });
+
+    table.on('tableBuilt', function() {
+      table.addFilter(globalFilter);
+      setRowCount(data.length);
+    });
+
+    table.on('dataFiltered', function(filters, rows) {
+      setRowCount(rows.length);
+    });
+  },
+
+  error: function(err) {
+    document.getElementById('ambilog-table').innerHTML =
+      '<p class="load-error">'
+      + '⚠️ Could not load <strong>Ambilog.csv</strong>.<br>'
+      + 'If testing locally, open via a local server rather than directly from the filesystem:<br>'
+      + '<code>python -m http.server</code> then visit <code>http://localhost:8000</code><br>'
+      + '<small style="color:#64748b">' + escHtml(String(err)) + '</small>'
+      + '</p>';
+  },
+});
+
+/* ── Search and clear controls ── */
+var searchInput = document.getElementById('global-search');
+var clearBtn    = document.getElementById('clear-all');
+
+searchInput.addEventListener('input', function() {
+  globalSearchVal = this.value.trim();
+  if (table) {
+    table.removeFilter(globalFilter);
+    table.addFilter(globalFilter);
+  }
+});
+
+clearBtn.addEventListener('click', function() {
+  globalSearchVal = '';
+  searchInput.value = '';
+  if (table) {
+    table.removeFilter(globalFilter);
+    table.addFilter(globalFilter);
+    table.clearHeaderFilter();
+  }
+});
+</script>
+
+</body>
+</html>
