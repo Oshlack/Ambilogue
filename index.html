@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Ambilogue — Ambient RNA Contamination Tool Comparison</title>
+  <title>Ambilog — Ambient RNA Contamination Tool Comparison</title>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/css/tabulator.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/js/tabulator.min.js"></script>
@@ -128,6 +128,7 @@
       font-weight: 600;
       color: #1e3a5f;
       font-size: 0.77rem;
+      text-align: left !important;
     }
     /* Column group header */
     .tabulator .tabulator-col-group .tabulator-col-title {
@@ -150,6 +151,27 @@
       white-space: normal !important;
       word-break: break-word;
       overflow-wrap: break-word;
+    }
+    /* ── Dropdown list filter: tick on selected items ── */
+    .tabulator-edit-list-item {
+      padding-left: 22px !important;
+      position: relative !important;
+    }
+    .tabulator-edit-list-item.active::before {
+      content: '✓';
+      position: absolute;
+      left: 6px;
+      color: #1e3a5f;
+      font-weight: 700;
+      font-size: 0.85em;
+    }
+
+    /* Wrap column header titles */
+    .tabulator .tabulator-col-title {
+      white-space: normal !important;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.3;
     }
 
     /* Frozen column */
@@ -276,6 +298,85 @@
     }
     a.doi-link:hover { color: #3b82f6; }
 
+    /* ── Approach modal ── */
+    .approach-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .approach-overlay.open { display: flex; }
+    .approach-modal {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18);
+      max-width: 620px;
+      width: 92%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .approach-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .approach-modal-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0;
+    }
+    .approach-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: #64748b;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .approach-modal-close:hover { background: #f1f5f9; color: #1e3a5f; }
+    .approach-modal-section-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #94a3b8;
+      margin: 0 0 8px 0;
+    }
+    .approach-modal-body {
+      padding: 16px 20px 20px;
+      overflow-y: auto;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #1e293b;
+      white-space: pre-wrap;
+    }
+    .modal-pub-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #1e3a5f;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .modal-pub-btn:hover { background: #2d5080; }
+    .tabulator-row { cursor: pointer; }
+    .tabulator-row:hover { background: #f8fafc !important; }
+
     /* ── Error ── */
     .load-error {
       padding: 2rem;
@@ -294,8 +395,8 @@
 <body>
 
 <header>
-  <h1>The Ambilogue</h1>
-  <p class="subtitle">A comparison of ambient RNA contamination tools for droplet-based scRNA-seq</p>
+  <h1>Ambilog</h1>
+  <p class="subtitle">A comparison of methods to address ambient RNA contamination</p>
 </header>
 
 <div class="controls-bar">
@@ -314,7 +415,7 @@
   <p>
     Citation counts updated daily via the
     <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API.
-    Compiled by Calandra Grima · OshlackLab · Peter MacCallum Cancer Centre.
+    Compiled by Calandra Grima · <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a> · Peter MacCallum Cancer Centre.
   </p>
 </footer>
 
@@ -408,13 +509,60 @@ function doiFormatter(cell) {
   return '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">🔗</a>';
 }
 
+function dateYear(val) {
+  /* Handles D/M/YYYY — year is last slash-delimited segment */
+  var s = String(val || '').trim();
+  var parts = s.split('/');
+  if (parts.length >= 3 && parts[parts.length - 1].length === 4) return parts[parts.length - 1];
+  return '';
+}
+function dateFormatter(cell) {
+  var y = dateYear(cell.getValue());
+  return y || escHtml(String(cell.getValue() || '').trim());
+}
+/* Year range state — shared between the injected inputs and the filter function */
+var yearRange = { from: null, to: null };
+function yearRangeGlobalFilter(data) {
+  var year = parseInt(dateYear(data.Publication_Date));
+  if (isNaN(year)) return true;
+  if (yearRange.from && year < yearRange.from) return false;
+  if (yearRange.to   && year > yearRange.to)   return false;
+  return true;
+}
+/* Exposed so the clear button can reset the inputs */
+var yearRangeFromInput = null;
+var yearRangeToInput   = null;
+
+/* Citation range state — shared between the injected inputs and the filter function */
+var citationRange = { from: null, to: null };
+function citationRangeGlobalFilter(data) {
+  var val = String(data.Citations == null ? '' : data.Citations).replace(/\(.*?\)/, '').trim();
+  var num = parseInt(val, 10);
+  if (isNaN(num)) return true;
+  if (citationRange.from !== null && num < citationRange.from) return false;
+  if (citationRange.to   !== null && num > citationRange.to)   return false;
+  return true;
+}
+/* Exposed so the clear button can reset the inputs */
+var citationRangeFromInput = null;
+var citationRangeToInput   = null;
+
+function dateSorter(a, b, aRow, bRow, col, dir) {
+  function toNum(s) {
+    var p = String(s || '').split('/');
+    if (p.length < 3) return dir === 'asc' ? Infinity : -Infinity;
+    return parseInt(p[2]) * 10000 + parseInt(p[1]) * 100 + parseInt(p[0]);
+  }
+  return toNum(a) - toNum(b);
+}
+
 function citationFormatter(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
   if (!val) return '';
   var isPreprint = val.indexOf('(preprint)') !== -1;
   var num = val.replace('(preprint)', '').trim();
   return isPreprint
-    ? '<span class="citation-num">' + escHtml(num) + '</span>&thinsp;<span class="preprint-tag">preprint</span>'
+    ? '<div style="line-height:1.4"><span class="citation-num">' + escHtml(num) + '</span><br><span class="preprint-tag">preprint</span></div>'
     : '<span class="citation-num">' + escHtml(num) + '</span>';
 }
 
@@ -423,11 +571,13 @@ function citationSorter(a, b) {
   return parse(a) - parse(b);
 }
 
-/* Wrap full text — rows auto-expand to fit */
-function truncFmt(maxLen) {
+/* Wrap full text — rows auto-expand to fit. Optional fallback shown for empty cells. */
+function truncFmt(maxLen, fallback) {
   return function(cell) {
     var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
-    if (!val) return '';
+    if (!val) return fallback !== undefined
+      ? '<span style="color:#94a3b8;font-style:italic">' + escHtml(fallback) + '</span>'
+      : '';
     return escHtml(val);
   };
 }
@@ -466,10 +616,15 @@ function ambientBasisFmt(cell) {
 /* ── Filter helpers ── */
 /* Matches a single selected value against a semicolon-separated cell */
 function multiValFilter(headerValue, rowValue) {
-  if (!headerValue) return true;
-  return String(rowValue == null ? '' : rowValue).split(';')
-    .map(function(v) { return v.trim().toLowerCase(); })
-    .indexOf(String(headerValue).toLowerCase()) !== -1;
+  /* headerValue is a string (single select) or array (multiselect) */
+  var selected = Array.isArray(headerValue) ? headerValue : (headerValue ? [headerValue] : []);
+  selected = selected.filter(function(v) { return v !== '' && v != null; });
+  if (!selected.length) return true;
+  var cellVals = String(rowValue == null ? '' : rowValue).split(';')
+    .map(function(v) { return v.trim().toLowerCase(); });
+  return selected.some(function(s) {
+    return cellVals.indexOf(String(s).toLowerCase()) !== -1;
+  });
 }
 
 /* Extract sorted unique individual values (split on sep) from a field */
@@ -521,10 +676,17 @@ Papa.parse('Ambilog.csv', {
     });
 
     /* Pre-compute unique values for dropdown (list) header filters */
-    var ecosystemVals    = getUniqueVals(data, 'Ecosystem');
-    var techSuitVals     = getUniqueVals(data, 'Technology_Suitability');
-    var methodCatVals    = getUniqueVals(data, 'Method_Category');
-    var availabilityVals = getUniqueVals(data, 'Availability');
+    var ecosystemVals       = getUniqueVals(data, 'Ecosystem');
+    var techSuitVals        = getUniqueVals(data, 'Technology_Suitability');
+    var methodCatVals       = getUniqueVals(data, 'Method_Category');
+    var availabilityVals    = getUniqueVals(data, 'Availability');
+    var otherFeaturesVals   = getUniqueVals(data, 'Other_Features');
+    var publishedYears = [''].concat(
+      data.map(function(r) { return dateYear(r.Publication_Date); })
+          .filter(function(y) { return y.length === 4; })
+          .filter(function(y, i, a) { return a.indexOf(y) === i; })
+          .sort()
+    );
 
     /* ── Column definitions ── */
     var columns = [
@@ -536,121 +698,128 @@ Papa.parse('Ambilog.csv', {
         formatter: function(cell) { return '<strong>' + escHtml(cell.getValue()) + '</strong>'; },
       },
       {
-        title: 'Author', field: 'Author', width: 160,
+        title: 'Author(s)', field: 'Author', width: 160,
         headerFilter: 'input', tooltip: true,
         formatter: truncFmt(40),
       },
       {
         title: 'DOI', field: 'Publication_DOI', width: 50,
-        headerFilter: false, formatter: doiFormatter,
+        headerFilter: false, formatter: doiFormatter, visible: false,
         hozAlign: 'center', headerHozAlign: 'center', sorter: false,
       },
       {
-        title: 'Published', field: 'Publication_Date', width: 100,
-        sorter: 'date', sorterParams: { format: 'YYYY-MM-DD', alignEmptyValues: 'bottom' },
-        headerFilter: 'input',
+        title: 'Year published', field: 'Publication_Date', width: 140,
+        formatter: dateFormatter,
+        sorter: dateSorter,
       },
       {
-        title: 'Ecosystem', field: 'Ecosystem', width: 135,
+        title: 'Software ecosystem', field: 'Ecosystem', width: 135,
         formatter: tagFormatter,
         headerFilter: 'list',
-        headerFilterParams: { values: ecosystemVals },
+        headerFilterParams: { values: ecosystemVals, multiselect: true },
         headerFilterFunc: multiValFilter,
       },
       {
-        title: 'Availability', field: 'Availability', width: 175,
+        title: 'Software availability', field: 'Availability', width: 175,
         formatter: tagFormatter,
         headerFilter: 'list',
-        headerFilterParams: { values: availabilityVals },
+        headerFilterParams: { values: availabilityVals, multiselect: true },
         headerFilterFunc: multiValFilter,
       },
       {
-        title: 'Citations', field: 'Citations', width: 100,
+        title: 'Number of citations', field: 'Citations', width: 100,
         formatter: citationFormatter, sorter: citationSorter,
         hozAlign: 'right', headerHozAlign: 'right', headerFilter: false,
       },
 
       /* Requirements */
       {
-        title: 'Requires Empties', field: 'Requires_Empties', width: 115,
+        title: 'Requires empty droplets?', field: 'Requires_Empties', width: 115,
         formatter: requiresBadgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
         headerFilter: 'list',
-        headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'] },
+        headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'], multiselect: true },
+        headerFilterFunc: multiValFilter,
       },
       {
-        title: 'Additional Requirements', field: 'Additional_Requirements', width: 180,
+        title: 'Additional requirements?', field: 'Additional_Requirements', width: 180,
         formatter: bulletFmt, headerFilter: 'input',
       },
       {
         title: 'Technology Suitability', field: 'Technology_Suitability', width: 175,
         formatter: tagFormatter,
         headerFilter: 'list',
-        headerFilterParams: { values: techSuitVals },
+        headerFilterParams: { values: techSuitVals, multiselect: true },
         headerFilterFunc: multiValFilter,
       },
 
       /* Method description */
       {
         title: 'Ambient Basis', field: 'Ambient_Basis', width: 185,
-        formatter: ambientBasisFmt, headerFilter: 'input',
+        formatter: ambientBasisFmt, headerFilter: 'input', visible: false,
       },
       {
-        title: 'Method Category', field: 'Method_Category', width: 165,
+        title: 'Methodology category', field: 'Method_Category', width: 165,
         formatter: tagFormatter,
         headerFilter: 'list',
-        headerFilterParams: { values: methodCatVals },
+        headerFilterParams: { values: methodCatVals, multiselect: true },
         headerFilterFunc: multiValFilter,
       },
       {
         title: 'Approach', field: 'Approach_Description', width: 205,
-        formatter: truncFmt(90), headerFilter: 'input', tooltip: true,
+        formatter: truncFmt(90), headerFilter: 'input', tooltip: true, visible: false,
       },
       {
-        title: 'Benchmarking', field: 'Benchmarking_Summary', width: 185,
+        title: 'Summary of benchmarking results', field: 'Benchmarking_Summary', width: 185,
         formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
       },
 
       /* ── Column group ── */
       {
-        title: 'Method features of interest',
+        title: 'Method features',
         columns: [
           {
-            title: 'Filter Empties', field: 'Can_Filter_Empties', width: 82,
+            title: 'Filter empty droplets', field: 'Can_Filter_Empties', width: 82,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Ambient Estimate', field: 'Can_Ambient_Estimate', width: 97,
+            title: 'Per-droplet ambient estimation', field: 'Can_Ambient_Estimate', width: 97,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Ambient Correct', field: 'Can_Ambient_Correct', width: 107,
+            title: 'Ambient correction of counts matrix', field: 'Can_Ambient_Correct', width: 107,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list',
-            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected Genes Only'] },
+            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected Genes Only'], multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
           {
-            title: 'QC Plot', field: 'Can_Ambient_QC_Plot', width: 76,
+            title: 'Generate ambient QC plots', field: 'Can_Ambient_QC_Plot', width: 76,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Simulate', field: 'Can_Ambient_Simulate', width: 82,
+            title: 'Simulate ambient-contaminated datasets', field: 'Can_Ambient_Simulate', width: 82,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'] },
+            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilterFunc: multiValFilter,
+          },
+          {
+            title: 'Other Features', field: 'Other_Features', width: 185,
+            formatter: tagFormatter,
+            headerFilter: 'list',
+            headerFilterParams: { values: otherFeaturesVals, multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
         ],
       },
-
-      /* Extras */
-      {
-        title: 'Other Features', field: 'Other_Features', width: 185,
-        formatter: tagFormatter, headerFilter: 'input',
-      },
       {
         title: 'Notes', field: 'Notes', width: 185,
-        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+        formatter: truncFmt(80), headerFilter: 'input', tooltip: true, visible: false,
       },
     ];
 
@@ -671,6 +840,94 @@ Papa.parse('Ambilog.csv', {
     table.on('tableBuilt', function() {
       table.addFilter(globalFilter);
       setRowCount(data.length);
+
+      /* ── Inject year-range inputs into the Published column header ── */
+      var pubCol = table.getColumn('Publication_Date');
+      if (pubCol) {
+        var colEl = pubCol.getElement();
+        var filterDiv = document.createElement('div');
+        filterDiv.className = 'tabulator-header-filter';
+        filterDiv.style.cssText = 'display:flex;align-items:center;gap:4px;padding:2px 4px;'
+          + 'width:100%;box-sizing:border-box;';
+
+        function makeYearInput(ph) {
+          var el = document.createElement('input');
+          el.type = 'number'; el.placeholder = ph; el.min = 2000; el.max = 2099;
+          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
+            + 'border:1px solid #cbd5e1;border-radius:3px;box-sizing:border-box;';
+          return el;
+        }
+        yearRangeFromInput = makeYearInput('From');
+        var dash = document.createElement('span');
+        dash.textContent = '–';
+        dash.style.cssText = 'color:#94a3b8;font-size:0.8rem;flex-shrink:0;';
+        yearRangeToInput = makeYearInput('To');
+
+        function applyYearRange() {
+          yearRange.from = yearRangeFromInput.value ? parseInt(yearRangeFromInput.value) : null;
+          yearRange.to   = yearRangeToInput.value   ? parseInt(yearRangeToInput.value)   : null;
+          table.removeFilter(yearRangeGlobalFilter);
+          if (yearRange.from || yearRange.to) table.addFilter(yearRangeGlobalFilter);
+        }
+        yearRangeFromInput.addEventListener('input', applyYearRange);
+        yearRangeToInput.addEventListener('input',   applyYearRange);
+
+        filterDiv.appendChild(yearRangeFromInput);
+        filterDiv.appendChild(dash);
+        filterDiv.appendChild(yearRangeToInput);
+        colEl.appendChild(filterDiv);
+
+        /* Keep filter row width in sync with column when user drags to resize */
+        if (window.ResizeObserver) {
+          new ResizeObserver(function() {
+            filterDiv.style.width = colEl.offsetWidth + 'px';
+          }).observe(colEl);
+        }
+      }
+
+      /* ── Inject citation-range inputs into the Citations column header ── */
+      var citCol = table.getColumn('Citations');
+      if (citCol) {
+        var citColEl = citCol.getElement();
+        var citFilterDiv = document.createElement('div');
+        citFilterDiv.className = 'tabulator-header-filter';
+        citFilterDiv.style.cssText = 'display:flex;align-items:center;gap:4px;padding:2px 4px;'
+          + 'width:100%;box-sizing:border-box;';
+
+        function makeCitInput(ph) {
+          var el = document.createElement('input');
+          el.type = 'number'; el.placeholder = ph; el.min = 0;
+          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
+            + 'border:1px solid #cbd5e1;border-radius:3px;box-sizing:border-box;';
+          return el;
+        }
+        citationRangeFromInput = makeCitInput('Min');
+        var citDash = document.createElement('span');
+        citDash.textContent = '–';
+        citDash.style.cssText = 'color:#94a3b8;font-size:0.8rem;flex-shrink:0;';
+        citationRangeToInput = makeCitInput('Max');
+
+        function applyCitationRange() {
+          citationRange.from = citationRangeFromInput.value !== '' ? parseInt(citationRangeFromInput.value) : null;
+          citationRange.to   = citationRangeToInput.value   !== '' ? parseInt(citationRangeToInput.value)   : null;
+          table.removeFilter(citationRangeGlobalFilter);
+          if (citationRange.from !== null || citationRange.to !== null) table.addFilter(citationRangeGlobalFilter);
+        }
+        citationRangeFromInput.addEventListener('input', applyCitationRange);
+        citationRangeToInput.addEventListener('input',   applyCitationRange);
+
+        citFilterDiv.appendChild(citationRangeFromInput);
+        citFilterDiv.appendChild(citDash);
+        citFilterDiv.appendChild(citationRangeToInput);
+        citColEl.appendChild(citFilterDiv);
+
+        /* Keep filter row width in sync with column when user drags to resize */
+        if (window.ResizeObserver) {
+          new ResizeObserver(function() {
+            citFilterDiv.style.width = citColEl.offsetWidth + 'px';
+          }).observe(citColEl);
+        }
+      }
     });
 
     table.on('dataFiltered', function(filters, rows) {
@@ -704,12 +961,147 @@ searchInput.addEventListener('input', function() {
 clearBtn.addEventListener('click', function() {
   globalSearchVal = '';
   searchInput.value = '';
+  /* Reset year range */
+  yearRange.from = null; yearRange.to = null;
+  if (yearRangeFromInput) yearRangeFromInput.value = '';
+  if (yearRangeToInput)   yearRangeToInput.value   = '';
+  /* Reset citation range */
+  citationRange.from = null; citationRange.to = null;
+  if (citationRangeFromInput) citationRangeFromInput.value = '';
+  if (citationRangeToInput)   citationRangeToInput.value   = '';
   if (table) {
+    table.removeFilter(yearRangeGlobalFilter);
+    table.removeFilter(citationRangeGlobalFilter);
     table.removeFilter(globalFilter);
     table.addFilter(globalFilter);
     table.clearHeaderFilter();
   }
 });
+</script>
+
+<!-- ── Approach modal ── -->
+<div id="approach-overlay" class="approach-overlay" role="dialog" aria-modal="true">
+  <div class="approach-modal">
+    <div class="approach-modal-header">
+      <h2 id="approach-modal-title">Approach</h2>
+      <button class="approach-modal-close" id="approach-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="approach-modal-body">
+      <div id="approach-modal-doi-wrap" style="margin-bottom:16px;">
+        <a id="approach-modal-doi" target="_blank" rel="noopener noreferrer" class="modal-pub-btn">
+          🔗 Publication
+        </a>
+      </div>
+      <p class="approach-modal-section-heading">Overview of method</p>
+      <div id="approach-modal-body"></div>
+      <div id="approach-modal-ambient-wrap" style="margin-top:18px;">
+        <p class="approach-modal-section-heading">Ambient basis</p>
+        <div id="approach-modal-ambient"></div>
+      </div>
+      <div id="approach-modal-notes-wrap" style="margin-top:18px;">
+        <p class="approach-modal-section-heading">Notes</p>
+        <div id="approach-modal-notes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var overlay       = document.getElementById('approach-overlay');
+  var modalTitle       = document.getElementById('approach-modal-title');
+  var modalBody        = document.getElementById('approach-modal-body');
+  var modalAmbient     = document.getElementById('approach-modal-ambient');
+  var modalAmbientWrap = document.getElementById('approach-modal-ambient-wrap');
+  var modalDoiWrap     = document.getElementById('approach-modal-doi-wrap');
+  var modalDoiLink     = document.getElementById('approach-modal-doi');
+  var modalNotesWrap   = document.getElementById('approach-modal-notes-wrap');
+  var modalNotes       = document.getElementById('approach-modal-notes');
+
+  /* Render Ambient Basis using the same logic as ambientBasisFmt */
+  var AMBIENT_LABELS_MODAL = ['With empty droplets:', 'No empty droplets:'];
+  function renderAmbientBasis(val) {
+    val = (val || '').trim();
+    if (!val) return '';
+    var items = val.split(';').map(function(v) { return v.trim(); }).filter(Boolean);
+    var lis = items.map(function(item) {
+      var html = null;
+      for (var i = 0; i < AMBIENT_LABELS_MODAL.length; i++) {
+        if (item.indexOf(AMBIENT_LABELS_MODAL[i]) === 0) {
+          var rest = item.slice(AMBIENT_LABELS_MODAL[i].length).trim();
+          html = '<span class="preprint-tag">' + escHtml(AMBIENT_LABELS_MODAL[i]) + '</span>'
+               + (rest ? ' ' + escHtml(rest) : '');
+          break;
+        }
+      }
+      return '<li>' + (html !== null ? html : escHtml(item)) + '</li>';
+    });
+    return '<ul class="bullet-list">' + lis.join('') + '</ul>';
+  }
+
+  function openModal(method, approach, ambientBasis, doi, notes) {
+    modalTitle.textContent = method || 'Approach';
+    /* DOI */
+    var doiVal = (doi || '').trim();
+    if (doiVal) {
+      var href = doiVal.startsWith('http') ? doiVal : 'https://doi.org/' + doiVal;
+      modalDoiLink.href = href;
+      modalDoiWrap.style.display = '';
+    } else {
+      modalDoiWrap.style.display = 'none';
+    }
+    /* Approach */
+    var approachItems = (approach || '').split(';').map(function(v) { return v.trim(); }).filter(Boolean);
+    modalBody.innerHTML = approachItems.length
+      ? '<ul class="bullet-list">' + approachItems.map(function(v) { return '<li>' + escHtml(v) + '</li>'; }).join('') + '</ul>'
+      : '<p style="color:#94a3b8">(no approach text)</p>';
+    /* Ambient Basis */
+    var ambientHtml = renderAmbientBasis(ambientBasis);
+    if (ambientHtml) {
+      modalAmbient.innerHTML = ambientHtml;
+      modalAmbientWrap.style.display = '';
+    } else {
+      modalAmbientWrap.style.display = 'none';
+    }
+    /* Notes */
+    var notesVal = (notes || '').trim();
+    if (notesVal) {
+      modalNotes.textContent = notesVal;
+      modalNotesWrap.style.display = '';
+    } else {
+      modalNotesWrap.style.display = 'none';
+    }
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('approach-modal-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  /* Attach row click after table is built */
+  function attachRowClick() {
+    if (!window.table) { setTimeout(attachRowClick, 200); return; }
+    window.table.on('rowClick', function(e, row) {
+      /* Don't open if user clicked a filter input or header */
+      if (e.target.closest('.tabulator-header')) return;
+      var d = row.getData();
+      var approach = (d.Approach_Description || '').trim();
+      if (!approach) return;
+      openModal(d.Method || 'Approach', approach, d.Ambient_Basis || '', d.Publication_DOI || '', d.Notes || '');
+    });
+  }
+  attachRowClick();
+})();
 </script>
 
 </body>
