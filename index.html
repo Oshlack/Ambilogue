@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ambilog — Ambient RNA Contamination Method Comparison</title>
+  <title>Ambilog — Ambient RNA Contamination Tool Comparison</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/css/tabulator.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.3.0/js/tabulator.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -16,9 +17,9 @@
       height: 100%;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: #eef2f8;
-      color: #1e293b;
+      font-family: 'Open Sans', sans-serif;
+      background: #FFFFFF;
+      color: #37352F;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -26,9 +27,8 @@
 
     /* ── Header ── */
     header {
-      background: linear-gradient(135deg, #162d4c 0%, #1f4472 100%);
-      border-bottom: 3px solid #38bdf8;
-      color: #fff;
+      background: #ffffff;
+      color: #37352F;
       padding: 1rem 2rem;
       flex-shrink: 0;
     }
@@ -40,7 +40,7 @@
     .subtitle {
       margin-top: 0.15rem;
       font-size: 0.85rem;
-      color: #93c5fd;
+      color: #555555;
     }
 
     /* ── Controls bar ── */
@@ -50,8 +50,8 @@
       gap: 1rem;
       padding: 0.55rem 2rem;
       background: #fff;
-      border-bottom: 1px solid #dde4ef;
-      box-shadow: 0 2px 8px rgba(15,40,80,0.07);
+      border-bottom: 2px solid #37352F;
+      box-shadow: 0 2px 8px rgba(55,53,47,0.08);
       flex-shrink: 0;
     }
     .search-group {
@@ -64,33 +64,33 @@
       flex: 1;
       max-width: 380px;
       padding: 0.4rem 0.75rem;
-      border: 1.5px solid #c8d3e6;
+      border: 1.5px solid #EDEDED;
       border-radius: 8px;
       font-size: 0.86rem;
       outline: none;
-      background: #f8fafc;
+      background: #F8F8F7;
       transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
     #global-search:focus {
-      border-color: #2563eb;
+      border-color: #808080;
       background: #fff;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+      box-shadow: 0 0 0 3px rgba(55,53,47,0.1);
     }
     #clear-all {
       padding: 0.4rem 0.8rem;
-      border: 1.5px solid #c8d3e6;
+      border: 1.5px solid #EDEDED;
       border-radius: 8px;
-      background: #f3f6fb;
-      color: #4b6080;
+      background: #F8F8F7;
+      color: #37352F;
       font-size: 0.8rem;
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.12s, color 0.12s;
     }
-    #clear-all:hover { background: #e2ecf8; color: #1e3a5f; }
+    #clear-all:hover { background: #EFEFEF; color: #37352F; }
     #row-count {
-      font-size: 0.8rem;
-      color: #64748b;
+      font-size: 0.92rem;
+      color: #555555;
       white-space: nowrap;
     }
 
@@ -108,13 +108,17 @@
     footer {
       padding: 0.5rem 2rem;
       font-size: 0.75rem;
-      color: #6b7f96;
-      border-top: 1px solid #dde4ef;
-      background: #f5f8fc;
+      color: #37352F;
+      border-top: 2px solid #37352F;
+      background: #FFFFFF;
       flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
     }
-    footer a { color: #1e3a5f; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    footer a { color: #37352F; text-decoration: none; }
+    footer a:hover { color: #808080; text-decoration: underline; }
 
     /* ── Tabulator overrides ── */
     .tabulator {
@@ -124,32 +128,40 @@
       height: 100% !important;
     }
     .tabulator .tabulator-header {
-      background: #e8eef8;
-      border-bottom: 2px solid #1e3a5f;
+      background: #F8F8F7;
+      border-bottom: 2px solid #37352F;
+    }
+    .tabulator .tabulator-header .tabulator-col {
+      background: #F8F8F7 !important;
+      border-right: 1px solid #EDEDED !important;
+      border-left: 1px solid #EDEDED !important;
     }
     .tabulator .tabulator-col-title {
       font-weight: 600;
-      color: #1a3356;
+      color: #37352F;
       font-size: 0.77rem;
       text-align: left !important;
     }
     /* Column group header */
     .tabulator .tabulator-col-group .tabulator-col-title {
-      font-style: italic;
-      color: #1a3356;
+      font-style: normal;
+      color: #37352F;
+    }
+    .tabulator .tabulator-col-group-cols {
+      border-top: 1px solid #EDEDED !important;
     }
     .tabulator .tabulator-col-group-cols > .tabulator-col {
-      background: #f0f5fc;
+      background: #EFEFEF;
     }
 
-    .tabulator .tabulator-row { border-bottom: 1px solid #e8edf6; background: #fff; }
-    .tabulator .tabulator-row.tabulator-row-even { background: #f6f9ff; }
-    .tabulator .tabulator-row:hover { background: #e8f2ff !important; }
+    .tabulator .tabulator-row { border-bottom: 1px solid #EDEDED; background: #fff; }
+    .tabulator .tabulator-row.tabulator-row-even { background: #F8F8F7; }
+    .tabulator .tabulator-row:hover { background: #EFEFEF !important; }
 
     .tabulator .tabulator-cell {
       padding: 5px 8px;
       line-height: 1.45;
-      border-right: 1px solid #e8edf6;
+      border-right: 1px solid #EDEDED;
       vertical-align: top;
       white-space: normal !important;
       word-break: break-word;
@@ -164,7 +176,7 @@
       content: '✓';
       position: absolute;
       left: 6px;
-      color: #1e3a5f;
+      color: #37352F;
       font-weight: 700;
       font-size: 0.85em;
     }
@@ -180,10 +192,16 @@
     /* Frozen column */
     .tabulator .tabulator-col.tabulator-frozen,
     .tabulator .tabulator-row .tabulator-cell.tabulator-frozen {
-      background: #edf4ff !important;
+      background: #EFEFEF !important;
+    }
+    .tabulator .tabulator-col.tabulator-frozen {
+      border-right: 2px solid #37352F !important;
+    }
+    .tabulator .tabulator-row .tabulator-cell.tabulator-frozen {
+      border-right: 2px solid #37352F !important;
     }
     .tabulator .tabulator-row:hover .tabulator-cell.tabulator-frozen {
-      background: #d6eaff !important;
+      background: #DCDCDB !important;
     }
 
     /* Header filter inputs */
@@ -192,15 +210,15 @@
       width: 100%;
       padding: 3px 5px;
       font-size: 0.74rem;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #D9D9D8;
       border-radius: 4px;
       background: #fff;
-      color: #334155;
+      color: #37352F;
     }
     .tabulator .tabulator-header-filter input:focus,
     .tabulator .tabulator-header-filter select:focus {
       outline: none;
-      border-color: #3b82f6;
+      border-color: #808080;
     }
 
     /* ── Badges ── */
@@ -295,18 +313,18 @@
 
     /* ── DOI link ── */
     a.doi-link {
-      color: #1e3a5f;
+      color: #37352F;
       text-decoration: none;
       font-size: 1rem;
     }
-    a.doi-link:hover { color: #3b82f6; }
+    a.doi-link:hover { color: #808080; }
 
     /* ── Approach modal ── */
     .approach-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.45);
+      background: rgba(55, 53, 47, 0.45);
       z-index: 1000;
       align-items: center;
       justify-content: center;
@@ -315,7 +333,7 @@
     .approach-modal {
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 8px 32px rgba(55, 53, 47, 0.2);
       max-width: 620px;
       width: 92%;
       max-height: 80vh;
@@ -327,31 +345,31 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px 20px 12px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #EDEDED;
     }
     .approach-modal-header h2 {
       font-size: 1.05rem;
       font-weight: 700;
-      color: #1e3a5f;
+      color: #37352F;
       margin: 0;
     }
     .approach-modal-close {
       background: none;
       border: none;
       font-size: 1.3rem;
-      color: #64748b;
+      color: #808080;
       cursor: pointer;
       padding: 2px 6px;
       border-radius: 4px;
       line-height: 1;
     }
-    .approach-modal-close:hover { background: #f1f5f9; color: #1e3a5f; }
+    .approach-modal-close:hover { background: #EFEFEF; color: #37352F; }
     .approach-modal-section-heading {
       font-size: 0.85rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #94a3b8;
+      color: #808080;
       margin: 0 0 8px 0;
     }
     .approach-modal-body {
@@ -359,7 +377,7 @@
       overflow-y: auto;
       font-size: 0.88rem;
       line-height: 1.65;
-      color: #1e293b;
+      color: #37352F;
       white-space: pre-wrap;
     }
     .modal-pub-btn {
@@ -367,7 +385,7 @@
       align-items: center;
       gap: 6px;
       padding: 6px 14px;
-      background: #1e3a5f;
+      background: #37352F;
       color: #fff;
       font-size: 0.82rem;
       font-weight: 600;
@@ -376,9 +394,9 @@
       letter-spacing: 0.02em;
       transition: background 0.15s;
     }
-    .modal-pub-btn:hover { background: #2d5080; }
+    .modal-pub-btn:hover { background: #000000; }
     .tabulator-row { cursor: pointer; }
-    .tabulator-row:hover { background: #e8f2ff !important; }
+    .tabulator-row:hover { background: #EFEFEF !important; }
 
     /* ── Error ── */
     .load-error {
@@ -415,11 +433,8 @@
 </div>
 
 <footer>
-  <p>
-    Citation counts updated daily via the
-    <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API.
-    Compiled by Calandra Grima · <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a> · Peter MacCallum Cancer Centre.
-  </p>
+  <span>Citation counts updated daily via the <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API.</span>
+  <span>Compiled by Calandra Grima · <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a> · Peter MacCallum Cancer Centre.</span>
 </footer>
 
 <script>
@@ -513,8 +528,11 @@ function doiFormatter(cell) {
 }
 
 function dateYear(val) {
-  /* Handles D/M/YYYY — year is last slash-delimited segment */
   var s = String(val || '').trim();
+  /* ISO format: YYYY-MM-DD, YYYY-MM, or bare YYYY */
+  var isoMatch = s.match(/^(\d{4})(?:-\d{2}(?:-\d{2})?)?$/);
+  if (isoMatch) return isoMatch[1];
+  /* Legacy D/M/YYYY — year is last slash-delimited segment */
   var parts = s.split('/');
   if (parts.length >= 3 && parts[parts.length - 1].length === 4) return parts[parts.length - 1];
   return '';
@@ -552,7 +570,10 @@ var citationRangeToInput   = null;
 
 function dateSorter(a, b, aRow, bRow, col, dir) {
   function toNum(s) {
-    var p = String(s || '').split('/');
+    s = String(s || '').trim();
+    var iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (iso) return parseInt(iso[1]) * 10000 + parseInt(iso[2]) * 100 + parseInt(iso[3]);
+    var p = s.split('/');
     if (p.length < 3) return dir === 'asc' ? Infinity : -Infinity;
     return parseInt(p[2]) * 10000 + parseInt(p[1]) * 100 + parseInt(p[0]);
   }
@@ -716,6 +737,18 @@ Papa.parse('Ambilog.csv', {
         sorter: dateSorter,
       },
       {
+        title: 'Number of citations', field: 'Citations', width: 100,
+        formatter: citationFormatter, sorter: citationSorter,
+        hozAlign: 'right', headerHozAlign: 'right', headerFilter: false,
+      },
+      {
+        title: 'Methodology category', field: 'Method_Category', width: 165,
+        formatter: tagFormatter,
+        headerFilter: 'list',
+        headerFilterParams: { values: methodCatVals, multiselect: true },
+        headerFilterFunc: multiValFilter,
+      },
+      {
         title: 'Software ecosystem', field: 'Ecosystem', width: 135,
         formatter: tagFormatter,
         headerFilter: 'list',
@@ -728,11 +761,6 @@ Papa.parse('Ambilog.csv', {
         headerFilter: 'list',
         headerFilterParams: { values: availabilityVals, multiselect: true },
         headerFilterFunc: multiValFilter,
-      },
-      {
-        title: 'Number of citations', field: 'Citations', width: 100,
-        formatter: citationFormatter, sorter: citationSorter,
-        hozAlign: 'right', headerHozAlign: 'right', headerFilter: false,
       },
 
       /* Requirements */
@@ -748,7 +776,7 @@ Papa.parse('Ambilog.csv', {
         formatter: bulletFmt, headerFilter: 'input',
       },
       {
-        title: 'Technology Suitability', field: 'Technology_Suitability', width: 175,
+        title: 'Supported data types', field: 'Technology_Suitability', width: 175,
         formatter: tagFormatter,
         headerFilter: 'list',
         headerFilterParams: { values: techSuitVals, multiselect: true },
@@ -759,13 +787,6 @@ Papa.parse('Ambilog.csv', {
       {
         title: 'Ambient Basis', field: 'Ambient_Basis', width: 185,
         formatter: ambientBasisFmt, headerFilter: 'input', visible: false,
-      },
-      {
-        title: 'Methodology category', field: 'Method_Category', width: 165,
-        formatter: tagFormatter,
-        headerFilter: 'list',
-        headerFilterParams: { values: methodCatVals, multiselect: true },
-        headerFilterFunc: multiValFilter,
       },
       {
         title: 'Approach', field: 'Approach_Description', width: 205,
@@ -781,38 +802,38 @@ Papa.parse('Ambilog.csv', {
         title: 'Method features',
         columns: [
           {
-            title: 'Filter empty droplets', field: 'Can_Filter_Empties', width: 82,
+            title: 'Filter empty droplets', field: 'Can_Filter_Empties', width: 140,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Per-droplet ambient estimation', field: 'Can_Ambient_Estimate', width: 97,
+            title: 'Per-droplet ambient estimation', field: 'Can_Ambient_Estimate', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Ambient correction of counts matrix', field: 'Can_Ambient_Correct', width: 107,
+            title: 'Ambient correction of counts matrix', field: 'Can_Ambient_Correct', width: 160,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list',
             headerFilterParams: { values: ['', 'Yes', 'No', 'Selected Genes Only'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Generate ambient QC plots', field: 'Can_Ambient_QC_Plot', width: 76,
+            title: 'Generate ambient QC plots', field: 'Can_Ambient_QC_Plot', width: 130,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Simulate ambient-contaminated datasets', field: 'Can_Ambient_Simulate', width: 82,
+            title: 'Simulate ambient-contaminated datasets', field: 'Can_Ambient_Simulate', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
             headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
             headerFilterFunc: multiValFilter,
           },
           {
-            title: 'Other Features', field: 'Other_Features', width: 185,
+            title: 'Other features', field: 'Other_Features', width: 185,
             formatter: tagFormatter,
             headerFilter: 'list',
             headerFilterParams: { values: otherFeaturesVals, multiselect: true },
