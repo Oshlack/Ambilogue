@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Update citation counts in Ambilog.csv using the OpenAlex API.
+Update citation counts in Ambilogue.csv using the OpenAlex API.
 Runs daily via GitHub Actions.
 
 OpenAlex docs: https://docs.openalex.org/
@@ -11,7 +11,7 @@ import os
 import time
 import requests
 
-DATA_FILE = os.path.join(os.path.dirname(__file__), '..', 'Ambilog.csv')
+DATA_FILE = os.path.join(os.path.dirname(__file__), '..', 'Ambilogue.csv')
 OPENALEX_BASE = 'https://api.openalex.org/works'
 
 # Providing an email uses OpenAlex's "polite pool" — faster and more reliable.
