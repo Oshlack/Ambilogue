@@ -285,6 +285,7 @@
     .tag-feat-sgrna   { background: #ffe4e6; color: #be123c; }  /* Assign sgRNAs → rose           */
     .tag-feat-barcode { background: #cffafe; color: #0e7490; }  /* Correct barcode swapping → cyan */
     .tag-feat-demux   { background: #fce7f3; color: #9d174d; }  /* Demultiplexing → pink          */
+    .tag-feat-cmo     { background: #dcfce7; color: #15803d; }  /* Tag demultiplexing → green     */
     .tag-feat-doublet { background: #fed7aa; color: #9a3412; }  /* Doublet detection → orange     */
     .tag-feat-filter  { background: #fee2e2; color: #991b1b; }  /* Filter damaged cells → red     */
     .tag-feat-donor   { background: #f3e8ff; color: #7e22ce; }  /* Find donor proportions → violet */
@@ -305,6 +306,24 @@
       font-size: 0.7rem;
       font-style: italic;
       vertical-align: middle;
+    }
+    .benchmarking-tag-grey {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      color: #64748b;
+      font-size: 0.7rem;
+      font-style: italic;
+    }
+    .benchmarking-tag-yellow {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #fef9c3;
+      color: #854d0e;
+      font-size: 0.7rem;
+      font-style: italic;
     }
 
     /* ── Truncated text ── */
@@ -497,6 +516,8 @@ var TAG_COLOURS = {
   'assign sgrnas to cells':           'tag-feat-sgrna',
   'correct barcode swapping':         'tag-feat-barcode',
   'demultiplexing':                   'tag-feat-demux',
+  'tag demultiplexing':               'tag-feat-cmo',
+  'genetic demultiplexing':           'tag-feat-demux',
   'doublet detection':                'tag-feat-doublet',
   'filter damaged cells':             'tag-feat-filter',
   'find donor proportions':           'tag-feat-donor',
@@ -625,6 +646,17 @@ function truncFmt(maxLen, fallback) {
       : '';
     return escHtml(val);
   };
+}
+
+/* Benchmarking summary: special labels for non-standard values */
+function benchmarkingFmt(cell) {
+  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!val) return '';
+  if (val === 'Does not perform ambient correction')
+    return '<span class="benchmarking-tag-grey">' + escHtml(val) + '</span>';
+  if (val === 'Not yet benchmarked')
+    return '<span class="benchmarking-tag-yellow">' + escHtml(val) + '</span>';
+  return escHtml(val);
 }
 
 /* Bullet list: splits on ; and renders as <ul> */
@@ -884,8 +916,8 @@ Papa.parse('Ambilogue.csv', {
         ],
       },
       {
-        title: 'Summary of benchmarking results', field: 'Benchmarking_Summary', width: 185,
-        formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+        title: 'Summary of ambient correction benchmarking results', field: 'Benchmarking_Summary', width: 185,
+        formatter: benchmarkingFmt, headerFilter: 'input', tooltip: true,
       },
       {
         title: 'Overview of method approach', field: 'Approach_Description', width: 205,
