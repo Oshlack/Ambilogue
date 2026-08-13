@@ -8,6 +8,6 @@ Compare methods that address ambient RNA contamination with the Ambilogue. This 
 
 If you find the Ambilogue useful for your work please cite our publication:
 
-_stay tuneddddddd_
+✨ _stay tuneddddddd_ ✨
 
 The code in this repository is covered by the MIT license and the written content on this website is covered by a Creative Commons CC-BY license.
