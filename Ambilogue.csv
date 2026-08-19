@@ -18,23 +18,3 @@ ambisim,Li et al. (2025),https://doi.org/10.21203/rs.3.rs-5977005/v1,10/2/2025,C
 CellBouncer,Schaefer et al. (2025),https://doi.org/10.1016/j.xgen.2026.101275,23/3/2025,Command Line,GitHub; Docker; conda,7,Required,Reads containing allele variants,Droplet-based scRNA-seq; Droplet-based scCRISPR-seq,Allele variant fractions,Demultiplexing-like,Variants that do not match known genotype of each droplet used to estimate ambient contamination; ambient counts subtracted to correct contamination,Not yet benchmarked,No,Yes,Yes,Yes,No,Genetic demultiplexing; Doublet detection; Find donor proportions; Assign sgRNAs to cells,,,https://github.com/nkschaefer/cellbouncer
 Ambimux,Alvarez et al. (2025),https://doi.org/10.1101/2025.08.21.671671,26/8/2025,Command Line,GitHub,0 (preprint),Required,Reads containing allele variants; Sample genotypes; Peak and gene annotations,Droplet-based scRNA-seq; Droplet-based scATAC-seq; Droplet-based scRNA+ATAC multiome,Allele variant fractions,Demultiplexing-like,Modelling cell and ambient counts based on variants in ambient pool using maximum likelihood; assigns ambient contamination estimation and cell/empty droplet status to each droplet,Does not perform ambient correction,Yes,Yes,No,No,No,Genetic demultiplexing; Doublet detection; Find donor proportions,,,https://github.com/marcalva/ambimux
 CellSweep,Caskey et al. (2026),https://doi.org/10.64898/2026.03.04.709349,6/3/2026,Python; Command Line,pip,0 (preprint),Optional,Pre-clustering required,Droplet-based scRNA-seq; Droplet-based scATAC-seq; Droplet-based snRNA-seq; Well-based scRNA-seq; Spatial transcriptomics,With empty droplets: Low total UMI count droplets; No empty droplets: Cell type expression mixture,Empty droplet-like; Expression profiling-like,Models and subtracts cell and ambient counts using Expectation-Maximization algorithm,Not yet benchmarked,No,Yes,Yes,Yes,No,,,,https://github.com/pachterlab/cellsweep
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,,,,
