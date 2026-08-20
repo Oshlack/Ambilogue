@@ -2,7 +2,9 @@
 
 # Ambilogue
 
-Compare methods that address ambient RNA contamination with the Ambilogue. This resource helps researchers make easier and more informed choices about ambient RNA contamination methods in their workflow. View the Ambilogue here: https://oshlacklab.com/Ambilogue/
+Compare methods that address ambient RNA contamination with the Ambilogue. This resource helps researchers make easier and more informed choices about ambient RNA contamination methods in their workflow. 
+
+**View the Ambilogue here: https://oshlacklab.com/Ambilogue/**
 
 ## Citation
 
