@@ -561,7 +561,7 @@ function tagClass(val) {
 
 function tagFormatter(cell) {
   var val = cell.getValue();
-  if (!val) return '<span class="tag-req tag-req-none">None</span>';
+  if (!val) return '';
   return String(val).split(';')
     .map(function(v) { return v.trim(); })
     .filter(Boolean)
@@ -671,7 +671,7 @@ function truncFmt(maxLen, fallback) {
   return function(cell) {
     var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
     if (!val) return fallback !== undefined
-      ? '<span class="tag-req tag-req-none">' + escHtml(fallback) + '</span>'
+      ? '<span style="color:#94a3b8;font-style:italic">' + escHtml(fallback) + '</span>'
       : '';
     return escHtml(val);
   };
@@ -965,7 +965,7 @@ Papa.parse('Ambilogue.csv', {
           },
           {
             title: 'Notes', field: 'Notes', width: 185,
-            formatter: truncFmt(80, 'None'), headerFilter: 'input', tooltip: true,
+            formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
           },
         ],
       },
