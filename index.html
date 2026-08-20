@@ -342,6 +342,36 @@
     }
     .bullet-list li { margin-bottom: 1px; }
 
+    /* ── Additional Requirements filter toggle ── */
+    .req-filter-wrap { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+    .req-filter-toggle {
+      width: 100%; font-size: 0.68rem; padding: 1px 4px; border-radius: 3px;
+      border: 1px solid #d1d5db; cursor: pointer; text-align: center; line-height: 1.4;
+    }
+    .req-filter-include { background: #dbeafe; color: #1d4ed8; }
+    .req-filter-exclude { background: #fee2e2; color: #991b1b; }
+    .req-multiselect { position: relative; width: 100%; }
+    .req-multiselect-trigger {
+      width: 100%; box-sizing: border-box; font-size: 0.7rem; padding: 2px 6px;
+      border: 1px solid #d1d5db; border-radius: 3px; cursor: pointer;
+      background: #fff; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; color: #37352F; text-align: left;
+    }
+    .req-multiselect-trigger.has-selection { font-weight: 500; }
+    .req-multiselect-dropdown {
+      display: none; position: fixed; z-index: 99999;
+      background: #fff; border: 1px solid #d1d5db; border-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      min-width: 210px; max-height: 220px; overflow-y: auto;
+    }
+    .req-multiselect-dropdown.open { display: block; }
+    .req-multiselect-option {
+      display: flex; align-items: center; gap: 7px;
+      padding: 5px 10px; cursor: pointer; font-size: 0.75rem; color: #37352F;
+    }
+    .req-multiselect-option:hover { background: #f1f5f9; }
+    .req-multiselect-option input[type=checkbox] { margin: 0; cursor: pointer; }
+
     /* ── Additional Requirements tags ── */
     .tag-req {
       display: inline-block;
@@ -754,6 +784,160 @@ function multiValFilter(headerValue, rowValue) {
   });
 }
 
+/* Additional Requirements: custom dropdown multiselect with include / exclude toggle */
+function reqFilterEditor(cell, onRendered, success, cancel, editorParams) {
+  var wrap = document.createElement('div');
+  wrap.className = 'req-filter-wrap';
+
+  /* Toggle button */
+  var toggle = document.createElement('button');
+  toggle.className = 'req-filter-toggle req-filter-exclude';
+  toggle.dataset.mode = 'exclude';
+  toggle.textContent = 'Exclude ✕';
+  toggle.type = 'button';
+
+  /* Dropdown wrapper */
+  var ms = document.createElement('div');
+  ms.className = 'req-multiselect';
+
+  var trigger = document.createElement('button');
+  trigger.className = 'req-multiselect-trigger';
+  trigger.type = 'button';
+  trigger.textContent = 'Filter…';
+
+  var dropdown = document.createElement('div');
+  dropdown.className = 'req-multiselect-dropdown';
+
+  var checked = [];
+
+  function updateTrigger() {
+    if (checked.length === 0) {
+      trigger.textContent = 'Filter…';
+      trigger.classList.remove('has-selection');
+    } else {
+      trigger.textContent = checked.length + ' selected';
+      trigger.classList.add('has-selection');
+    }
+  }
+
+  function emit() {
+    success({ mode: toggle.dataset.mode, values: checked.slice() });
+  }
+
+  (editorParams.values || []).filter(Boolean).forEach(function(v) {
+    var label = document.createElement('label');
+    label.className = 'req-multiselect-option';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = v;
+    cb.addEventListener('change', function() {
+      if (cb.checked) { checked.push(v); } else { checked = checked.filter(function(x) { return x !== v; }); }
+      updateTrigger();
+      emit();
+    });
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(v));
+    dropdown.appendChild(label);
+  });
+
+  /* Open / close dropdown */
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var rect = trigger.getBoundingClientRect();
+    dropdown.style.top  = (rect.bottom + 2) + 'px';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function(e) {
+    if (!dropdown.contains(e.target) && e.target !== trigger) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  /* Toggle include / exclude */
+  toggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (toggle.dataset.mode === 'include') {
+      toggle.dataset.mode = 'exclude';
+      toggle.textContent = 'Exclude ✕';
+      toggle.className = 'req-filter-toggle req-filter-exclude';
+    } else {
+      toggle.dataset.mode = 'include';
+      toggle.textContent = 'Include ▾';
+      toggle.className = 'req-filter-toggle req-filter-include';
+    }
+    emit();
+  });
+
+  ms.appendChild(trigger);
+  document.body.appendChild(dropdown); /* attach to body so it overlays table */
+  wrap.appendChild(toggle);
+  wrap.appendChild(ms);
+  return wrap;
+}
+
+/* General-purpose checkbox dropdown for all multiselect header filters */
+function multiSelectDropdownEditor(cell, onRendered, success, cancel, editorParams) {
+  var ms = document.createElement('div');
+  ms.className = 'req-multiselect';
+  ms.style.width = '100%';
+
+  var trigger = document.createElement('button');
+  trigger.className = 'req-multiselect-trigger';
+  trigger.type = 'button';
+  trigger.textContent = 'Filter…';
+
+  var dropdown = document.createElement('div');
+  dropdown.className = 'req-multiselect-dropdown';
+
+  var checked = [];
+
+  function updateTrigger() {
+    trigger.textContent = checked.length ? checked.length + ' selected' : 'Filter…';
+    trigger.classList.toggle('has-selection', checked.length > 0);
+  }
+
+  (editorParams.values || []).filter(function(v) { return v !== '' && v != null; }).forEach(function(v) {
+    var label = document.createElement('label');
+    label.className = 'req-multiselect-option';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.value = v;
+    cb.addEventListener('change', function() {
+      if (cb.checked) { checked.push(v); } else { checked = checked.filter(function(x) { return x !== v; }); }
+      updateTrigger();
+      success(checked.slice());
+    });
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(v));
+    dropdown.appendChild(label);
+  });
+
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var rect = trigger.getBoundingClientRect();
+    dropdown.style.top  = (rect.bottom + 2) + 'px';
+    dropdown.style.left = rect.left + 'px';
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', function close(e) {
+    if (!dropdown.contains(e.target) && e.target !== trigger) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  ms.appendChild(trigger);
+  document.body.appendChild(dropdown);
+  return ms;
+}
+
+function reqFilterFunc(headerValue, rowValue) {
+  if (!headerValue || !headerValue.values || !headerValue.values.length) return true;
+  var items = String(rowValue == null ? '' : rowValue).split(';')
+    .map(function(v) { return v.trim().toLowerCase(); });
+  var selected = headerValue.values.map(function(v) { return v.toLowerCase(); });
+  var hasMatch = selected.some(function(s) { return items.indexOf(s) !== -1; });
+  return headerValue.mode === 'exclude' ? !hasMatch : hasMatch;
+}
+
 /* Extract sorted unique individual values (split on sep) from a field */
 function getUniqueVals(data, field) {
   var set = new Set();
@@ -869,8 +1053,8 @@ Papa.parse('Ambilogue.csv', {
       {
         title: 'Method category', field: 'Method_Category', width: 165,
         formatter: tagFormatter,
-        headerFilter: 'list',
-        headerFilterParams: { values: methodCatVals, multiselect: true },
+        headerFilter: multiSelectDropdownEditor,
+        headerFilterParams: { values: methodCatVals },
         headerFilterFunc: multiValFilter,
       },
       {
@@ -879,15 +1063,15 @@ Papa.parse('Ambilogue.csv', {
           {
             title: 'Ecosystem', field: 'Ecosystem', width: 135,
             formatter: tagFormatter,
-            headerFilter: 'list',
-            headerFilterParams: { values: ecosystemVals, multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: ecosystemVals },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Availability', field: 'Availability', width: 175,
             formatter: tagFormatter,
-            headerFilter: 'list',
-            headerFilterParams: { values: availabilityVals, multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: availabilityVals },
             headerFilterFunc: multiValFilter,
           },
         ],
@@ -900,23 +1084,23 @@ Papa.parse('Ambilogue.csv', {
           {
             title: 'Supported data types', field: 'Technology_Suitability', width: 175,
             formatter: tagFormatter,
-            headerFilter: 'list',
-            headerFilterParams: { values: techSuitVals, multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: techSuitVals },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Requires empty droplets?', field: 'Requires_Empties', width: 115,
             formatter: requiresBadgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list',
-            headerFilterParams: { values: ['', 'Required', 'Not required', 'Optional'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: ['Required', 'Not required', 'Optional'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Additional requirements?', field: 'Additional_Requirements', width: 180,
             formatter: additionalReqFmt,
-            headerFilter: 'list',
-            headerFilterParams: { values: additionalReqVals, multiselect: true },
-            headerFilterFunc: multiValFilter,
+            headerFilter: reqFilterEditor,
+            headerFilterParams: { values: additionalReqVals },
+            headerFilterFunc: reqFilterFunc,
           },
         ],
       },
@@ -928,39 +1112,39 @@ Papa.parse('Ambilogue.csv', {
           {
             title: 'Filter empty droplets', field: 'Can_Filter_Empties', width: 140,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Per-droplet ambient estimation', field: 'Can_Ambient_Estimate', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Ambient correction of counts matrix', field: 'Can_Ambient_Correct', width: 160,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list',
-            headerFilterParams: { values: ['', 'Yes', 'No', 'Selected genes only'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: ['Yes', 'No', 'Selected genes only'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Generate ambient QC plots', field: 'Can_Ambient_QC_Plot', width: 130,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Simulate ambient-contaminated datasets', field: 'Can_Ambient_Simulate', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: 'list', headerFilterParams: { values: ['', 'Yes', 'No'], multiselect: true },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Other features', field: 'Other_Features', width: 185,
             formatter: tagFormatter,
-            headerFilter: 'list',
-            headerFilterParams: { values: otherFeaturesVals, multiselect: true },
+            headerFilter: multiSelectDropdownEditor,
+            headerFilterParams: { values: otherFeaturesVals },
             headerFilterFunc: multiValFilter,
           },
           {
