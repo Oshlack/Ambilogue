@@ -671,7 +671,7 @@ function truncFmt(maxLen, fallback) {
   return function(cell) {
     var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
     if (!val) return fallback !== undefined
-      ? '<span style="color:#94a3b8;font-style:italic">' + escHtml(fallback) + '</span>'
+      ? '<span class="tag-req tag-req-none">' + escHtml(fallback) + '</span>'
       : '';
     return escHtml(val);
   };
