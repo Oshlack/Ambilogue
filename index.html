@@ -77,7 +77,7 @@
       border-radius: 8px;
       font-size: 0.86rem;
       outline: none;
-      background: #F8F8F7;
+      background: #FAFAFA;
       transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
     }
     #global-search:focus {
@@ -89,7 +89,7 @@
       padding: 0.4rem 0.8rem;
       border: 1.5px solid #EDEDED;
       border-radius: 8px;
-      background: #F8F8F7;
+      background: #FAFAFA;
       color: #37352F;
       font-size: 0.8rem;
       cursor: pointer;
@@ -140,11 +140,11 @@
       height: 100% !important;
     }
     .tabulator .tabulator-header {
-      background: #F8F8F7;
+      background: #FAFAFA;
       border-bottom: 2px solid #37352F;
     }
     .tabulator .tabulator-header .tabulator-col {
-      background: #F8F8F7 !important;
+      background: #FAFAFA !important;
       border-right: 1px solid #EDEDED !important;
       border-left: 1px solid #EDEDED !important;
     }
@@ -167,7 +167,7 @@
     }
 
     .tabulator .tabulator-row { border-bottom: 1px solid #EDEDED; background: #fff; }
-    .tabulator .tabulator-row.tabulator-row-even { background: #F8F8F7; }
+    .tabulator .tabulator-row.tabulator-row-even { background: #FAFAFA; }
     .tabulator .tabulator-row:hover { background: #EFEFEF !important; }
 
     .tabulator .tabulator-cell {
@@ -224,7 +224,7 @@
       font-size: 0.8rem;
       border: 1.5px solid #EDEDED;
       border-radius: 8px;
-      background: #F8F8F7;
+      background: #FAFAFA;
       color: #37352F;
     }
     .tabulator .tabulator-header-filter input:focus,
@@ -346,8 +346,8 @@
     /* ── Additional Requirements filter toggle ── */
     .req-filter-wrap { display: flex; flex-direction: column; gap: 2px; width: 100%; }
     .req-filter-toggle {
-      width: 100%; font-size: 0.68rem; padding: 1px 4px; border-radius: 3px;
-      border: 1px solid #d1d5db; cursor: pointer; text-align: center; line-height: 1.4;
+      width: 100%; font-size: 0.68rem; padding: 1px 4px; border-radius: 8px;
+      border: 1.5px solid #EDEDED; cursor: pointer; text-align: center; line-height: 1.4;
     }
     .req-filter-include { background: #dbeafe; color: #1d4ed8; }
     .req-filter-exclude { background: #fee2e2; color: #991b1b; }
@@ -355,7 +355,7 @@
     .req-multiselect-trigger {
       width: 100%; box-sizing: border-box; font-size: 0.8rem; font-family: inherit;
       padding: 4px 5px; border: 1.5px solid #EDEDED; border-radius: 8px; cursor: pointer;
-      background: #F8F8F7; white-space: nowrap; overflow: hidden;
+      background: #FAFAFA; white-space: nowrap; overflow: hidden;
       text-overflow: ellipsis; color: #9ca3af; text-align: left;
     }
     .req-multiselect-trigger.has-selection { font-weight: 500; color: #37352F; }
@@ -1199,7 +1199,7 @@ Papa.parse('Ambilogue.csv', {
           var el = document.createElement('input');
           el.type = 'number'; el.placeholder = ph; el.min = 2000; el.max = 2099;
           el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
-            + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#F8F8F7;color:#37352F;';
+            + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#FAFAFA;color:#37352F;';
           return el;
         }
         yearRangeFromInput = makeYearInput('From');
@@ -1243,7 +1243,7 @@ Papa.parse('Ambilogue.csv', {
           var el = document.createElement('input');
           el.type = 'number'; el.placeholder = ph; el.min = 0;
           el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
-            + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#F8F8F7;color:#37352F;';
+            + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#FAFAFA;color:#37352F;';
           return el;
         }
         citationRangeFromInput = makeCitInput('Min');
