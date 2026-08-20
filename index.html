@@ -561,7 +561,7 @@ function tagClass(val) {
 
 function tagFormatter(cell) {
   var val = cell.getValue();
-  if (!val) return '';
+  if (!val) return '<span class="tag-req tag-req-none">None</span>';
   return String(val).split(';')
     .map(function(v) { return v.trim(); })
     .filter(Boolean)
@@ -965,7 +965,7 @@ Papa.parse('Ambilogue.csv', {
           },
           {
             title: 'Notes', field: 'Notes', width: 185,
-            formatter: truncFmt(80), headerFilter: 'input', tooltip: true,
+            formatter: truncFmt(80, 'None'), headerFilter: 'input', tooltip: true,
           },
         ],
       },
