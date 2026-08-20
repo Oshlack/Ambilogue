@@ -354,11 +354,15 @@
       white-space: nowrap;
     }
     .tag-req-blue   { background: #dbeafe; color: #1d4ed8; }  /* BAM file */
-    .tag-req-teal   { background: #ccfbf1; color: #0f766e; }  /* GTF / FASTA / BED */
-    .tag-req-green  { background: #dcfce7; color: #15803d; }  /* VCF file */
+    .tag-req-teal   { background: #ccfbf1; color: #0f766e; }  /* GTF */
+    .tag-req-sky    { background: #e0f2fe; color: #0369a1; }  /* FASTA */
+    .tag-req-lime   { background: #ecfccb; color: #4d7c0f; }  /* BED */
+    .tag-req-green  { background: #fee2e2; color: #991b1b; }  /* VCF file */
     .tag-req-amber  { background: #fef3c7; color: #b45309; }  /* GPU */
-    .tag-req-violet { background: #ede9fe; color: #7c3aed; }  /* Pre-clustering */
+    .tag-req-violet  { background: #ede9fe; color: #7c3aed; }  /* Pre-clustering (required) */
+    .tag-req-fuchsia { background: #fdf4ff; color: #a21caf; }  /* Pre-clustering (optional) */
     .tag-req-rose   { background: #ffe4e6; color: #be123c; }  /* Allele reads */
+    .tag-req-none   { background: #f1f5f9; color: #9ca3af; }  /* None */
 
     /* ── DOI link ── */
     a.doi-link {
@@ -697,17 +701,17 @@ function bulletFmt(cell) {
 var REQ_CLASS = {
   'bam file':                         'tag-req-blue',
   'gene gtf file':                    'tag-req-teal',
-  'genome fasta file':                'tag-req-teal',
-  'peak bed file':                    'tag-req-teal',
+  'genome fasta file':                'tag-req-sky',
+  'peak bed file':                    'tag-req-lime',
   'genotype vcf file':                'tag-req-green',
   'gpu access (recommended)':         'tag-req-amber',
-  'pre-clustering (optional)':        'tag-req-violet',
+  'pre-clustering (optional)':        'tag-req-fuchsia',
   'pre-clustering (required)':        'tag-req-violet',
   'reads containing allele variants': 'tag-req-rose',
 };
 function additionalReqFmt(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
-  if (!val) return '';
+  if (!val) return '<span class="tag-req tag-req-none">None</span>';
   var items = val.split(';').map(function(v) { return v.trim(); }).filter(Boolean);
   return items.map(function(v) {
     var cls = REQ_CLASS[v.toLowerCase()] || '';
@@ -804,6 +808,7 @@ Papa.parse('Ambilogue.csv', {
     var methodCatVals       = getUniqueVals(data, 'Method_Category');
     var availabilityVals    = getUniqueVals(data, 'Availability');
     var otherFeaturesVals   = getUniqueVals(data, 'Other_Features');
+    var additionalReqVals   = getUniqueVals(data, 'Additional_Requirements');
     var publishedYears = [''].concat(
       data.map(function(r) { return dateYear(r.Publication_Date); })
           .filter(function(y) { return y.length === 4; })
@@ -908,7 +913,10 @@ Papa.parse('Ambilogue.csv', {
           },
           {
             title: 'Additional requirements?', field: 'Additional_Requirements', width: 180,
-            formatter: additionalReqFmt, headerFilter: 'input',
+            formatter: additionalReqFmt,
+            headerFilter: 'list',
+            headerFilterParams: { values: additionalReqVals, multiselect: true },
+            headerFilterFunc: multiValFilter,
           },
         ],
       },
