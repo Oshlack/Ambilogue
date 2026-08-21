@@ -222,10 +222,14 @@
       width: 100%;
       padding: 4px 5px;
       font-size: 0.8rem;
+      font-family: inherit;
       border: 1.5px solid #EDEDED;
       border-radius: 8px;
       background: #FAFAFA;
       color: #37352F;
+    }
+    .tabulator .tabulator-header-filter input::placeholder {
+      color: #9ca3af;
     }
     .tabulator .tabulator-header-filter input:focus,
     .tabulator .tabulator-header-filter select:focus {
@@ -350,7 +354,9 @@
       border: 1.5px solid #EDEDED; cursor: pointer; text-align: center; line-height: 1.4;
     }
     .req-filter-include { background: #dbeafe; color: #1d4ed8; }
+    .req-filter-include:hover { background: #bfdbfe; color: #1e40af; }
     .req-filter-exclude { background: #fee2e2; color: #991b1b; }
+    .req-filter-exclude:hover { background: #fecaca; color: #7f1d1d; }
     .req-multiselect { position: relative; width: 100%; }
     .req-multiselect-trigger {
       width: 100%; box-sizing: border-box; font-size: 0.8rem; font-family: inherit;
@@ -1198,7 +1204,7 @@ Papa.parse('Ambilogue.csv', {
         function makeYearInput(ph) {
           var el = document.createElement('input');
           el.type = 'number'; el.placeholder = ph; el.min = 2000; el.max = 2099;
-          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
+          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;font-family:inherit;'
             + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#FAFAFA;color:#37352F;';
           return el;
         }
@@ -1242,7 +1248,7 @@ Papa.parse('Ambilogue.csv', {
         function makeCitInput(ph) {
           var el = document.createElement('input');
           el.type = 'number'; el.placeholder = ph; el.min = 0;
-          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;'
+          el.style.cssText = 'flex:1;min-width:0;padding:4px 5px;font-size:0.8rem;font-family:inherit;'
             + 'border:1.5px solid #EDEDED;border-radius:8px;box-sizing:border-box;background:#FAFAFA;color:#37352F;';
           return el;
         }
