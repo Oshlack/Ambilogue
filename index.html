@@ -399,7 +399,7 @@
     .tag-req-violet  { background: #ede9fe; color: #7c3aed; }  /* Pre-clustering (required) */
     .tag-req-fuchsia { background: #fdf4ff; color: #a21caf; }  /* Pre-clustering (optional) */
     .tag-req-rose   { background: #fdf2f8; color: #c026d3; }  /* Allele reads */
-    .tag-req-orange { background: #ffedd5; color: #c2410c; }  /* Compatibility warning */
+    .tag-req-orange { background: #fecaca; color: #dc2626; }  /* Compatibility warning */
     .tag-req-none   { background: #f1f5f9; color: #9ca3af; }  /* None */
 
     /* ── DOI link ── */
@@ -746,7 +746,8 @@ var REQ_CLASS = {
   'pre-clustering (optional)':        'tag-req-fuchsia',
   'pre-clustering (required)':        'tag-req-violet',
   'reads containing allele variants': 'tag-req-rose',
-  'will not install on r 4.6.0+':    'tag-req-orange',
+  'will not install on r 4.6.0+':                                    'tag-req-orange',
+  'relies on file structure of cell ranger 2.2.0 or lower':          'tag-req-orange',
 };
 function additionalReqFmt(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
