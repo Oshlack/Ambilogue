@@ -747,7 +747,8 @@ var REQ_CLASS = {
   'pre-clustering (required)':        'tag-req-violet',
   'reads containing allele variants': 'tag-req-rose',
   'will not install on r 4.6.0+':                                    'tag-req-orange',
-  'relies on file structure of cell ranger 2.2.0 or lower':          'tag-req-orange',
+  'not compatible with file structure of cell ranger 3.0.0+':         'tag-req-orange',
+  'requires tweaking to make functions work':                         'tag-req-orange',
 };
 function additionalReqFmt(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
