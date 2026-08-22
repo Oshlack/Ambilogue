@@ -252,9 +252,8 @@
     .badge-no          { background: #f1f5f9; color: #9ca3af; }
     .badge-optional    { background: #e0e7ff; color: #4338ca; }
     .badge-partial     { background: #fef3c7; color: #92400e; }
-    .badge-per-droplet { background: #dbeafe; color: #1d4ed8; }  /* Per-Droplet → blue */
-    .badge-global      { background: #ede9fe; color: #7c3aed; }  /* Global → purple */
-    .badge-todo        { background: #f1f5f9; color: #9ca3af; }  /* TODO → grey */
+    .badge-per-droplet { background: #dcfce7; color: #15803d; }  /* Per-Droplet → green */
+    .badge-global      { background: #fef3c7; color: #92400e; }  /* Global → yellow */
     /* Requires Empties column: No = good (green), Yes = constraint (blue) */
     .badge-req-no   { background: #dcfce7; color: #15803d; }
     .badge-req-yes  { background: #fef9c3; color: #854d0e; }
@@ -617,7 +616,7 @@ function badgeFormatter(cell) {
   var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
   if (!val) return '';
   var clsMap = { 'Yes': 'badge-yes', 'No': 'badge-no', 'Optional': 'badge-optional', 'Selected genes only': 'badge-partial',
-                 'Per-Droplet': 'badge-per-droplet', 'Global': 'badge-global', 'TODO': 'badge-todo' };
+                 'Per-Droplet': 'badge-per-droplet', 'Global': 'badge-global' };
   var cls = clsMap[val] || '';
   var label = val === 'Selected genes only' ? 'Selected<br>genes only' : escHtml(val);
   return '<span class="badge ' + cls + '">' + label + '</span>';
@@ -1133,13 +1132,13 @@ Papa.parse('Ambilogue.csv', {
           {
             title: 'Estimate ambient contamination in droplets', field: 'Can_Ambient_Estimate_Droplets', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Per-Droplet', 'Global', 'No', 'TODO'] },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Per-Droplet', 'Global', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
             title: 'Identify genes driving ambient contamination', field: 'Can_Ambient_Estimate_Genes', width: 150,
             formatter: badgeFormatter, hozAlign: 'center', headerHozAlign: 'center',
-            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No', 'TODO'] },
+            headerFilter: multiSelectDropdownEditor, headerFilterParams: { values: ['Yes', 'No'] },
             headerFilterFunc: multiValFilter,
           },
           {
