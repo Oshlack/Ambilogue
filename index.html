@@ -622,13 +622,19 @@ function tagFormatter(cell) {
 }
 
 function badgeFormatter(cell) {
-  var val = String(cell.getValue() == null ? '' : cell.getValue()).trim();
-  if (!val) return '';
+  var raw = String(cell.getValue() == null ? '' : cell.getValue()).trim();
+  if (!raw) return '';
   var clsMap = { 'Yes': 'badge-yes', 'No': 'badge-no', 'Optional': 'badge-optional', 'Selected genes only': 'badge-partial',
                  'Per-Droplet': 'badge-per-droplet', 'Global': 'badge-global' };
-  var cls = clsMap[val] || '';
-  var label = val === 'Selected genes only' ? 'Selected<br>genes only' : escHtml(val);
-  return '<span class="badge ' + cls + '">' + label + '</span>';
+  var parts = raw.split(';').map(function(v) { return v.trim(); }).filter(Boolean);
+  var badges = parts.map(function(val) {
+    var cls = clsMap[val] || '';
+    var label = val === 'Selected genes only' ? 'Selected<br>genes only' : escHtml(val);
+    return '<span class="badge ' + cls + '">' + label + '</span>';
+  });
+  return badges.length > 1
+    ? '<span style="display:flex;flex-wrap:wrap;gap:3px;justify-content:center;">' + badges.join('') + '</span>'
+    : badges[0];
 }
 
 /* Requires Empties column: Not Required = green, Required = yellow */
