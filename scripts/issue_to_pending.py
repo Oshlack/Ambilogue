@@ -54,8 +54,16 @@ CSV_COLUMNS = [
     "Notes", "Bioconductor_Link", "GitHub_Link", "Notes_Publication_DOI",
 ]
 
-# Fields rendered as checkboxes in the issue template (multiple selections joined by "; ")
+# Fields rendered as checkboxes (multiple selections joined by "; ")
 CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Method_Category"}
+
+# "Other" free-text fields and which CSV column they append to
+OTHER_FIELDS = {
+    "Other Ecosystem": "Ecosystem",
+    "Other Availability": "Availability",
+    "Other Technology Suitability": "Technology_Suitability",
+    "Other Method Category": "Method_Category",
+}
 
 
 def fetch_issue(issue_number):
@@ -72,14 +80,14 @@ def fetch_issue(issue_number):
 
 
 def parse_checkboxes(text):
-    """Extract checked items from a checkbox section and join with '; '."""
+    """Extract checked items from a checkbox section, excluding 'Other'."""
     checked = re.findall(r"- \[x\] (.+)", text, re.IGNORECASE)
-    return "; ".join(item.strip() for item in checked)
+    # Exclude the generic "Other" tick — the value comes from the free-text field
+    return "; ".join(item.strip() for item in checked if item.strip().lower() != "other")
 
 
 def parse_body(body):
     """Parse issue body into a dict of {label: value}."""
-    # Split on ### headers; result is [pre-text, label1, content1, label2, content2, ...]
     sections = re.split(r"^### (.+)$", body, flags=re.MULTILINE)
 
     parsed = {}
@@ -87,11 +95,9 @@ def parse_body(body):
         label = sections[i].strip()
         content = sections[i + 1].strip() if i + 1 < len(sections) else ""
 
-        # Empty optional fields render as "_No response_"
         if content == "_No response_":
             content = ""
 
-        # Checkbox fields: extract only the checked items
         csv_col = FIELD_MAP.get(label)
         if csv_col and csv_col in CHECKBOX_FIELDS:
             content = parse_checkboxes(content)
@@ -120,13 +126,24 @@ def main():
     print(f"Title: {title}")
     parsed = parse_body(body)
 
-    # Build CSV row, mapping issue labels to CSV columns
+    # Build CSV row
     row = {col: "" for col in CSV_COLUMNS}
     for label, csv_col in FIELD_MAP.items():
         row[csv_col] = parsed.get(label, "")
 
-    # Citations is auto-populated by the update_citations GitHub Action
-    row["Citations"] = ""
+    # Append any "Other" free-text values to their parent checkbox field
+    for other_label, csv_col in OTHER_FIELDS.items():
+        other_val = parsed.get(other_label, "").strip()
+        if other_val:
+            existing = row[csv_col]
+            row[csv_col] = f"{existing}; {other_val}" if existing else other_val
+
+    # Set Citations placeholder based on publication status
+    pub_status = parsed.get("Publication Status", "").strip()
+    if pub_status == "Preprint":
+        row["Citations"] = "0 (preprint)"
+    else:
+        row["Citations"] = ""  # auto-populated by the update_citations GitHub Action
 
     # Write to pending_submission.csv
     with open(PENDING_CSV, "w", newline="", encoding="utf-8") as f:

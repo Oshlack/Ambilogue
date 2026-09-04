@@ -30,6 +30,7 @@ body:
     id: doi
     attributes:
       label: Publication DOI
+      description: Write N/A if the method is unpublished
       placeholder: e.g. https://doi.org/10.1093/gigascience/giaa151
     validations:
       required: true
@@ -38,8 +39,19 @@ body:
     id: date
     attributes:
       label: Publication Date
-      description: "Format: DD/M/YYYY"
+      description: "Format: DD/M/YYYY. Write N/A if the method is unpublished"
       placeholder: e.g. 26/12/2020
+    validations:
+      required: true
+
+  - type: dropdown
+    id: publication_status
+    attributes:
+      label: Publication Status
+      options:
+        - Published
+        - Preprint
+        - Unpublished
     validations:
       required: true
 
@@ -53,8 +65,16 @@ body:
         - label: Python
         - label: Command Line
         - label: Cell Ranger
+        - label: Other
     validations:
       required: true
+
+  - type: input
+    id: ecosystem_other
+    attributes:
+      label: Other Ecosystem
+      description: If you selected "Other" above, please specify
+      placeholder: e.g. Julia
 
   - type: checkboxes
     id: availability
@@ -70,8 +90,16 @@ body:
         - label: Docker
         - label: Singularity
         - label: Cell Ranger
+        - label: Other
     validations:
       required: true
+
+  - type: input
+    id: availability_other
+    attributes:
+      label: Other Availability
+      description: If you selected "Other" above, please specify
+      placeholder: e.g. Nextflow
 
   - type: dropdown
     id: requires_empties
@@ -107,8 +135,16 @@ body:
         - label: Droplet-based single-cell omics
         - label: Well-based scRNA-seq
         - label: Spatial transcriptomics
+        - label: Other
     validations:
       required: true
+
+  - type: input
+    id: technology_other
+    attributes:
+      label: Other Technology Suitability
+      description: If you selected "Other" above, please specify
+      placeholder: e.g. Slide-seq
 
   - type: textarea
     id: ambient_basis
@@ -154,6 +190,7 @@ body:
     attributes:
       label: Can Filter Empties
       description: Can the method classify empty vs cell-containing droplets?
+      default: 1
       options:
         - "Yes"
         - "No"
@@ -165,6 +202,7 @@ body:
     attributes:
       label: Can Ambient Estimate Droplets
       description: Can the method estimate ambient contamination level per droplet or globally?
+      default: 0
       options:
         - "No"
         - Per-Droplet
@@ -178,6 +216,7 @@ body:
     attributes:
       label: Can Ambient Estimate Genes
       description: Can the method identify which genes are most affected by ambient contamination?
+      default: 1
       options:
         - "Yes"
         - "No"
@@ -189,6 +228,7 @@ body:
     attributes:
       label: Can Ambient Correct
       description: Can the method correct ambient contamination in the count matrix?
+      default: 1
       options:
         - "Yes"
         - "No"
@@ -201,6 +241,7 @@ body:
     attributes:
       label: Can Ambient QC Plot
       description: Does the method produce QC plots related to ambient contamination?
+      default: 1
       options:
         - "Yes"
         - "No"
@@ -212,6 +253,7 @@ body:
     attributes:
       label: Can Ambient Simulate
       description: Can the method simulate ambient contamination?
+      default: 1
       options:
         - "Yes"
         - "No"
