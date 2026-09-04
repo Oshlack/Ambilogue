@@ -4,11 +4,13 @@
 
 Compare methods that address ambient RNA contamination with the Ambilogue. This online catalogue helps researchers make easier and more informed choices about ambient RNA contamination methods in their workflow. 
 
-**View the Ambilogue here:** https://oshlacklab.com/Ambilogue/
+🔗 **View the Ambilogue here:** https://oshlacklab.com/Ambilogue/
+
+## Submit a method
 
 **Know a method that's missing from the Ambilogue?** 
 
-[Submit a new method](https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml) via a GitHub issue and we'll review it for inclusion.
+📋 [Submit a method](https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml) via a GitHub issue and we'll review it for inclusion.
 
 ## Citation
 
