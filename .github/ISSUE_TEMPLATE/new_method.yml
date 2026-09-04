@@ -80,8 +80,8 @@ body:
   - type: input
     id: ecosystem_other
     attributes:
-      label: Other: Software Ecosystem
-      description: If you selected "Other" above, please specify:
+      label: "Other: Software Ecosystem"
+      description: "If you selected \"Other\" above, please specify:"
       placeholder: e.g. Julia
 
   - type: checkboxes
@@ -105,8 +105,8 @@ body:
   - type: input
     id: availability_other
     attributes:
-      label: Other: Software Availability
-      description: If you selected "Other" above, please specify:
+      label: "Other: Software Availability"
+      description: "If you selected \"Other\" above, please specify:"
       placeholder: e.g. Nextflow
 
   - type: dropdown
@@ -150,7 +150,7 @@ body:
   - type: input
     id: technology_other
     attributes:
-      label: Other: Technology Suitability
+      label: "Other: Technology Suitability"
       description: If you selected "Other" above, please specify
       placeholder: e.g. Slide-seq
 
@@ -167,7 +167,7 @@ body:
     id: category
     attributes:
       label: Method Category
-      description: Select all that apply. Please see our publication for definitions of these categories: (coming soon)
+      description: "Select all that apply. Please see our publication for definitions of these categories: (coming soon)"
       options:
         - label: Empty droplet-like
         - label: Expression profiling-like
@@ -179,8 +179,8 @@ body:
   - type: input
     id: category_other
     attributes:
-      label: Other: Method Category
-      description: If you selected "Other" above, please specify:
+      label: "Other: Method Category"
+      description: "If you selected \"Other\" above, please specify:"
       placeholder: e.g. Simulation-based
 
   - type: textarea
