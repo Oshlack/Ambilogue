@@ -106,6 +106,28 @@
       transition: background 0.12s, color 0.12s;
     }
     #clear-all:hover { background: #EFEFEF; color: #37352F; }
+    #suggest-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 16px;
+      height: 32px;
+      background: #ffffff;
+      color: #000000;
+      border: 1.5px solid #000000;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    #suggest-btn:hover { background: #000000; color: #ffffff; }
     #row-count {
       font-size: 0.92rem;
       color: #555555;
@@ -540,6 +562,7 @@
       <span id="row-count"></span>
     </div>
   </div>
+  <a id="suggest-btn" href="https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Submit a method</a>
 </header>
 
 <div id="table-wrap">

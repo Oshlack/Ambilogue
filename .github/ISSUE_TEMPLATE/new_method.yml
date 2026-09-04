@@ -1,0 +1,252 @@
+name: Submit a New Method
+description: Submit a new ambient RNA method for inclusion in the Ambilogue
+title: "[New Method]: "
+labels: ["new method submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a method to the Ambilogue! Please fill in as much detail as possible.
+        Fields marked as required must be completed. Optional fields can be left blank.
+
+  - type: input
+    id: method
+    attributes:
+      label: Method Name
+      placeholder: e.g. SoupX
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Author
+      description: "Format: Surname et al. (Year) or Surname and Surname (Year)"
+      placeholder: e.g. Young and Behjati (2020)
+    validations:
+      required: true
+
+  - type: input
+    id: doi
+    attributes:
+      label: Publication DOI
+      placeholder: e.g. https://doi.org/10.1093/gigascience/giaa151
+    validations:
+      required: true
+
+  - type: input
+    id: date
+    attributes:
+      label: Publication Date
+      description: "Format: DD/M/YYYY"
+      placeholder: e.g. 26/12/2020
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: ecosystem
+    attributes:
+      label: Ecosystem
+      description: Select all that apply
+      options:
+        - label: R
+        - label: Python
+        - label: Command Line
+        - label: Cell Ranger
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: availability
+    attributes:
+      label: Availability
+      description: Select all that apply
+      options:
+        - label: Bioconductor
+        - label: CRAN
+        - label: pip
+        - label: conda
+        - label: GitHub
+        - label: Docker
+        - label: Singularity
+        - label: Cell Ranger
+    validations:
+      required: true
+
+  - type: dropdown
+    id: requires_empties
+    attributes:
+      label: Requires Empties
+      description: Does the method require empty droplets to be present in the input data?
+      options:
+        - Required
+        - Optional
+        - Not required
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_requirements
+    attributes:
+      label: Additional Requirements
+      description: Any additional data or software requirements (e.g. BAM file, pre-clustering). Leave blank if none.
+      placeholder: e.g. BAM file; Pre-clustering (required)
+
+  - type: checkboxes
+    id: technology
+    attributes:
+      label: Technology Suitability
+      description: Select all that apply
+      options:
+        - label: Droplet-based scRNA-seq
+        - label: Droplet-based snRNA-seq
+        - label: Droplet-based scATAC-seq
+        - label: Droplet-based CITE-seq
+        - label: Droplet-based scCRISPR-seq
+        - label: Droplet-based scRNA+ATAC multiome
+        - label: Droplet-based single-cell omics
+        - label: Well-based scRNA-seq
+        - label: Spatial transcriptomics
+    validations:
+      required: true
+
+  - type: textarea
+    id: ambient_basis
+    attributes:
+      label: Ambient Basis
+      description: What does the method use as a basis for estimating ambient RNA?
+      placeholder: e.g. Low total UMI count droplets
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: category
+    attributes:
+      label: Method Category
+      description: Select all that apply
+      options:
+        - label: Empty droplet-like
+        - label: Expression profiling-like
+        - label: Demultiplexing-like
+    validations:
+      required: true
+
+  - type: textarea
+    id: approach
+    attributes:
+      label: Approach Description
+      description: Brief description of how the method works
+      placeholder: e.g. Maximum likelihood used to estimate contamination then subtract this from counts
+    validations:
+      required: true
+
+  - type: textarea
+    id: benchmarking
+    attributes:
+      label: Benchmarking Summary
+      description: Summary of benchmarking results or performance notes. Use "Not yet benchmarked" if none available.
+      placeholder: e.g. Recommended if compute constraints present
+    validations:
+      required: true
+
+  - type: dropdown
+    id: filter_empties
+    attributes:
+      label: Can Filter Empties
+      description: Can the method classify empty vs cell-containing droplets?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimate_droplets
+    attributes:
+      label: Can Ambient Estimate Droplets
+      description: Can the method estimate ambient contamination level per droplet or globally?
+      options:
+        - "No"
+        - Per-Droplet
+        - Global
+        - "Per-Droplet; Global"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimate_genes
+    attributes:
+      label: Can Ambient Estimate Genes
+      description: Can the method identify which genes are most affected by ambient contamination?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: correct
+    attributes:
+      label: Can Ambient Correct
+      description: Can the method correct ambient contamination in the count matrix?
+      options:
+        - "Yes"
+        - "No"
+        - Selected genes only
+    validations:
+      required: true
+
+  - type: dropdown
+    id: qc_plot
+    attributes:
+      label: Can Ambient QC Plot
+      description: Does the method produce QC plots related to ambient contamination?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: simulate
+    attributes:
+      label: Can Ambient Simulate
+      description: Can the method simulate ambient contamination?
+      options:
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: other_features
+    attributes:
+      label: Other Features
+      description: Any other notable features (e.g. doublet detection, genetic demultiplexing). Leave blank if none.
+      placeholder: e.g. Genetic demultiplexing; Doublet detection
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Any additional notes or caveats about the method. Leave blank if none.
+
+  - type: input
+    id: bioconductor
+    attributes:
+      label: Bioconductor Link
+      description: Full DOI-style Bioconductor link if available
+      placeholder: e.g. https://doi.org/doi:10.18129/B9.bioc.DropletUtils
+
+  - type: input
+    id: github
+    attributes:
+      label: GitHub Link
+      description: GitHub repository URL if available
+      placeholder: e.g. https://github.com/constantAmateur/SoupX
+
+  - type: input
+    id: notes_doi
+    attributes:
+      label: Notes on Publication DOI
+      description: If there is a secondary DOI (e.g. a newer version or corrigendum), add it here
