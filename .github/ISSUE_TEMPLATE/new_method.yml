@@ -63,6 +63,20 @@ body:
       label: Publication DOI Notes
       description: If there is a secondary DOI (e.g. a newer version or corrigendum), add it here.
 
+  - type: input
+    id: github
+    attributes:
+      label: GitHub Link
+      description: GitHub repository URL if available
+      placeholder: e.g. https://github.com/constantAmateur/SoupX
+
+  - type: input
+    id: bioconductor
+    attributes:
+      label: Bioconductor Link
+      description: Full DOI-style Bioconductor link if available
+      placeholder: e.g. https://doi.org/doi:10.18129/B9.bioc.DropletUtils
+
   - type: checkboxes
     id: ecosystem
     attributes:
@@ -288,17 +302,3 @@ body:
     attributes:
       label: Notes
       description: Any additional notes or caveats about the method. Leave blank if none.
-
-  - type: input
-    id: bioconductor
-    attributes:
-      label: Bioconductor Link
-      description: Full DOI-style Bioconductor link if available
-      placeholder: e.g. https://doi.org/doi:10.18129/B9.bioc.DropletUtils
-
-  - type: input
-    id: github
-    attributes:
-      label: GitHub Link
-      description: GitHub repository URL if available
-      placeholder: e.g. https://github.com/constantAmateur/SoupX
