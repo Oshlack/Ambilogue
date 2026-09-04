@@ -8,39 +8,14 @@ body:
       value: |
         Thank you for submitting a method to the Ambilogue! Please fill in as much detail as possible.
         Fields marked as required must be completed. Optional fields can be left blank.
+        
+        If you have any other questions or suggestions for the Ambilogue, please submit these as a general GitHub issue.
 
   - type: input
     id: method
     attributes:
       label: Method Name
       placeholder: e.g. SoupX
-    validations:
-      required: true
-
-  - type: input
-    id: author
-    attributes:
-      label: Author
-      description: "Format: Surname et al. (Year) or Surname and Surname (Year)"
-      placeholder: e.g. Young and Behjati (2020)
-    validations:
-      required: true
-
-  - type: input
-    id: doi
-    attributes:
-      label: Publication DOI
-      description: Write N/A if the method is unpublished
-      placeholder: e.g. https://doi.org/10.1093/gigascience/giaa151
-    validations:
-      required: true
-
-  - type: input
-    id: date
-    attributes:
-      label: Publication Date
-      description: "Format: DD/M/YYYY. Write N/A if the method is unpublished"
-      placeholder: e.g. 26/12/2020
     validations:
       required: true
 
@@ -55,10 +30,43 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: author
+    attributes:
+      label: Author(s) and Publication Year
+      description: "Format: Surname et al. (Year) or Surname and Surname (Year). Can write lab name if method is unpublished."
+      placeholder: e.g. Young and Behjati (2020)
+    validations:
+      required: true
+
+  - type: input
+    id: doi
+    attributes:
+      label: Publication DOI
+      description: This should be the DOI of the primary publication. Write N/A if the method is unpublished.
+      placeholder: e.g. https://doi.org/10.1093/gigascience/giaa151
+    validations:
+      required: true
+
+  - type: input
+    id: date
+    attributes:
+      label: Publication Date
+      description: "Format: DD/M/YYYY. Can also provide date when software became available online if unpublished."
+      placeholder: e.g. 26/12/2020
+    validations:
+      required: true
+
+  - type: input
+    id: notes_doi
+    attributes:
+      label: Publication DOI Notes
+      description: If there is a secondary DOI (e.g. a newer version or corrigendum), add it here.
+
   - type: checkboxes
     id: ecosystem
     attributes:
-      label: Ecosystem
+      label: Software Ecosystem
       description: Select all that apply
       options:
         - label: R
@@ -72,14 +80,14 @@ body:
   - type: input
     id: ecosystem_other
     attributes:
-      label: Other Ecosystem
-      description: If you selected "Other" above, please specify
+      label: Other: Software Ecosystem
+      description: If you selected "Other" above, please specify:
       placeholder: e.g. Julia
 
   - type: checkboxes
     id: availability
     attributes:
-      label: Availability
+      label: Software Availability
       description: Select all that apply
       options:
         - label: Bioconductor
@@ -97,14 +105,14 @@ body:
   - type: input
     id: availability_other
     attributes:
-      label: Other Availability
-      description: If you selected "Other" above, please specify
+      label: Other: Software Availability
+      description: If you selected "Other" above, please specify:
       placeholder: e.g. Nextflow
 
   - type: dropdown
     id: requires_empties
     attributes:
-      label: Requires Empties
+      label: Requires Empty Droplets?
       description: Does the method require empty droplets to be present in the input data?
       options:
         - Required
@@ -142,7 +150,7 @@ body:
   - type: input
     id: technology_other
     attributes:
-      label: Other Technology Suitability
+      label: Other: Technology Suitability
       description: If you selected "Other" above, please specify
       placeholder: e.g. Slide-seq
 
@@ -159,13 +167,21 @@ body:
     id: category
     attributes:
       label: Method Category
-      description: Select all that apply
+      description: Select all that apply. Please see our publication for definitions of these categories: (coming soon)
       options:
         - label: Empty droplet-like
         - label: Expression profiling-like
         - label: Demultiplexing-like
+        - label: Other
     validations:
       required: true
+
+  - type: input
+    id: category_other
+    attributes:
+      label: Other: Method Category
+      description: If you selected "Other" above, please specify:
+      placeholder: e.g. Simulation-based
 
   - type: textarea
     id: approach
@@ -188,8 +204,8 @@ body:
   - type: dropdown
     id: filter_empties
     attributes:
-      label: Can Filter Empties
-      description: Can the method classify empty vs cell-containing droplets?
+      label: Can filter empty droplets?
+      description: Can the method classify empty and cell-containing droplets?
       default: 1
       options:
         - "Yes"
@@ -200,8 +216,8 @@ body:
   - type: dropdown
     id: estimate_droplets
     attributes:
-      label: Can Ambient Estimate Droplets
-      description: Can the method estimate ambient contamination level per droplet or globally?
+      label: Can estimate ambient contamination in droplets?
+      description: Can the method estimate ambient contamination level per droplet or globally in the dataset?
       default: 0
       options:
         - "No"
@@ -214,8 +230,8 @@ body:
   - type: dropdown
     id: estimate_genes
     attributes:
-      label: Can Ambient Estimate Genes
-      description: Can the method identify which genes are most affected by ambient contamination?
+      label: Can identify genes driving ambient contamination?
+      description: Can the method identify which genes contribute most to ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -226,8 +242,8 @@ body:
   - type: dropdown
     id: correct
     attributes:
-      label: Can Ambient Correct
-      description: Can the method correct ambient contamination in the count matrix?
+      label: Can correct ambient contamination?
+      description: Can the method correct ambient RNA contamination in the count matrix?
       default: 1
       options:
         - "Yes"
@@ -239,8 +255,8 @@ body:
   - type: dropdown
     id: qc_plot
     attributes:
-      label: Can Ambient QC Plot
-      description: Does the method produce QC plots related to ambient contamination?
+      label: Can generate ambient contamination QC plots?
+      description: Does the method produce QC plots related to ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -251,8 +267,8 @@ body:
   - type: dropdown
     id: simulate
     attributes:
-      label: Can Ambient Simulate
-      description: Can the method simulate ambient contamination?
+      label: Can simulate datasets with ambient contamination?
+      description: Can the method simulate datasets that contain ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -286,9 +302,3 @@ body:
       label: GitHub Link
       description: GitHub repository URL if available
       placeholder: e.g. https://github.com/constantAmateur/SoupX
-
-  - type: input
-    id: notes_doi
-    attributes:
-      label: Notes on Publication DOI
-      description: If there is a secondary DOI (e.g. a newer version or corrigendum), add it here
