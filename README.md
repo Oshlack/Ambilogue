@@ -6,6 +6,13 @@ Compare methods that address ambient RNA contamination with the Ambilogue. This 
 
 **View the Ambilogue here: https://oshlacklab.com/Ambilogue/**
 
+
+## Submit a Method
+
+Know a method that's missing from the Ambilogue? Submit it via a GitHub issue and we'll review it for inclusion.
+
+👉 [Submit a new method](https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml)
+
 ## Citation
 
 If you find the Ambilogue useful for your work please cite our publication:
