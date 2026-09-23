@@ -25,7 +25,8 @@ FIELD_MAP = {
     "Availability": "Availability",
     "Requires Empties": "Requires_Empties",
     "Additional Requirements": "Additional_Requirements",
-    "Technology Suitability": "Technology_Suitability",
+    "Officially Supported Input Types": "Technology_Suitability",
+    "Additional Input Types Used by the Community": "Technology_Suitability_Community",
     "Ambient Basis": "Ambient_Basis",
     "Method Category": "Method_Category",
     "Approach Description": "Approach_Description",
@@ -46,7 +47,7 @@ FIELD_MAP = {
 CSV_COLUMNS = [
     "Method", "Author", "Publication_DOI", "Publication_Date",
     "Ecosystem", "Availability", "Citations", "Requires_Empties",
-    "Additional_Requirements", "Technology_Suitability", "Ambient_Basis",
+    "Additional_Requirements", "Technology_Suitability", "Technology_Suitability_Community", "Ambient_Basis",
     "Method_Category", "Approach_Description", "Benchmarking_Summary",
     "Can_Filter_Empties", "Can_Ambient_Estimate_Droplets",
     "Can_Ambient_Estimate_Genes", "Can_Ambient_Correct",
@@ -55,13 +56,14 @@ CSV_COLUMNS = [
 ]
 
 # Fields rendered as checkboxes (multiple selections joined by "; ")
-CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Method_Category"}
+CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Technology_Suitability_Community", "Method_Category"}
 
 # "Other" free-text fields and which CSV column they append to
 OTHER_FIELDS = {
     "Other Ecosystem": "Ecosystem",
     "Other Availability": "Availability",
-    "Other Technology Suitability": "Technology_Suitability",
+    "Other: Officially Supported Input Types": "Technology_Suitability",
+    "Other: Additional Input Types Used by the Community": "Technology_Suitability_Community",
     "Other Method Category": "Method_Category",
 }
 

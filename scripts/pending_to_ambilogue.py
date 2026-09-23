@@ -14,7 +14,7 @@ AMBILOGUE_CSV = REPO_ROOT / "Ambilogue.csv"
 CSV_COLUMNS = [
     "Method", "Author", "Publication_DOI", "Publication_Date",
     "Ecosystem", "Availability", "Citations", "Requires_Empties",
-    "Additional_Requirements", "Technology_Suitability", "Ambient_Basis",
+    "Additional_Requirements", "Technology_Suitability", "Technology_Suitability_Community", "Ambient_Basis",
     "Method_Category", "Approach_Description", "Benchmarking_Summary",
     "Can_Filter_Empties", "Can_Ambient_Estimate_Droplets",
     "Can_Ambient_Estimate_Genes", "Can_Ambient_Correct",

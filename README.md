@@ -12,6 +12,12 @@ Compare methods that address ambient RNA contamination with the Ambilogue. This 
 
 📋 [Submit a method](https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml) via a GitHub issue and we'll review it for inclusion.
 
+## Report a community-used input type
+
+**Know of a method being used on an input type its developers don't officially support?**
+
+🏷️ [Report a community-used input type](https://github.com/Oshlack/Ambilogue/issues/new?template=community_input_type.yml) via a GitHub issue. We'll review it and add it to the Ambilogue, marked with an asterisk to distinguish it from the method's officially supported input types.
+
 ## Citation
 
 If you find the Ambilogue useful for your work please cite our publication:

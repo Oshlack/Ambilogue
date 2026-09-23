@@ -145,8 +145,8 @@ body:
   - type: checkboxes
     id: technology
     attributes:
-      label: Technology Suitability
-      description: Select all that apply
+      label: "Officially Supported Input Types"
+      description: Select the input types the tool's developers officially support (e.g. stated in the paper, README or documentation). Select all that apply.
       options:
         - label: Droplet-based scRNA-seq
         - label: Droplet-based snRNA-seq
@@ -155,7 +155,7 @@ body:
         - label: Droplet-based scCRISPR-seq
         - label: Droplet-based scRNA+ATAC multiome
         - label: Droplet-based single-cell omics
-        - label: Well-based scRNA-seq
+        - label: Well-plate scRNA-seq
         - label: Spatial transcriptomics
         - label: Other
     validations:
@@ -164,7 +164,31 @@ body:
   - type: input
     id: technology_other
     attributes:
-      label: "Other: Technology Suitability"
+      label: "Other: Officially Supported Input Types"
+      description: If you selected "Other" above, please specify
+      placeholder: e.g. Slide-seq
+
+  - type: checkboxes
+    id: technology_community
+    attributes:
+      label: "Additional Input Types Used by the Community"
+      description: "Optional. Select any input types you know people commonly use this tool on, even though they aren't officially supported or documented by the developers. Leave blank if none."
+      options:
+        - label: Droplet-based scRNA-seq
+        - label: Droplet-based snRNA-seq
+        - label: Droplet-based scATAC-seq
+        - label: Droplet-based CITE-seq
+        - label: Droplet-based scCRISPR-seq
+        - label: Droplet-based scRNA+ATAC multiome
+        - label: Droplet-based single-cell omics
+        - label: Well-plate scRNA-seq
+        - label: Spatial transcriptomics
+        - label: Other
+
+  - type: input
+    id: technology_community_other
+    attributes:
+      label: "Other: Additional Input Types Used by the Community"
       description: If you selected "Other" above, please specify
       placeholder: e.g. Slide-seq
 

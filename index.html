@@ -106,10 +106,17 @@
       transition: background 0.12s, color 0.12s;
     }
     #clear-all:hover { background: #EFEFEF; color: #37352F; }
-    #suggest-btn {
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .header-btn {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 5px;
       padding: 0 16px;
       height: 32px;
@@ -127,7 +134,7 @@
       flex-shrink: 0;
       transition: background 0.15s, color 0.15s;
     }
-    #suggest-btn:hover { background: #000000; color: #ffffff; }
+    .header-btn:hover { background: #000000; color: #ffffff; }
     #row-count {
       font-size: 0.92rem;
       color: #555555;
@@ -146,7 +153,7 @@
 
     /* ── Footer ── */
     footer {
-      padding: 0.5rem 2rem;
+      padding: 0.5rem 0.75rem;
       font-size: 0.75rem;
       color: #37352F;
       border-top: 2px solid #37352F;
@@ -320,7 +327,7 @@
     .tag-tech-multiome { background: #ccfbf1; color: #0f766e; }  /* scRNA+ATAC multiome → teal    */
     .tag-tech-omics    { background: #f1f5f9; color: #475569; }  /* single-cell omics → slate     */
     .tag-tech-spatial  { background: #fef3c7; color: #92400e; }  /* Spatial transcriptomics → amber */
-    .tag-tech-well     { background: #d9f99d; color: #3f6212; }  /* Well-based scRNA-seq → lime   */
+    .tag-tech-well     { background: #d9f99d; color: #3f6212; }  /* Well-plate scRNA-seq → lime   */
 
     /* ── Other Features colours ── */
     .tag-feat-sgrna   { background: #ffe4e6; color: #be123c; }  /* Assign sgRNAs → rose           */
@@ -335,6 +342,43 @@
     .tag-methcat-empty { background: #dbeafe; color: #1e40af; }  /* Empty droplet-like → blue      */
     .tag-methcat-demux { background: #fce7f3; color: #9d174d; }  /* Demultiplexing-like → pink     */
     .tag-methcat-expr  { background: #ede9fe; color: #5b21b6; }  /* Expression profiling-like → purple */
+
+    /* ── Column header help button + popover ── */
+    .col-help-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      margin-left: 4px;
+      border: 1px solid #000000;
+      border-radius: 50%;
+      background: #FAFAFA;
+      color: #000000;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      font-family: inherit;
+      vertical-align: middle;
+    }
+    .col-help-btn:hover { background: #000000; color: #ffffff; }
+    .col-help-popover {
+      position: fixed;
+      display: none;
+      max-width: 260px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid #EDEDED;
+      border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      font-size: 0.8rem;
+      font-weight: 400;
+      line-height: 1.35;
+      color: #37352F;
+      z-index: 9999;
+    }
+    .col-help-popover.open { display: block; }
 
     /* ── Citations ── */
     .citation-num { font-weight: 400; }
@@ -562,7 +606,10 @@
       <span id="row-count"></span>
     </div>
   </div>
-  <a id="suggest-btn" href="https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Submit a method</a>
+  <div class="header-actions">
+    <a class="header-btn" href="https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Submit method</a>
+    <a class="header-btn" href="https://github.com/Oshlack/Ambilogue/issues/new?template=community_input_type.yml" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Submit community-used data type</a>
+  </div>
 </header>
 
 <div id="table-wrap">
@@ -612,7 +659,7 @@ var TAG_COLOURS = {
   'droplet-based scrna+atac multiome': 'tag-tech-multiome',
   'droplet-based single-cell omics':   'tag-tech-omics',
   'spatial transcriptomics':           'tag-tech-spatial',
-  'well-based scrna-seq':              'tag-tech-well',
+  'well-plate scrna-seq':              'tag-tech-well',
   /* Other Features */
   'assign sgrnas to cells':           'tag-feat-sgrna',
   'correct barcode swapping':         'tag-feat-barcode',
@@ -642,6 +689,39 @@ function tagFormatter(cell) {
       return '<span class="tag ' + extra + '">' + escHtml(v) + '</span>';
     })
     .join('');
+}
+
+/* Supported data types: merges the officially-supported and community-reported
+   columns into one set of pills. Colour is always keyed off the technology
+   name (tagClass), independent of official/community status. Official entries
+   render exactly like tagFormatter always has; community-only entries get a
+   "*" and a subtle border on top of the same colour. */
+function techSuitFormatter(cell) {
+  var data = cell.getData();
+  var official = String(data.Technology_Suitability || '').split(';')
+    .map(function(v) { return v.trim(); }).filter(Boolean);
+  var community = String(data.Technology_Suitability_Community || '').split(';')
+    .map(function(v) { return v.trim(); }).filter(Boolean);
+
+  var seen = {};
+  var tags = [];
+
+  official.forEach(function(v) {
+    var key = v.toLowerCase();
+    if (seen[key]) return;
+    seen[key] = true;
+    tags.push('<span class="tag ' + tagClass(v) + '" title="Officially supported by the tool\'s developers">' + escHtml(v) + '</span>');
+  });
+
+  community.forEach(function(v) {
+    var key = v.toLowerCase();
+    if (seen[key]) return; /* already listed as official - don't double up */
+    seen[key] = true;
+    tags.push('<span class="tag ' + tagClass(v) + '" title="Reported as used by the community - not officially supported by the tool\'s developers">' + escHtml(v) + '*</span>');
+  });
+
+  if (!tags.length) return '<span class="tag-req tag-req-none">None</span>';
+  return tags.join('');
 }
 
 function badgeFormatter(cell) {
@@ -837,6 +917,20 @@ function multiValFilter(headerValue, rowValue) {
   });
 }
 
+/* Supported data types filter: matches against the union of the official and
+   community-reported columns, so filtering by a technology finds a method
+   regardless of which column it came from. */
+function techSuitFilter(headerValue, rowValue, rowData) {
+  var selected = Array.isArray(headerValue) ? headerValue : (headerValue ? [headerValue] : []);
+  selected = selected.filter(function(v) { return v !== '' && v != null; });
+  if (!selected.length) return true;
+  var combined = String(rowData.Technology_Suitability || '') + ';' + String(rowData.Technology_Suitability_Community || '');
+  var cellVals = combined.split(';').map(function(v) { return v.trim().toLowerCase(); }).filter(Boolean);
+  return selected.some(function(s) {
+    return cellVals.indexOf(String(s).toLowerCase()) !== -1;
+  });
+}
+
 /* Additional Requirements: custom dropdown multiselect with include / exclude toggle */
 function reqFilterEditor(cell, onRendered, success, cancel, editorParams) {
   var wrap = document.createElement('div');
@@ -992,16 +1086,19 @@ function reqFilterFunc(headerValue, rowValue) {
 }
 
 /* Extract sorted unique individual values (split on sep) from a field */
-function getUniqueVals(data, field) {
+function getUniqueVals(data, fields) {
+  var fieldList = Array.isArray(fields) ? fields : [fields];
   var set = new Set();
   data.forEach(function(row) {
-    var val = row[field];
-    if (val) {
-      String(val).split(';').forEach(function(v) {
-        var t = v.trim();
-        if (t) set.add(t);
-      });
-    }
+    fieldList.forEach(function(field) {
+      var val = row[field];
+      if (val) {
+        String(val).split(';').forEach(function(v) {
+          var t = v.trim();
+          if (t) set.add(t);
+        });
+      }
+    });
   });
   return [''].concat(Array.from(set).sort());
 }
@@ -1022,6 +1119,35 @@ function setRowCount(n) {
   document.getElementById('row-count').textContent = n + ' tool' + (n === 1 ? '' : 's');
 }
 
+/* ── Column header help popovers ── */
+var HELP_TEXT = {
+  'tech-suit': 'An asterisk (*) marks an input type that has been reported as used by the community, but is not officially supported or documented by the method\'s developers. Unmarked input types are officially supported.'
+};
+var colHelpPopover = document.createElement('div');
+colHelpPopover.className = 'col-help-popover';
+document.body.appendChild(colHelpPopover);
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest ? e.target.closest('.col-help-btn') : null;
+  if (btn) {
+    e.stopPropagation();
+    var key = btn.getAttribute('data-help');
+    if (colHelpPopover.classList.contains('open') && colHelpPopover.dataset.key === key) {
+      colHelpPopover.classList.remove('open');
+      return;
+    }
+    colHelpPopover.textContent = HELP_TEXT[key] || '';
+    colHelpPopover.dataset.key = key;
+    var rect = btn.getBoundingClientRect();
+    colHelpPopover.style.top = (rect.bottom + 6) + 'px';
+    colHelpPopover.style.left = Math.max(8, rect.left - 120) + 'px';
+    colHelpPopover.classList.add('open');
+    return;
+  }
+  if (!colHelpPopover.contains(e.target)) {
+    colHelpPopover.classList.remove('open');
+  }
+});
+
 /* ── Load CSV and build table ── */
 Papa.parse('Ambilogue.csv', {
   header: true,
@@ -1041,7 +1167,7 @@ Papa.parse('Ambilogue.csv', {
 
     /* Pre-compute unique values for dropdown (list) header filters */
     var ecosystemVals       = getUniqueVals(data, 'Ecosystem');
-    var techSuitVals        = getUniqueVals(data, 'Technology_Suitability');
+    var techSuitVals        = getUniqueVals(data, ['Technology_Suitability', 'Technology_Suitability_Community']);
     var methodCatVals       = getUniqueVals(data, 'Method_Category');
     var availabilityVals    = getUniqueVals(data, 'Availability');
     var otherFeaturesVals   = getUniqueVals(data, 'Other_Features');
@@ -1135,11 +1261,14 @@ Papa.parse('Ambilogue.csv', {
         title: 'Input requirements',
         columns: [
           {
-            title: 'Supported data types', field: 'Technology_Suitability', width: 175,
-            formatter: tagFormatter,
+            title: 'Supported data types', field: 'Technology_Suitability', width: 230,
+            titleFormatter: function() {
+              return 'Supported data types<button type="button" class="col-help-btn" data-help="tech-suit" aria-label="What does the asterisk mean?">i</button>';
+            },
+            formatter: techSuitFormatter,
             headerFilter: multiSelectDropdownEditor,
             headerFilterParams: { values: techSuitVals },
-            headerFilterFunc: multiValFilter,
+            headerFilterFunc: techSuitFilter,
           },
           {
             title: 'Requires empty droplets?', field: 'Requires_Empties', width: 115,

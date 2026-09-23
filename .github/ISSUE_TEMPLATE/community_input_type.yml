@@ -1,0 +1,59 @@
+name: Report a Community-Used Input Type
+description: Tell us about an input type you've seen used with an existing Ambilogue method, even though it isn't officially supported
+title: "[Community Input Type]: "
+labels: ["community input type"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Know of a method being used on a data type its developers don't officially support or document?
+        Let us know here and we'll add it to the Ambilogue as a community-reported input type (marked
+        with an asterisk on the site, separate from the method's officially supported input types).
+
+        If you're submitting a brand-new method instead, please use the "Submit a New Method" issue form.
+
+  - type: input
+    id: method
+    attributes:
+      label: Method Name
+      description: The exact name of the method as it appears on the Ambilogue (https://oshlacklab.com/Ambilogue/)
+      placeholder: e.g. SoupX
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: technology_community
+    attributes:
+      label: Input Type(s) Used
+      description: Select all the input types you've seen this method used on that are not part of its official support.
+      options:
+        - label: Droplet-based scRNA-seq
+        - label: Droplet-based snRNA-seq
+        - label: Droplet-based scATAC-seq
+        - label: Droplet-based CITE-seq
+        - label: Droplet-based scCRISPR-seq
+        - label: Droplet-based scRNA+ATAC multiome
+        - label: Droplet-based single-cell omics
+        - label: Well-plate scRNA-seq
+        - label: Spatial transcriptomics
+        - label: Other
+    validations:
+      required: true
+
+  - type: input
+    id: technology_community_other
+    attributes:
+      label: "Other: Input Type(s) Used"
+      description: If you selected "Other" above, please specify
+      placeholder: e.g. Slide-seq
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: >
+        A link or a short description that helps us verify this - e.g. a forum post, a GitHub discussion or
+        issue, a paper that used the method this way, or your own experience running it.
+      placeholder: e.g. https://github.com/constantAmateur/SoupX/issues/123 - several users report running SoupX on well-plate data
+    validations:
+      required: true
