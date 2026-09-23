@@ -16,7 +16,7 @@ Compare methods that address ambient RNA contamination with the Ambilogue. This 
 
 **Know of a method being used on a data type not listed here? Do you successfully use a method on data types not officially supported by the developers? **
 
-🏷️ [Report a community-used input data type](https://github.com/Oshlack/Ambilogue/issues/new?template=community_input_type.yml) via a GitHub issue and we'll review it for inclusion.
+📋 [Report a community-used input data type](https://github.com/Oshlack/Ambilogue/issues/new?template=community_input_type.yml) via a GitHub issue and we'll review it for inclusion.
 
 ## Citation
 
