@@ -28,4 +28,4 @@ If you find the Ambilogue useful for your work please cite our publication:
 
 The code in this analysis is covered by the [MIT license](https://opensource.org/license/mit) and the written content is covered by a [Creative Commons CC-BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
 
-The associated publication and the data sets used are covered by their respective licenses and usage agreements. Please refer to those sources for details.
+The associated publication is covered by its respective licenses and usage agreements. Please refer to those sources for details.
