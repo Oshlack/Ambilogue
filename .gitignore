@@ -2,3 +2,6 @@ Ambilogue.xlsx
 .DS_Store
 test_local_site.sh
 .Rproj.user
+.Rhistory
+*.Rproj
+.RData
