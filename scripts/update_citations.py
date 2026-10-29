@@ -47,14 +47,6 @@ def get_citation_count(doi_url: str) -> int | None:
     return None
 
 
-def is_preprint(citation_str: str) -> bool:
-    return '(preprint)' in str(citation_str)
-
-
-def format_citations(count: int, preprint: bool) -> str:
-    return f'{count} (preprint)' if preprint else str(count)
-
-
 def main():
     data_path = os.path.abspath(DATA_FILE)
     print(f'Reading {data_path}')
@@ -81,8 +73,7 @@ def main():
 
         if count is not None:
             old = row.get('Citations', '')
-            preprint = is_preprint(old)
-            new_val = format_citations(count, preprint)
+            new_val = str(count)
             if str(old).strip() != new_val:
                 row['Citations'] = new_val
                 updated += 1

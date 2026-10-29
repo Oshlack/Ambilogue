@@ -40,3 +40,48 @@ jobs:
             git commit -m "chore: update citation counts $(date -u '+%Y-%m-%d')"
             git push
           fi
+
+  # Looks for preprints that have now been published and opens a pull request for review
+  check-preprints:
+    needs: update-citations
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write       # Needed to push the branch
+      pull-requests: write  # Needed to open the pull request
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Check whether any preprints are now published
+        id: check
+        env:
+          OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
+        run: python scripts/check_preprints.py --summary preprint_summary.md
+
+      - name: Open or update the pull request
+        if: steps.check.outputs.changes != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B bot/preprint-published
+          git add Ambilogue.csv
+          git commit -m "Update preprints that are now published"
+          git push --force origin bot/preprint-published
+          if [ -z "$(gh pr list --head bot/preprint-published --state open --json number --jq '.[].number')" ]; then
+            gh pr create --base main --head bot/preprint-published \
+              --title "Preprints that are now published" --body-file preprint_summary.md
+          else
+            gh pr edit bot/preprint-published --body-file preprint_summary.md
+          fi

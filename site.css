@@ -1,0 +1,184 @@
+/* Shared styles for the Ambilogue site: nav bar (all pages) and the simple pages (landing, submit). */
+
+/* ── Logo link + nav (all pages) ── */
+header > a.logo-link { display: flex; flex-shrink: 0; }
+.footer-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.site-nav { display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; }
+.site-nav a.nav-link {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #2B2A25;
+  text-decoration: none;
+  padding: 0.35rem 0;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.15s, color 0.15s;
+}
+.site-nav a.nav-link:hover { border-bottom-color: #808080; }
+.site-nav a.nav-link[aria-current="page"] { color: #000000; border-bottom-color: #000000; }
+.nav-github { display: inline-flex; align-items: center; color: #2B2A25; margin-left: 0.25rem; }
+.nav-github:hover { color: #808080; }
+.nav-github-icon { width: 24px; height: 24px; fill: currentColor; }
+@media (max-width: 800px) { .site-nav { flex-wrap: wrap; gap: 0.75rem 1rem; } }
+
+/* ── Simple pages (landing, submit) ── */
+body.simple *, body.simple *::before, body.simple *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body.simple {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  background: #FFFFFF;
+  color: #2B2A25;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body.simple header {
+  background: #ffffff;
+  padding: 1.25rem 2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 2px solid #2B2A25;
+  box-shadow: 0 2px 8px rgba(43,42,37,0.08);
+  overflow: hidden;
+}
+body.simple .site-logo { height: 100px; width: auto; flex-shrink: 0; margin: -10px 0 -10px -8px; display: block; }
+body.simple .header-right { display: flex; flex-direction: column; justify-content: center; gap: 0.35rem; flex: 1; }
+body.simple .page-title { font-size: 1.35rem; font-weight: 700; }
+body.simple .subtitle { font-size: 0.85rem; color: #2B2A25; font-weight: normal; }
+@media (max-width: 800px) {
+  body.simple header { padding: 1rem; flex-wrap: wrap; }
+  body.simple .site-logo { height: 70px; }
+}
+
+body.simple main { flex: 1 0 auto; width: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 2rem 3rem; }
+@media (max-width: 800px) { body.simple main { padding: 1rem; } }
+
+body.simple .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  height: 38px;
+  background: #ffffff;
+  color: #000000;
+  border: 1.5px solid #000000;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+body.simple .btn:hover { background: #000000; color: #ffffff; }
+
+/* hero */
+body.simple .hero { text-align: center; padding: 3rem 0 2.5rem; max-width: 780px; margin: 0 auto; }
+body.simple .hero h1 { font-size: 2.4rem; font-weight: 700; line-height: 1.2; }
+body.simple .hero .lead { font-size: 1.05rem; line-height: 1.65; color: #2B2A25; margin: 1.1rem 0 1.4rem; }
+body.simple .hero .count { font-size: 1.6rem; color: #000000; margin-bottom: 1.4rem; }
+body.simple .hero .count[hidden] { display: none; }
+body.simple .count-num { font-size: inherit; font-weight: 700; color: #000000; }
+
+/* cards */
+body.simple .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2.5rem; }
+body.simple .cards.two { grid-template-columns: repeat(2, 1fr); margin-top: 2rem; }
+@media (max-width: 800px) { body.simple .cards, body.simple .cards.two { grid-template-columns: 1fr; } }
+body.simple .action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.4rem 1.4rem 1.2rem;
+  border: 1.5px solid #EDEDED;
+  border-radius: 10px;
+  background: #ffffff;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+body.simple a.action-card:hover { border-color: #2B2A25; box-shadow: 0 2px 10px rgba(43,42,37,0.12); }
+body.simple .card-icon svg { width: 34px; height: 34px; color: #2B2A25; display: block; }
+body.simple .action-card h2 { font-size: 1.05rem; font-weight: 700; }
+body.simple .action-card p { font-size: 0.88rem; line-height: 1.55; color: #2B2A25; flex: 1; }
+body.simple .action-card.static .btn { align-self: flex-start; margin-top: 0.6rem; }
+body.simple .card-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #000000; }
+body.simple .submit-note { text-align: center; font-size: 0.82rem; color: #555555; }
+
+/* cite + about */
+.info-blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; padding-top: 1.5rem; border-top: 1px solid #EDEDED; }
+@media (max-width: 800px) { .info-blocks { grid-template-columns: 1fr; } }
+.info-block h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+.info-block p { font-size: 0.9rem; line-height: 1.65; color: #555555; }
+.info-block a { color: #2B2A25; font-weight: 600; text-decoration: underline; text-decoration-color: #BBBBBB; }
+.info-block a:hover { color: #808080; }
+
+/* footer */
+body.simple footer {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: #2B2A25;
+  border-top: 2px solid #2B2A25;
+  background: #FFFFFF;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+body.simple footer a { color: #2B2A25; text-decoration: none; }
+body.simple footer a:hover { color: #808080; text-decoration: underline; }
+body.simple .github-icon { width: 15px; height: 15px; fill: currentColor; vertical-align: middle; margin-bottom: 1px; }
+body.simple .github-link { display: inline-flex; align-items: center; margin-left: 0.4rem; vertical-align: middle; }
+body.simple .github-link:hover { color: #808080; text-decoration: none !important; }
+
+/* landing-page footer holding the Cite us and About blocks */
+footer.site-footer.site-footer { display: block; padding: 1.25rem 2rem 1.5rem; font-size: inherit; }
+footer.site-footer .footer-blocks { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+@media (max-width: 800px) {
+  footer.site-footer.site-footer { padding: 1rem; }
+  footer.site-footer .footer-blocks { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* black footer with white text (landing page) */
+footer.site-footer.site-footer { background: #1F1E1A; color: #ffffff; border-top-color: #1F1E1A; }
+footer.site-footer .info-block h2,
+footer.site-footer .info-block p { color: #ffffff; }
+footer.site-footer .info-block a { color: #ffffff; text-decoration-color: rgba(255,255,255,0.5); }
+footer.site-footer .info-block a:hover { color: #CCCCCC; text-decoration-color: #CCCCCC; }
+
+/* line under the footer headings */
+footer.site-footer .info-block h2 { padding-bottom: 0.4rem; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.45); }
+
+/* method count: fade and rise in while the number counts up */
+body.simple .hero .count.count-in { animation: count-in 0.7s ease-out both; }
+body.simple .count-num { font-variant-numeric: tabular-nums; }
+@keyframes count-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { body.simple .hero .count.count-in { animation: none; } }
+
+/* trailing "..." that appears one dot at a time, then loops */
+body.simple .dots span { opacity: 0; animation: dot-appear 1.8s infinite; }
+body.simple .dots span:nth-child(2) { animation-delay: 0.3s; }
+body.simple .dots span:nth-child(3) { animation-delay: 0.6s; }
+@keyframes dot-appear { 0%, 10% { opacity: 0; } 25%, 80% { opacity: 1; } 95%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { body.simple .dots span { animation: none; opacity: 1; } }
+
+/* ── Heading font: Space Grotesk (body text stays Open Sans) ── */
+:root { --font-heading: 'Space Grotesk', 'Open Sans', sans-serif; }
+.page-title,
+.hero h1,
+.action-card h2,
+.info-block h2,
+.section-title,
+.card-title,
+.hero .count { font-family: var(--font-heading); }
+.hero h1 { font-weight: 700; }
+.action-card h2, .info-block h2, .section-title, .card-title, .page-title { font-weight: 600; }
+
+/* page title and intro sit in the page body, keeping the header clean (Stats, Submit) */
+html body .page-intro { text-align: center; max-width: 780px; margin: 0 auto; padding: 1.75rem 0 1.5rem; }
+html body .page-intro .page-title { font-size: 2.8rem; line-height: 1.2; font-weight: 700; }
+html body .page-intro .subtitle { font-size: 1rem; line-height: 1.6; margin-top: 0.6rem; color: #2B2A25; font-weight: normal; }
+body.simple .cards.two { margin-top: 0.5rem; }

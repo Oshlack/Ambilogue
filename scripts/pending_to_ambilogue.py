@@ -11,22 +11,18 @@ REPO_ROOT = Path(__file__).parent.parent
 PENDING_CSV = REPO_ROOT / "pending_submission.csv"
 AMBILOGUE_CSV = REPO_ROOT / "Ambilogue.csv"
 
-CSV_COLUMNS = [
-    "Method", "Author", "Publication_DOI", "Publication_Date",
-    "Ecosystem", "Availability", "Citations", "Requires_Empties",
-    "Additional_Requirements", "Technology_Suitability", "Technology_Suitability_Community", "Ambient_Basis",
-    "Method_Category", "Approach_Description", "Benchmarking_Summary",
-    "Can_Filter_Empties", "Can_Ambient_Estimate_Droplets",
-    "Can_Ambient_Estimate_Genes", "Can_Ambient_Correct",
-    "Can_Ambient_QC_Plot", "Can_Ambient_Simulate", "Other_Features",
-    "Notes", "Bioconductor_Link", "GitHub_Link", "Notes_Publication_DOI",
-]
+def load_columns():
+    """Use the column order of Ambilogue.csv, so new rows always line up with it."""
+    with open(AMBILOGUE_CSV, newline="", encoding="utf-8-sig") as f:
+        return next(csv.reader(f))
 
 
 def main():
     if not PENDING_CSV.exists():
         print(f"Error: {PENDING_CSV.name} not found. Run issue_to_pending.py first.")
         return
+
+    columns = load_columns()
 
     # Read pending rows
     with open(PENDING_CSV, newline="", encoding="utf-8") as f:
@@ -46,9 +42,18 @@ def main():
         print("Aborted. No changes made.")
         return
 
-    # Append to Ambilogue.csv (file already has a BOM; open in append mode without adding another)
+    # Append to Ambilogue.csv (file already has a BOM; open in append mode without adding another).
+    # If the last line has no line break, add one first so the new row starts on its own line.
+    with open(AMBILOGUE_CSV, "rb") as f:
+        content = f.read()
+    line_break = "\r\n" if b"\r\n" in content else "\n"
+    needs_line_break = not content.endswith(b"\n")
+
     with open(AMBILOGUE_CSV, "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+        if needs_line_break:
+            f.write(line_break)
+        writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore",
+                                lineterminator=line_break)
         for row in pending_rows:
             writer.writerow(row)
 
@@ -56,7 +61,7 @@ def main():
 
     # Wipe pending_submission.csv (leave just the header)
     with open(PENDING_CSV, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
 
     print(f"{PENDING_CSV.name} wiped.")

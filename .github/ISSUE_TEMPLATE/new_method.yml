@@ -58,6 +58,20 @@ body:
       required: true
 
   - type: input
+    id: preprint_doi
+    attributes:
+      label: Preprint DOI
+      description: If the method was posted as a preprint before it was published, add the preprint DOI here. Leave blank if there is no separate preprint, or if the method is still a preprint (the publication fields above already cover it).
+      placeholder: e.g. https://doi.org/10.1101/303727
+
+  - type: input
+    id: preprint_date
+    attributes:
+      label: Preprint Date
+      description: "Date the preprint was first posted. Format: DD/M/YYYY. Leave blank if there is no separate preprint."
+      placeholder: e.g. 20/4/2018
+
+  - type: input
     id: notes_doi
     attributes:
       label: Publication DOI Notes

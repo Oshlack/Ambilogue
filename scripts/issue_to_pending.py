@@ -14,16 +14,19 @@ from pathlib import Path
 REPO = "Oshlack/Ambilogue"
 REPO_ROOT = Path(__file__).parent.parent
 PENDING_CSV = REPO_ROOT / "pending_submission.csv"
+AMBILOGUE_CSV = REPO_ROOT / "Ambilogue.csv"
 
 # Maps issue template field labels to CSV column names
 FIELD_MAP = {
     "Method Name": "Method",
-    "Author": "Author",
+    "Author(s) and Publication Year": "Author",
     "Publication DOI": "Publication_DOI",
     "Publication Date": "Publication_Date",
-    "Ecosystem": "Ecosystem",
-    "Availability": "Availability",
-    "Requires Empties": "Requires_Empties",
+    "Preprint Date": "Preprint_Date",
+    "Preprint DOI": "Preprint_DOI",
+    "Software Ecosystem": "Ecosystem",
+    "Software Availability": "Availability",
+    "Requires Empty Droplets?": "Requires_Empties",
     "Additional Requirements": "Additional_Requirements",
     "Officially Supported Input Types": "Technology_Suitability",
     "Additional Input Types Used by the Community": "Technology_Suitability_Community",
@@ -31,40 +34,40 @@ FIELD_MAP = {
     "Method Category": "Method_Category",
     "Approach Description": "Approach_Description",
     "Benchmarking Summary": "Benchmarking_Summary",
-    "Can Filter Empties": "Can_Filter_Empties",
-    "Can Ambient Estimate Droplets": "Can_Ambient_Estimate_Droplets",
-    "Can Ambient Estimate Genes": "Can_Ambient_Estimate_Genes",
-    "Can Ambient Correct": "Can_Ambient_Correct",
-    "Can Ambient QC Plot": "Can_Ambient_QC_Plot",
-    "Can Ambient Simulate": "Can_Ambient_Simulate",
+    "Can filter empty droplets?": "Can_Filter_Empties",
+    "Can estimate ambient contamination in droplets?": "Can_Ambient_Estimate_Droplets",
+    "Can identify genes driving ambient contamination?": "Can_Ambient_Estimate_Genes",
+    "Can correct ambient contamination?": "Can_Ambient_Correct",
+    "Can generate ambient contamination QC plots?": "Can_Ambient_QC_Plot",
+    "Can simulate datasets with ambient contamination?": "Can_Ambient_Simulate",
     "Other Features": "Other_Features",
     "Notes": "Notes",
     "Bioconductor Link": "Bioconductor_Link",
     "GitHub Link": "GitHub_Link",
-    "Notes on Publication DOI": "Notes_Publication_DOI",
+    "Publication DOI Notes": "Notes_Publication_DOI",
 }
 
-CSV_COLUMNS = [
-    "Method", "Author", "Publication_DOI", "Publication_Date",
-    "Ecosystem", "Availability", "Citations", "Requires_Empties",
-    "Additional_Requirements", "Technology_Suitability", "Technology_Suitability_Community", "Ambient_Basis",
-    "Method_Category", "Approach_Description", "Benchmarking_Summary",
-    "Can_Filter_Empties", "Can_Ambient_Estimate_Droplets",
-    "Can_Ambient_Estimate_Genes", "Can_Ambient_Correct",
-    "Can_Ambient_QC_Plot", "Can_Ambient_Simulate", "Other_Features",
-    "Notes", "Bioconductor_Link", "GitHub_Link", "Notes_Publication_DOI",
-]
+def load_columns():
+    """Use the column order of Ambilogue.csv, so the two files can never drift apart."""
+    with open(AMBILOGUE_CSV, newline="", encoding="utf-8-sig") as f:
+        return next(csv.reader(f))
+
 
 # Fields rendered as checkboxes (multiple selections joined by "; ")
 CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Technology_Suitability_Community", "Method_Category"}
 
+# Form option wording that differs from the value used in Ambilogue.csv
+VALUE_MAP = {
+    "Ecosystem": {"Cell Ranger": "Cell Ranger v3.0.0+"},
+}
+
 # "Other" free-text fields and which CSV column they append to
 OTHER_FIELDS = {
-    "Other Ecosystem": "Ecosystem",
-    "Other Availability": "Availability",
+    "Other: Software Ecosystem": "Ecosystem",
+    "Other: Software Availability": "Availability",
     "Other: Officially Supported Input Types": "Technology_Suitability",
     "Other: Additional Input Types Used by the Community": "Technology_Suitability_Community",
-    "Other Method Category": "Method_Category",
+    "Other: Method Category": "Method_Category",
 }
 
 
@@ -103,6 +106,8 @@ def parse_body(body):
         csv_col = FIELD_MAP.get(label)
         if csv_col and csv_col in CHECKBOX_FIELDS:
             content = parse_checkboxes(content)
+            renames = VALUE_MAP.get(csv_col, {})
+            content = "; ".join(renames.get(item, item) for item in content.split("; ") if item)
 
         parsed[label] = content
 
@@ -129,7 +134,8 @@ def main():
     parsed = parse_body(body)
 
     # Build CSV row
-    row = {col: "" for col in CSV_COLUMNS}
+    columns = load_columns()
+    row = {col: "" for col in columns}
     for label, csv_col in FIELD_MAP.items():
         row[csv_col] = parsed.get(label, "")
 
@@ -140,16 +146,17 @@ def main():
             existing = row[csv_col]
             row[csv_col] = f"{existing}; {other_val}" if existing else other_val
 
-    # Set Citations placeholder based on publication status
+    # Publication status has its own column; Citations is only the number
     pub_status = parsed.get("Publication Status", "").strip()
+    row["Publication_Status"] = pub_status
     if pub_status == "Preprint":
-        row["Citations"] = "0 (preprint)"
+        row["Citations"] = "0"
     else:
         row["Citations"] = ""  # auto-populated by the update_citations GitHub Action
 
     # Write to pending_submission.csv
     with open(PENDING_CSV, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
         writer.writerow(row)
 

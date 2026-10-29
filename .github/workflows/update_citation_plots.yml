@@ -1,0 +1,61 @@
+name: Update Citation Trend Plots
+
+on:
+  schedule:
+    - cron: '30 7 1 * *'   # 1st of each month at 07:30 UTC, after the daily 06:00 citation update
+  workflow_dispatch:        # Allow manual trigger from the GitHub Actions tab
+
+jobs:
+  update-plots:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write       # Needed to commit and push the updated CSVs and figures
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      # --strict stops the job before any citation CSV is written if a lookup
+      # fails, so a partial OpenAlex outage never overwrites good data.
+      - name: Retrieve citations over time from OpenAlex
+        env:
+          OPENALEX_EMAIL: ${{ secrets.OPENALEX_EMAIL }}
+        run: python analysis/citations_over_time.py --csv Ambilogue.csv --outdir analysis --strict
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: true
+
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::ggplot2
+            any::svglite
+
+      - name: Draw figures
+        run: Rscript analysis/plot_citations.R --dir=analysis --out=analysis/plots --format=png,svg
+
+      - name: Commit and push if CSVs or figures changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add analysis/*.csv analysis/plots
+          if git diff --staged --quiet; then
+            echo "Citation trend outputs unchanged — nothing to commit."
+          else
+            git commit -m "chore: update citation trend plots $(date -u '+%Y-%m-%d')"
+            git pull --rebase
+            git push
+          fi
