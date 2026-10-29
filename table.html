@@ -420,6 +420,9 @@
       font-style: italic;
       vertical-align: middle;
     }
+    /* Status tags in the year published column (same colours as the plots) */
+    .preprint-tag.status-preprint { background: #ffedd5; color: #9a3412; }
+    .preprint-tag.status-published { background: #dbeafe; color: #1e40af; }
     .benchmarking-tag-grey {
       display: inline-block;
       padding: 1px 5px;
@@ -812,11 +815,12 @@ function dateFormatter(cell) {
   var data = cell.getRow().getData();
   var status = String(data.Publication_Status || '').trim();
   if (status) {
-    html += '<br><span class="preprint-tag">Status: ' + escHtml(status) + '</span>';
+    var statusClass = status === 'Preprint' ? ' status-preprint' : (status === 'Published' ? ' status-published' : '');
+    html += '<br><span class="preprint-tag' + statusClass + '">Status: ' + escHtml(status) + '</span>';
   }
   var preprintYear = dateYear(data.Preprint_Date);
   if (preprintYear) {
-    html += '<br><span style="font-size:0.8em;color:#6b7280;font-style:italic;">(preprint ' + escHtml(preprintYear) + ')</span>';
+    html += '<br><span style="font-size:0.8em;color:#6b7280;font-style:italic;">(preprint released ' + escHtml(preprintYear) + ')</span>';
   }
   return html;
 }

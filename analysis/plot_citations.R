@@ -64,7 +64,7 @@ overall <- read_data("citations_by_year_overall.csv")
 RETRIEVED_DATE <- unique(long$Retrieved)[1]
 
 all_years <- sort(unique(long$Year))
-facet_years <- seq(min(all_years), max(all_years), by = 2)
+facet_years <- seq(min(all_years), max(all_years))
 
 # The dashed lines start from the last full year
 last_full_year <- if (any(long$Year_to_date)) max(long$Year[long$Year_to_date]) - 1 else Inf
@@ -99,9 +99,9 @@ SUM_COLOUR <- "#E57373"
 METHOD_LINE_COLOUR <- "#222222"
 
 UNIQUE_LABEL <- "Cumulative number of unique papers citing at least one methods"
-SUM_LABEL <- "Cumulative total of citations methods (double-count papers citing more than one tool)"
+SUM_LABEL <- "Cumulative total of method citations (double-count papers citing more than one tool)"
 
-METHOD_LINE_LABEL <- "Total citations to date"
+METHOD_LINE_LABEL <- "Full year"
 BEFORE_PUBLICATION_LABEL <- "Before preprint or publication"
 PREPRINT_LABEL <- "Preprint only"
 YEAR_TO_DATE_LABEL <- "Year-to-date"
@@ -131,13 +131,13 @@ theme_ambilogue_bar <- function(base_size = 11) {
 # Large text so the plot stays readable when shown at page width
 theme_ambilogue_facet <- function(base_size = 11) {
   theme_ambilogue_bar(base_size) +
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size = 20),
-        axis.text = element_text(size = 20, family = "arial"),
-        axis.title = element_text(size = 24, family = "arial", face = "bold"),
+  theme(axis.text = element_text(size = 18, family = "arial"),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 16),
+        axis.title = element_text(size = 21, family = "arial", face = "bold"),
         strip.background = element_blank(),
-        strip.text = element_text(size = 23, face = "bold", hjust = 0, family = "arial", colour = "black"),
-        legend.title = element_text(size = 22, family = "arial", face = "bold"),
-        legend.text = element_text(size = 22, family = "arial"),
+        strip.text = element_text(size = 20, face = "bold", hjust = 0, family = "arial", colour = "black"),
+        legend.title = element_text(size = 19, family = "arial", face = "bold"),
+        legend.text = element_text(size = 19, family = "arial"),
         legend.key.size = unit(1.3, "lines"),
         legend.box = "vertical",
         panel.spacing = unit(1.4, "lines"))
@@ -218,7 +218,10 @@ ggplot(plot_df, aes(x = Year)) +
             aes(xmin = First_Year - 0.5, xmax = Preprint_End, ymin = -Inf, ymax = Inf,
                 fill = PREPRINT_LABEL),
             alpha = 0.4, inherit.aes = FALSE) +
-  # Year-to-date bars are the same blue, lighter (alpha), so the shading can have its own legend
+  # White underlay so the shading never shows through the bars
+  geom_col(aes(y = Citations), fill = "white") +
+  # Year-to-date bars are the same blue as in plot_ambilogue.R (#9FBEE0), drawn with alpha so
+  # the shading can have its own legend; over the white underlay they look solid
   geom_col(aes(y = Citations, alpha = Year_to_date), fill = CURRENT_YEAR_COLOURS[["FALSE"]]) +
   # The cumulative line starts at the first year the method was available
   cumulative_layers(plot_df[which(plot_df$Year >= plot_df$First_Year), ],

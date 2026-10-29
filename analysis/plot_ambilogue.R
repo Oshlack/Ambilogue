@@ -61,6 +61,10 @@ if (anyNA(ambilogue$Publication_Date)) {
 }
 ambilogue$Publication_Year <- as.integer(format(ambilogue$Publication_Date, "%Y"))
 
+# Publication_Date is day/month/year (e.g. 22/3/2019).
+ambilogue$Preprint_Date <- as.Date(ambilogue$Preprint_Date, format = "%d/%m/%Y")
+ambilogue$Preprint_Year <- as.integer(format(ambilogue$Preprint_Date, "%Y"))
+
 # Methods in publication order (oldest first).
 ambilogue <- ambilogue[order(ambilogue$Publication_Date), ]
 ambilogue$Method <- factor(ambilogue$Method, levels = ambilogue$Method)
@@ -261,29 +265,34 @@ ggplot(plot_df, aes(x = Feature, fill = value)) +
 save_plot(ambient_feature_bar, "ambient_feature_bar", width=12, height=8)
 
 # METHODS PER YEAR
-plot_df <- ambilogue %>% group_by(Publication_Year) %>% summarise(YearMethods = n()) %>% mutate(CumSumMethods = cumsum(YearMethods))
-plot_df$current_year <- ifelse(plot_df$Publication_Year == PLOT_YEAR, TRUE, FALSE)
+plot_df <- ambilogue
+plot_df$Preprint_Year <- replace_na(plot_df$Preprint_Year, +.Machine$integer.max)
+plot_df$First_Version_Year <- ifelse(plot_df$Preprint_Year <= plot_df$Publication_Year,
+                                   plot_df$Preprint_Year, plot_df$Publication_Year)
+plot_df <- plot_df %>% group_by(First_Version_Year) %>% summarise(YearMethods = n()) %>% 
+                mutate(CumSumMethods = cumsum(YearMethods))
+plot_df$Current_Year <- ifelse(plot_df$First_Version_Year == PLOT_YEAR, TRUE, FALSE)
 
-if (!any(plot_df$current_year)) {
+if (!any(plot_df$Current_Year)) {
   cumsum_max <- max(plot_df$CumSumMethods)
-  plot_df <- plot_df %>% add_row(Publication_Year = PLOT_YEAR,
+  plot_df <- plot_df %>% add_row(First_Version_Year = PLOT_YEAR,
                                  YearMethods = 0,
                                  CumSumMethods = cumsum_max,
-                                 current_year = TRUE)
+                                 Current_Year = TRUE)
 }
 
 # Cumulative line: solid up to the last full year, dashed from there into the current (year to date) point.
-last_full_year <- max(plot_df$Publication_Year[!plot_df$current_year])
-line_solid  <- plot_df[!plot_df$current_year, ]
-line_dashed <- plot_df[plot_df$current_year | plot_df$Publication_Year == last_full_year, ]
+last_full_year <- max(plot_df$First_Version_Year[!plot_df$Current_Year])
+line_solid  <- plot_df[!plot_df$Current_Year, ]
+line_dashed <- plot_df[plot_df$Current_Year | plot_df$First_Version_Year == last_full_year, ]
 
 CURRENT_YEAR_COLOURS <- c("TRUE" = "#9FBEE0", "FALSE" = "#2A6FBB")
-ggplot(plot_df, aes(x = Publication_Year, fill = current_year)) +
+ggplot(plot_df, aes(x = First_Version_Year, fill = Current_Year)) +
   geom_bar(stat = "identity", aes(y = YearMethods)) +
   geom_line(data = line_solid, aes(y = CumSumMethods, group = 1, linetype = "Full year")) +
   geom_line(data = line_dashed, aes(y = CumSumMethods, group = 1, linetype = "Year-to-date")) +
   geom_point(data = line_solid, aes(y = CumSumMethods), size = 4, show.legend = FALSE) +
-  geom_point(data = plot_df[plot_df$current_year, ], aes(y = CumSumMethods),
+  geom_point(data = plot_df[plot_df$Current_Year, ], aes(y = CumSumMethods),
              shape = 21, fill = "white", size = 4, stroke = 0.8, show.legend = FALSE) +   # open circle for the year-to-date point
   ylab("Number of methods") +
   xlab("Year") +
@@ -296,7 +305,7 @@ ggplot(plot_df, aes(x = Publication_Year, fill = current_year)) +
   scale_linetype_manual(values = c("Full year" = "solid", "Year-to-date" = "dashed"),
                         name = "Cumulative number of methods") +
   guides(fill = guide_legend(order = 1), linetype = guide_legend(order = 2)) +
-  scale_x_continuous(breaks = min(plot_df$Publication_Year):max(plot_df$Publication_Year)) +
+  scale_x_continuous(breaks = min(plot_df$First_Version_Year):max(plot_df$First_Version_Year)) +
   theme_ambilogue_bar() +
   theme(legend.position = "bottom",
         axis.text.x = element_text(angle = 0, hjust = 0.5)) -> method_year_bar
