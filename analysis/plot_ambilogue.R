@@ -226,18 +226,35 @@ ggplot(plot_df, aes(x = "", y = count, fill = Ecosystem)) +
 save_plot(ecosystem_pie, "ecosystem_pie", width=8, height=8)
 
 # DATA TYPE
-plot_df <- split_multi(ambilogue, "Technology_Suitability")
-plot_df$Technology_Suitability <- factor(plot_df$Technology_Suitability,
-                                         levels = names(sort(table(plot_df$Technology_Suitability), decreasing = TRUE)))
+official  <- split_multi(ambilogue, "Technology_Suitability")
+community <- split_multi(ambilogue, "Technology_Suitability_Community")
 
-ggplot(plot_df, aes(x = Technology_Suitability, fill = Technology_Suitability)) +
-  geom_bar() + xlab("Data Type (Officially Supported)") + ylab("Number of methods") +
-  geom_text(stat = "count", y = 0, aes(label = after_stat(count)), size = 5,
-            vjust = -0.5, fontface = "bold") +
-  scale_fill_manual(values = TECHNOLOGY_SUITABILITY_COLOURS) +
+plot_df <- bind_rows(
+  data.frame(Data_Type = official$Technology_Suitability,            Support = "Officially supported"),
+  data.frame(Data_Type = community$Technology_Suitability_Community, Support = "Community supported")
+) %>% filter(!is.na(Data_Type))
+
+# x-axis order: by total (official + community), biggest first
+plot_df$Data_Type <- factor(plot_df$Data_Type,
+                            levels = names(sort(table(plot_df$Data_Type), decreasing = TRUE)))
+# first level is stacked on top, so community goes first -> sits above official
+plot_df$Support <- factor(plot_df$Support,
+                          levels = c("Community supported", "Officially supported"))
+
+SUPPORT_COLOURS <- c("Officially supported" = "#93c5fd",
+                     "Community supported"  = "#fdba74")
+
+ggplot(plot_df, aes(x = Data_Type, fill = Support)) +
+  geom_bar() + xlab("Data Type") + ylab("Number of methods") +
+  geom_text(stat = "count", aes(label = after_stat(count)), size = 5,
+            position = position_stack(vjust = 0.5), fontface = "bold") +
+  scale_fill_manual(values = SUPPORT_COLOURS) +
+  guides(fill = guide_legend(reverse = TRUE)) +   # legend: official first, then community
+  labs(fill = "Support") +
   theme_ambilogue_bar() +
   # extra left margin so the long, angled first label is not cut off
-  theme(plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 70)) -> technology_suitability_bar
+  theme(legend.position = "bottom",
+        plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 70)) -> technology_suitability_bar
 
 save_plot(technology_suitability_bar, "technology_suitability_bar", width=12, height=8)
 
