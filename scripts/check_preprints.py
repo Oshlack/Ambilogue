@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Check whether any method marked "Preprint" in Ambilogue.csv has now been published.
+Check whether any tool marked "Preprint" in Ambilogue.csv has now been published.
 
 For each preprint it looks for a journal version:
   - bioRxiv / medRxiv preprints: the bioRxiv API lists the journal DOI once published.
@@ -135,25 +135,25 @@ def main():
     for row in rows:
         if row.get('Publication_Status', '').strip() != 'Preprint':
             continue
-        method = row['Method'].strip()
+        tool = row['Tool'].strip()
         doi_url = row.get('Publication_DOI', '').strip()
         if not doi_url.startswith('http'):
-            print(f'  [skip] {method} - no DOI')
+            print(f'  [skip] {tool} - no DOI')
             continue
 
-        print(f'  Checking {method}...')
+        print(f'  Checking {tool}...')
         journal = find_journal_doi(doi_url)
         time.sleep(0.2)
         if not journal:
-            print(f'    {method}: still a preprint')
+            print(f'    {tool}: still a preprint')
             continue
 
         date = journal_date(journal)
         time.sleep(0.2)
         new_date, day_known = date if date else ('', False)
-        print(f'    {method}: now published -> {journal} ({new_date or "date not found"})')
+        print(f'    {tool}: now published -> {journal} ({new_date or "date not found"})')
         changes.append({
-            'method': method,
+            'tool': tool,
             'old_doi': doi_url,
             'old_date': row.get('Publication_Date', ''),
             'journal_doi': f'https://doi.org/{journal}',
@@ -189,7 +189,7 @@ def main():
     if args.summary and changes:
         lines = ['These preprints now appear to be published. Please check each before merging.\n']
         for c in changes:
-            lines.append(f'### {c["method"]}')
+            lines.append(f'### {c["tool"]}')
             lines.append(f'- Journal article: {c["journal_doi"]}')
             lines.append(f'- Moved to the preprint fields: {c["old_doi"]} ({c["old_date"]})')
             if not c['new_date']:

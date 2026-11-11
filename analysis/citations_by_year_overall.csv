@@ -1,4 +1,4 @@
-Year,Group,Unique_citing_works,Sum_of_per_method_counts,Cumulative_unique,Cumulative_sum,Year_to_date,Retrieved
+Year,Group,Unique_citing_works,Sum_of_per_tool_counts,Cumulative_unique,Cumulative_sum,Year_to_date,Retrieved
 2018,Tool,5,5,5,5,FALSE,2026-11-04
 2019,Tool,43,54,48,59,FALSE,2026-11-04
 2020,Tool,126,147,174,206,FALSE,2026-11-04

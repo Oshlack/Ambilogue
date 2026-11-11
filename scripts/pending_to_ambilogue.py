@@ -36,7 +36,7 @@ def main():
     # Show a summary and ask for confirmation
     print("About to add the following to Ambilogue.csv:")
     for row in pending_rows:
-        print(f"  - {row.get('Method', '(unknown)')} by {row.get('Author', '(unknown)')}")
+        print(f"  - {row.get('Tool', '(unknown)')} by {row.get('Author', '(unknown)')}")
     confirm = input("\nProceed? [y/N] ").strip().lower()
     if confirm != "y":
         print("Aborted. No changes made.")
@@ -67,7 +67,7 @@ def main():
     print(f"{PENDING_CSV.name} wiped.")
     print("\nNext steps:")
     print("  1. git add Ambilogue.csv pending_submission.csv")
-    print("  2. git commit -m 'Add <method name> to Ambilogue'")
+    print("  2. git commit -m 'Add <tool name> to Ambilogue'")
     print("  3. git push")
     print("  4. Trigger the update_citations workflow on GitHub (Actions tab → Run workflow)")
 

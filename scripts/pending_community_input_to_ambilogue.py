@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Merges pending_community_input.csv into the matching method's row in Ambilogue.csv
+Merges pending_community_input.csv into the matching tool's row in Ambilogue.csv
 (only ever touching the Technology_Suitability_Community field of an existing row -
-never adds a new row or changes a method's officially supported input types), then
+never adds a new row or changes a tool's officially supported input types), then
 wipes pending_community_input.csv.
 Usage: python scripts/pending_community_input_to_ambilogue.py
 """
@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).parent.parent
 PENDING_CSV = REPO_ROOT / "pending_community_input.csv"
 AMBILOGUE_CSV = REPO_ROOT / "Ambilogue.csv"
 
-PENDING_COLUMNS = ["Method", "Technology_Suitability_Community", "Evidence", "Issue_Number", "Issue_URL"]
+PENDING_COLUMNS = ["Tool", "Technology_Suitability_Community", "Evidence", "Issue_Number", "Issue_URL"]
 
 
 def split_terms(value):
@@ -44,20 +44,20 @@ def main():
 
     changed = []
     for pending in pending_rows:
-        method = pending.get("Method", "").strip()
+        tool = pending.get("Tool", "").strip()
         new_terms = split_terms(pending.get("Technology_Suitability_Community", ""))
-        if not method or not new_terms:
+        if not tool or not new_terms:
             continue
 
-        matches = [r for r in rows if r.get("Method", "").strip().lower() == method.lower()]
+        matches = [r for r in rows if r.get("Tool", "").strip().lower() == tool.lower()]
         if not matches:
-            close = [r["Method"] for r in rows if method.lower() in r.get("Method", "").lower()]
-            print(f"Warning: no method named '{method}' found in Ambilogue.csv - skipped.")
+            close = [r["Tool"] for r in rows if tool.lower() in r.get("Tool", "").lower()]
+            print(f"Warning: no tool named '{tool}' found in Ambilogue.csv - skipped.")
             if close:
                 print(f"  Did you mean: {', '.join(close)}?")
             continue
         if len(matches) > 1:
-            print(f"Warning: more than one method matched '{method}' - skipped. Resolve manually.")
+            print(f"Warning: more than one tool matched '{tool}' - skipped. Resolve manually.")
             continue
 
         row = matches[0]
@@ -75,18 +75,18 @@ def main():
 
         if added:
             row["Technology_Suitability_Community"] = "; ".join(existing_community)
-            changed.append((method, added, pending.get("Issue_URL", "")))
+            changed.append((tool, added, pending.get("Issue_URL", "")))
         else:
-            print(f"Nothing new to add for '{method}' - all reported types are already listed.")
+            print(f"Nothing new to add for '{tool}' - all reported types are already listed.")
 
     if not changed:
         print("\nNo rows were changed.")
         return
 
     print("\nAbout to update Ambilogue.csv:")
-    for method, added, issue_url in changed:
+    for tool, added, issue_url in changed:
         suffix = f"  ({issue_url})" if issue_url else ""
-        print(f"  - {method}: + {', '.join(added)}{suffix}")
+        print(f"  - {tool}: + {', '.join(added)}{suffix}")
     confirm = input("\nProceed? [y/N] ").strip().lower()
     if confirm != "y":
         print("Aborted. No changes made.")

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Citations over time for the methods listed in Ambilogue.csv, using OpenAlex.
+Citations over time for the tools listed in Ambilogue.csv, using OpenAlex.
 
-For every method with a DOI this script:
+For every tool with a DOI this script:
   1. resolves the DOI to an OpenAlex work ID,
   2. asks OpenAlex for the works that cite it, grouped by the citing work's
      publication year (filter=cites:<id>&group_by=publication_year),
-  3. asks the same question once for ALL methods together, which gives the
+  3. asks the same question once for ALL tools together, which gives the
      number of UNIQUE papers citing at least one ambient contamination tool
      (a paper citing SoupX and CellBender is counted once).
 
@@ -14,19 +14,19 @@ CSV outputs (written to --outdir, default: the folder containing this script).
 Together these hold every number needed for the figures (drawn by
 plot_citations.R):
 
-  citations_by_year_long.csv     TIDY, one row per method x year
-      Method, Group, OpenAlex_ID, Publication_DOI, Publication_Date,
+  citations_by_year_long.csv     TIDY, one row per tool x year
+      Tool, Group, OpenAlex_ID, Publication_DOI, Publication_Date,
       Preprint_Date, Publication_Year, Year, Years_since_publication, Citations,
       Cumulative_citations, Year_to_date, Retrieved
-  citations_by_year_overall.csv  one row per year, all methods pooled
-      Year, Group, Unique_citing_works, Sum_of_per_method_counts,
+  citations_by_year_overall.csv  one row per year, all tools pooled
+      Year, Group, Unique_citing_works, Sum_of_per_tool_counts,
       Cumulative_unique, Cumulative_sum, Year_to_date, Retrieved
 
 This script only retrieves data and writes CSVs. The figures are drawn from
 these CSVs by plot_citations.R (run: Rscript plot_citations.R).
 
 Unique_citing_works counts a paper once even if it cites several tools, so it
-is <= Sum_of_per_method_counts. Citing works that OpenAlex dates outside the
+is <= Sum_of_per_tool_counts. Citing works that OpenAlex dates outside the
 plotted years (likely date errors) are left out of both files.
 
 Read-only with respect to Ambilogue.csv (it is never modified).
@@ -178,36 +178,36 @@ def collect(csv_path):
 
     results, unresolved = [], []
     for row in rows:
-        method = row.get('Method', '').strip()
+        tool = row.get('Tool', '').strip()
         doi = row.get('Publication_DOI', '').strip()
-        if not method:
+        if not tool:
             continue
         if not doi.startswith('http'):
-            unresolved.append((method, 'no DOI'))
+            unresolved.append((tool, 'no DOI'))
             continue
 
-        print(f'  {method} ...', flush=True)
+        print(f'  {tool} ...', flush=True)
         work = resolve_work(doi)
         time.sleep(REQUEST_DELAY)
         if work is None:
-            unresolved.append((method, 'DOI not found in OpenAlex'))
+            unresolved.append((tool, 'DOI not found in OpenAlex'))
             continue
 
         by_year = citing_by_year([work['id']])
         time.sleep(REQUEST_DELAY)
         if by_year is None:
-            unresolved.append((method, 'citation query failed'))
+            unresolved.append((tool, 'citation query failed'))
             continue
 
         results.append({
-            'method': method,
+            'tool': tool,
             'group': 'Tool',
             'doi': doi,
             'pub_year': pub_year(row.get('Publication_Date', '')),
             'pub_date': pub_date_iso(row.get('Publication_Date', '')),
             'preprint_year': pub_year(row.get('Preprint_Date', '')),
             'preprint_date': pub_date_iso(row.get('Preprint_Date', '')),
-            'category': row.get('Method_Category', '').strip(),
+            'category': row.get('Methodological_Category', '').strip(),
             'id': work['id'],
             'title': work['title'],
             'total': work['total'],
@@ -222,7 +222,7 @@ def collect(csv_path):
             chunk = citing_by_year(ids[i:i + 100]) or {}
             time.sleep(REQUEST_DELAY)
             if len(ids) > 100:
-                print('  [warn] >100 methods: unique count is per-chunk only',
+                print('  [warn] >100 tools: unique count is per-chunk only',
                       file=sys.stderr)
             for y, c in chunk.items():
                 overall_unique[y] = overall_unique.get(y, 0) + c
@@ -232,7 +232,7 @@ def collect(csv_path):
 
 def year_range(results, overall_unique, this_year):
     """
-    Start at the earliest method publication year. OpenAlex occasionally lists
+    Start at the earliest tool publication year. OpenAlex occasionally lists
     citing works with impossible dates (e.g. 1991 or 2005 citing a 2020 tool);
     those are left out of the tables rather than stretching the year range.
     """
@@ -267,11 +267,11 @@ def _bool(v):
 
 
 def write_csvs(results, overall_unique, years, outdir, this_year, retrieved):
-    # --- tidy per-method, per-year table: the best starting point for R ----
+    # --- tidy per-tool, per-year table: the best starting point for R ----
     long_path = os.path.join(outdir, 'citations_by_year_long.csv')
     with open(long_path, 'w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
-        w.writerow(['Method', 'Group', 'OpenAlex_ID', 'Publication_DOI',
+        w.writerow(['Tool', 'Group', 'OpenAlex_ID', 'Publication_DOI',
                     'Publication_Date', 'Preprint_Date', 'Publication_Year', 'Year',
                     'Years_since_publication', 'Citations',
                     'Cumulative_citations', 'Year_to_date', 'Retrieved'])
@@ -279,18 +279,18 @@ def write_csvs(results, overall_unique, years, outdir, this_year, retrieved):
             counts = [r['by_year'].get(y, 0) for y in years]
             py = r['pub_year']
             for y, n, cn in zip(years, counts, _cum(counts)):
-                w.writerow([r['method'], r['group'], r['id'], r['doi'],
+                w.writerow([r['tool'], r['group'], r['id'], r['doi'],
                             r['pub_date'], r['preprint_date'], py or '', y, (y - py) if py else '',
                             n, cn, _bool(y == this_year), retrieved])
 
-    # --- all methods pooled, one row per year ------------------------------
+    # --- all tools pooled, one row per year ------------------------------
     overall_path = os.path.join(outdir, 'citations_by_year_overall.csv')
     uniq = [overall_unique.get(y, 0) for y in years]
     summed = [sum(r['by_year'].get(y, 0) for r in results) for y in years]
     with open(overall_path, 'w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         w.writerow(['Year', 'Group', 'Unique_citing_works',
-                    'Sum_of_per_method_counts', 'Cumulative_unique',
+                    'Sum_of_per_tool_counts', 'Cumulative_unique',
                     'Cumulative_sum', 'Year_to_date', 'Retrieved'])
         for y, u, s, cu, cs in zip(years, uniq, summed, _cum(uniq), _cum(summed)):
             w.writerow([y, 'Tool', u, s, cu, cs, _bool(y == this_year), retrieved])
@@ -308,7 +308,7 @@ def main():
     ap.add_argument('--outdir', default=HERE, help='where to write outputs')
     ap.add_argument('--strict', action='store_true',
                     help='exit with an error, before writing any citation '
-                         'outputs, if a method with a DOI could not be '
+                         'outputs, if a tool with a DOI could not be '
                          'retrieved from OpenAlex (for automated runs)')
     args = ap.parse_args()
 
@@ -324,10 +324,10 @@ def main():
 
     results, overall_unique, unresolved = collect(csv_path)
 
-    # A method with no DOI is not a retrieval failure; anything else is.
+    # A tool with no DOI is not a retrieval failure; anything else is.
     failures = [(m, why) for m, why in unresolved if why != 'no DOI']
     if args.strict and failures:
-        print('\n--strict: could not retrieve these methods, so no citation '
+        print('\n--strict: could not retrieve these tools, so no citation '
               'outputs were written:', file=sys.stderr)
         for m, why in failures:
             print(f'  {m}: {why}', file=sys.stderr)
@@ -358,8 +358,8 @@ def main():
 
     total_unique = sum(overall_unique.get(y, 0) for y in years)
     total_summed = sum(r['by_year'].get(y, 0) for r in results for y in years)
-    print(f'\n{len(results)} methods; {total_unique:,} unique citing papers in total '
-          f'({total_summed:,} summed per-method), {years[0]}-{years[-1]}.')
+    print(f'\n{len(results)} tools; {total_unique:,} unique citing papers in total '
+          f'({total_summed:,} summed per-tool), {years[0]}-{years[-1]}.')
 
 
 if __name__ == '__main__':

@@ -2,19 +2,19 @@
 
 # Ambilogue
 
-Compare methods that address ambient RNA contamination with the Ambilogue. This online catalogue helps researchers make easier and more informed choices about ambient RNA contamination methods in their workflow. 
+Compare tools that address ambient RNA contamination with the Ambilogue. This online catalogue helps researchers make easier and more informed choices about ambient RNA contamination tools in their workflow. 
 
 🔗 **View the Ambilogue here:** https://oshlacklab.com/Ambilogue/
 
-## Submit a method
+## Submit a tool
 
-**Know a method that's missing from the Ambilogue?** 
+**Know a tool that's missing from the Ambilogue?** 
 
-📋 [Submit a method](https://github.com/Oshlack/Ambilogue/issues/new?template=new_method.yml) via a GitHub issue and we'll review it for inclusion.
+📋 [Submit a tool](https://github.com/Oshlack/Ambilogue/issues/new?template=new_tool.yml) via a GitHub issue and we'll review it for inclusion.
 
-## Report a community-used input data type for a method
+## Report a community-used input data type for a tool
 
-**Do you successfully use a method on data types not officially supported by the developers?**
+**Do you successfully use a tool on data types not officially supported by the developers?**
 
 📋 [Report a community-used input data type](https://github.com/Oshlack/Ambilogue/issues/new?template=community_input_type.yml) via a GitHub issue and we'll review it for inclusion.
 

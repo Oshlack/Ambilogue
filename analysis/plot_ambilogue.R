@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # ------------------------------------------------------------------------------
-# Plots for the Ambilogue methods (what the methods are and how they are
+# Plots for the Ambilogue tools (what the tools are and how they are
 # distributed), drawn from Ambilogue.csv.
 #
 # The citation plots (OpenAlex data) are drawn by plot_citations.R.
@@ -45,10 +45,10 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # DATA -------------------------------------------------------------------------
 
-PLOT_DATE <- Sys.Date()   # written to methods_last_updated.txt (shown on plots.html), not drawn on the plots
+PLOT_DATE <- Sys.Date()   # written to tools_last_updated.txt (shown on plots.html), not drawn on the plots
 PLOT_YEAR <- as.integer(format(PLOT_DATE, "%Y"))   # the current year, as a number
 
-# fileEncoding = "UTF-8-BOM" strip byte-order mark so the first column is called "Method".
+# fileEncoding = "UTF-8-BOM" strip byte-order mark so the first column is called "Tool".
 ambilogue <- read.csv(csv_path, stringsAsFactors = FALSE, check.names = FALSE,
                  fileEncoding = "UTF-8-BOM")
 
@@ -56,7 +56,7 @@ ambilogue <- read.csv(csv_path, stringsAsFactors = FALSE, check.names = FALSE,
 ambilogue$Publication_Date <- as.Date(ambilogue$Publication_Date, format = "%d/%m/%Y")
 if (anyNA(ambilogue$Publication_Date)) {
   stop("Unparseable Publication_Date for: ",
-       paste(ambilogue$Method[is.na(ambilogue$Publication_Date)], collapse = ", "),
+       paste(ambilogue$Tool[is.na(ambilogue$Publication_Date)], collapse = ", "),
        call. = FALSE)
 }
 ambilogue$Publication_Year <- as.integer(format(ambilogue$Publication_Date, "%Y"))
@@ -65,16 +65,16 @@ ambilogue$Publication_Year <- as.integer(format(ambilogue$Publication_Date, "%Y"
 ambilogue$Preprint_Date <- as.Date(ambilogue$Preprint_Date, format = "%d/%m/%Y")
 ambilogue$Preprint_Year <- as.integer(format(ambilogue$Preprint_Date, "%Y"))
 
-# Methods in publication order (oldest first).
+# Tools in publication order (oldest first).
 ambilogue <- ambilogue[order(ambilogue$Publication_Date), ]
-ambilogue$Method <- factor(ambilogue$Method, levels = ambilogue$Method)
+ambilogue$Tool <- factor(ambilogue$Tool, levels = ambilogue$Tool)
 
 # Publication_Status ("Preprint" or "Published") has its own column
 ambilogue$Citations <- as.numeric(ambilogue$Citations)
 
 # Several columns hold ';'-separated lists (Ecosystem, Availability,
-# Technology_Suitability, Ambient_Basis, Method_Category). This returns one row
-# per method x value, e.g. split_multi(ambilogue, "Technology_Suitability").
+# Technology_Suitability, Ambient_Basis, Methodological_Category). This returns one row
+# per tool x value, e.g. split_multi(ambilogue, "Technology_Suitability").
 split_multi <- function(data, cols, empty = NA_character_) {
   for (col in cols) {
     vals <- lapply(strsplit(as.character(data[[col]]), ";"), function(v) {
@@ -89,29 +89,112 @@ split_multi <- function(data, cols, empty = NA_character_) {
   data
 }
 
-n_methods <- nrow(ambilogue)
-message("Read ", n_methods, " methods from ", csv_path)
+n_tools <- nrow(ambilogue)
+message("Read ", n_tools, " tools from ", csv_path)
 
 # PLOT STYLING -----------------------------------------------------------------
+# Styling follows the paper figures (analysis/ambilogue_paper/ambilogue_paper.R): pastel fills with
+# black outlines, a black border around the plot area, the standard sans serif font and legends on
+# the right of the pies. No titles are drawn on the plots (plots.html gives each one a title).
 
-METHOD_CATEGORY_COLOURS <- c("Empty droplet-like" = "#93c5fd",
-                             "Expression profiling-like" = "#c4b5fd",
-                             "Demultiplexing-like" = "#f9a8d4")
+OUTLINE_WIDTH <- 1.2        # black outline on bars and pies (ggplot default is 0.5)
+PANEL_BORDER_WIDTH <- 3     # black border around the plot area on the bar-type plots
+PIE_SMALL_SLICE <- 0.10     # pie slices smaller than this share get their label outside the pie
+LEGEND_WRAP <- 40           # long legend labels wrap after this many characters, keeping the legend inside the plot area
+PAIR_FIG_WIDTH <- 18        # figure size (inches) of the timeline and overall citations plots, so they match
+PAIR_FIG_HEIGHT <- 13
+PAIR_PANEL_WIDTH <- 14      # size (inches) of the plot area inside each of those two figures
+PAIR_PANEL_HEIGHT <- 7.5
+PIE_SIZE <- 5.5             # width and height (inches) of each pie's plot area, so both pies match
+FONT_FAMILY <- "Open Sans"  # the font used on the website (site.css); install it on your computer, or R falls back to the default sans serif
+FONT_SCALE <- 1.5           # multiplies every font size below (1 = original website sizes)
 
-ECOSYSTEM_COLOURS <- c("R" = "#6ee7b7",
-                       "Python" = "#fde047",
-                       "Command Line" = "#c4b5fd",
-                       "Cell Ranger" = "#cbd5e1")
+# Text is measured on a Cairo device, the same one ggsave() uses for the PNGs, so legend widths
+# are worked out with the real fonts (Open Sans) rather than the PDF device's built-in ones.
+if (capabilities("cairo")) grDevices::png(tempfile(fileext = ".png"), type = "cairo")
 
-TECHNOLOGY_SUITABILITY_COLOURS <- c("Droplet-based scRNA-seq" = "#93c5fd",
-                                    "Droplet-based snRNA-seq" = "#c4b5fd",
-                                    "Droplet-based CITE-seq" = "#fdba74",
-                                    "Droplet-based scATAC-seq" = "#f9a8d4",
-                                    "Droplet-based scCRISPR-seq" = "#fca5a5",
-                                    "Droplet-based scRNA+ATAC multiome" = "#5eead4",
-                                    "Droplet-based single-cell omics" = "#cbd5e1",
-                                    "Spatial transcriptomics" = "#fcd34d",
-                                    "Well-plate scRNA-seq" = "#bef264")
+# Bold text (axis titles, legend titles, the numbers on the plots) needs the bold face of the font.
+# If only the regular face is installed, R silently draws everything in regular weight, so warn.
+tryCatch(local({   # the check itself must never stop the script
+  plain <- systemfonts::match_fonts(FONT_FAMILY, weight = "normal")$path
+  bold  <- systemfonts::match_fonts(FONT_FAMILY, weight = "bold")$path
+  if (identical(plain, bold))
+    warning("No bold face of '", FONT_FAMILY, "' found, so bold text will be drawn in regular weight. ",
+            "Install the static 'Open Sans Bold' (e.g. from the 'static' folder of the Google Fonts download, ",
+            "not only the variable font), restart R and run the script again.", call. = FALSE)
+}), error = function(e) NULL)
+
+# Text drawn with geom_text (the numbers on bars and pies) uses the same font
+update_geom_defaults("text", list(family = FONT_FAMILY))
+
+save_plot <- function(p, name, width, height) {
+  for (fmt in formats) {
+    f <- file.path(out_dir, paste0(name, ".", fmt))
+    ggsave(f, p, width = width, height = height, dpi = 200, bg = "white")
+    message("Wrote ", f)
+  }
+}
+
+# Fixes the plot area (panel) to width x height inches (height defaults to width). Used so plots
+# come out the same size however wide their legends are. Returns a gtable (draw it with grid.draw).
+set_panel_size <- function(p, width, height = width) {
+  g <- ggplotGrob(p)
+  panel <- g$layout[g$layout$name == "panel", ]
+  g$widths[panel$l]  <- unit(width, "in")
+  g$heights[panel$t] <- unit(height, "in")
+  g
+}
+
+# Wrap text at `width` characters (used for legend titles and labels, which now sit on the right)
+wrap_text <- function(x, width) {
+  vapply(x, function(v) paste(strwrap(v, width), collapse = "\n"), character(1), USE.NAMES = FALSE)
+}
+
+# Width (points) of a legend title, measured with the plot font.
+title_width <- function(x, size) {
+  tg <- grid::textGrob(x, gp = grid::gpar(fontfamily = FONT_FAMILY, fontsize = size, fontface = "bold"))
+  grid::convertWidth(grid::grobWidth(tg), "pt", valueOnly = TRUE)
+}
+
+# Pads `title` on the right with non-breaking spaces until it is as wide as `target`, so the
+# entries of two stacked legends start at the same left edge. `size` is the title font size (pt).
+pad_title <- function(title, target, size) {
+  for (i in 1:60) {
+    if (title_width(title, size) >= title_width(target, size)) break
+    title <- paste0(title, "\u00a0")
+  }
+  title
+}
+
+
+# Preprint / Published pie colours
+PUBLICATION_COLOURS <- c("Preprint" = "#F4C7A1",
+                         "Published" = "#C1DAFB",
+                         "Unpublished" = "#E5B9B8")
+
+# Full year (FALSE) and year-to-date (TRUE) bars
+CURRENT_YEAR_COLOURS <- c("TRUE" = "#E4F0FC",
+                          "FALSE" = "#C1DAFB")
+
+METHODOLOGICAL_CATEGORY_COLOURS <- c("Empty droplet-based" = "#B697F1",
+                             "Expression-based" = "#FEF5A8",
+                             "Variant-based" = "#F2CAE0",
+                             "Empty droplet-based (with alternative expression-based mode)" = "#F4C7A1")
+
+ECOSYSTEM_COLOURS <- c("R" = "#BEE9C1",
+                       "Python" = "#A6D3D1",
+                       "Command Line" = "#B1BAD1",
+                       "Cell Ranger" = "#E3E3E3")
+
+TECHNOLOGY_SUITABILITY_COLOURS <- c("Droplet-based scRNA-seq" = "#a3c6ed",
+                                    "Droplet-based snRNA-seq" = "#cac0f2",
+                                    "Droplet-based CITE-seq" = "#e8ba89",
+                                    "Droplet-based scATAC-seq" = "#edb4d3",
+                                    "Droplet-based scCRISPR-seq" = "#efb2b2",
+                                    "Droplet-based scRNA+ATAC multiome" = "#73d5c6",
+                                    "Droplet-based single-cell omics" = "#ced5de",
+                                    "Spatial transcriptomics" = "#e2c567",
+                                    "Well-plate scRNA-seq" = "#b8dd79")
 
 FEATURE_LABELS <- c("Can_Filter_Empties" = "Filter empty droplets",
                     "Can_Ambient_Estimate_Droplets" = "Estimate ambient contamination in droplets",
@@ -120,15 +203,15 @@ FEATURE_LABELS <- c("Can_Filter_Empties" = "Filter empty droplets",
                     "Can_Ambient_QC_Plot" = "Generate ambient QC plots",
                     "Can_Ambient_Simulate" = "Simulate ambient-contaminated datasets")
 
-FEATURE_DETAILED_COLOURS <- c("Per-Droplet" = "#87CEFA",
-                              "Global" = "#DAB1DA",
-                              "Has this feature" = "#86efac",
-                              "All genes" = "#FFC067",
-                              "Selected genes only" = "#FF746C")
+FEATURE_DETAILED_COLOURS <- c("Per-Droplet" = "#C1DAFB",
+                              "Global" = "#F9A3CB",
+                              "Both per-droplet and global" = "#B697F1",
+                              "Has this feature" = "#BEE9C1",
+                              "All genes" = "#FEF5A8",
+                              "Selected genes only" = "#E5B9B8")
 
-PUBLICATION_COLOURS <- c("Preprint" = "#fdba74",
-                         "Published" = "#93c5fd",
-                         "Unpublished" = "#fca5a5")
+SUPPORT_COLOURS <- c("Officially supported" = "#C1DAFB",
+                     "Community supported" = "#E5B9B8")
 
 # Rename the values in a column
 # Values not in `labels` are left as they are. Levels follow the order of `labels`.
@@ -140,92 +223,141 @@ relabel <- function(x, labels) {
 
 theme_ambilogue_bar <- function(base_size = 11) {
   theme_linedraw(base_size = base_size) +
-  theme(plot.title = element_markdown(face = "bold", size = 18, family = "arial"),
-        plot.subtitle = element_markdown(face = "italic", size = 12, family = "arial"),
-        legend.title = element_text(size = 15, family = "arial", face = "bold"),
-        legend.text = element_text(size = 13, family = "arial"),
-        axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
-        axis.title = element_text(size = 18, family = "arial", face = "bold"),
-        axis.text = element_text(size = 16, family = "arial"),
-        panel.border          = element_blank(),
+  theme(text = element_text(family = FONT_FAMILY),
+        plot.background = element_rect(fill = NA, colour = NA),   # transparent background
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA, colour = NA),
+        legend.box.background = element_rect(fill = NA, colour = NA),
+        plot.title = element_markdown(face = "bold", size = 18 * FONT_SCALE, family = FONT_FAMILY, hjust = 0.5),
+        plot.subtitle = element_markdown(face = "italic", size = 12 * FONT_SCALE, family = FONT_FAMILY),
+        legend.title = element_text(size = 15 * FONT_SCALE, family = FONT_FAMILY, face = "bold"),
+        legend.text = element_text(size = 13 * FONT_SCALE, family = FONT_FAMILY),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 16 * FONT_SCALE),
+        axis.title = element_text(size = 18 * FONT_SCALE, family = FONT_FAMILY, face = "bold"),
+        axis.text = element_text(size = 16 * FONT_SCALE, family = FONT_FAMILY),
+        panel.border          = element_rect(colour = "black", fill = NA, linewidth = PANEL_BORDER_WIDTH),   # solid black border around the plot area (raise linewidth for a bolder line)
         panel.background      = element_blank(),
         panel.grid.major.x    = element_blank(),
         panel.grid.minor      = element_blank(),
-        axis.line             = element_line(),
+        axis.line             = element_blank(),   # the panel border already draws these edges
+        plot.title.position = "panel",   # centre the title over the plot area, not the legend
+        legend.justification = "left",   # legend sits at the left edge of the plot area
+        legend.box.just = "left",        # stacked legends line up on the left
+        legend.title.position = "left",  # titles beside their entries
         legend.position = "none")
 }
 
 theme_ambilogue_pie <- function(base_size = 11) {
   theme_void(base_size = base_size) +
-    theme(plot.title = element_markdown(face = "bold", size = 18, family = "arial", hjust = 0.5),
-          plot.subtitle = element_markdown(face = "italic", size = 10, family = "arial", hjust = 0.5),
-          legend.title = element_text(size = 15, family = "arial", face = "bold"),
-          legend.text = element_text(size = 13, family = "arial"),
-          legend.position = "bottom")
-}
-
-save_plot <- function(p, name, width, height) {
-  for (fmt in formats) {
-    f <- file.path(out_dir, paste0(name, ".", fmt))
-    ggsave(f, p, width = width, height = height, dpi = 200, bg = "white")
-    message("Wrote ", f)
-  }
+    theme(text = element_text(family = FONT_FAMILY),
+          plot.background = element_rect(fill = NA, colour = NA),   # transparent background
+          legend.background = element_rect(fill = NA, colour = NA),
+          legend.key = element_rect(fill = NA, colour = NA),
+          legend.box.background = element_rect(fill = NA, colour = NA),
+        plot.title = element_markdown(face = "bold", size = 18 * FONT_SCALE, family = FONT_FAMILY, hjust = 0.5),
+          plot.subtitle = element_markdown(face = "plain", size = 11 * FONT_SCALE, family = FONT_FAMILY, hjust = 0.5),
+          legend.title = element_text(size = 15 * FONT_SCALE, family = FONT_FAMILY, face = "bold"),
+          legend.text = element_text(size = 13 * FONT_SCALE, family = FONT_FAMILY),
+          legend.position = "right")
 }
 
 # PLOTS ------------------------------------------------------------------------
 
-# PUBLICATION STATUS
+## Publication status ----------------------------------------------------------
+
 plot_df <- ambilogue
 plot_df <- plot_df %>% group_by(Publication_Status) %>% summarise(count = n())
 plot_df$percent <- plot_df$count / sum(plot_df$count) * 100
-plot_df$percent <- paste0(round(plot_df$percent, 1), "% (", plot_df$count, ")")
+plot_df$share <- plot_df$percent / 100
+plot_df$percent <- paste0(round(plot_df$percent, 1), "%\n(", plot_df$count, ")")
+plot_df$label_inside  <- ifelse(plot_df$share < PIE_SMALL_SLICE, "", plot_df$percent)
+plot_df$label_outside <- ifelse(plot_df$share < PIE_SMALL_SLICE, plot_df$percent, "")
 
 ggplot(plot_df, aes(x = "", y = count, fill = Publication_Status)) +
-  geom_bar(stat = "identity", width = 1, color = "white") +
-  geom_text(aes(label = percent), position = position_stack(vjust = 0.5),
-            size = 6, fontface = "bold") +
+  geom_bar(stat = "identity", width = 1, color = "black", linewidth = OUTLINE_WIDTH) +
+  # Labels sit part-way out from the centre (x = 1.2), clear of the slice edges. Small slices
+  # are labelled outside the pie instead (x = 1.75).
+  geom_text(aes(x = 1.2, label = label_inside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
+  geom_text(aes(x = 1.75, label = label_outside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
   coord_polar(theta = "y", direction = -1, clip = "off") +
   scale_fill_manual(values = PUBLICATION_COLOURS) +
   labs(fill = "Publication Status") + theme_ambilogue_pie() -> publication_status_pie
 
-save_plot(publication_status_pie, "publication_status_pie", width=8, height=8)
+publication_status_pie_grob <- set_panel_size(publication_status_pie, PIE_SIZE)
+save_plot(publication_status_pie_grob, "publication_status_pie", width = 11, height = 7)
 
-# METHOD CATEGORY
-plot_df <- split_multi(ambilogue, "Method_Category")
-plot_df <- plot_df %>% group_by(Method_Category) %>% summarise(count = n())
+## Methodological category -------------------------------------------------------------
+
+# Tools with two categories get their own combined slice ("Empty droplet-based (with alternative
+# expression-based mode)") instead of being counted once in each category, so every tool is counted once
+plot_df <- ambilogue
+plot_df$Methodological_Category <- gsub("\\s*;\\s*", " and ", plot_df$Methodological_Category)
+# Name of the combined slice
+plot_df$Methodological_Category[plot_df$Methodological_Category == "Empty droplet-based and Expression-based"] <-
+  "Empty droplet-based (with alternative expression-based mode)"
+plot_df <- plot_df %>% group_by(Methodological_Category) %>% summarise(count = n())
+# Order of the slices (clockwise from the top), which is also the order of the legend: the three
+# single categories, then the combined (orange) one last
+plot_df$Methodological_Category <- factor(plot_df$Methodological_Category,
+                                  levels = c("Empty droplet-based", "Expression-based", "Variant-based",
+                                             "Empty droplet-based (with alternative expression-based mode)"))
 plot_df$percent <- plot_df$count / sum(plot_df$count) * 100
-plot_df$percent <- paste0(round(plot_df$percent, 1), "% (", plot_df$count, ")")
+plot_df$share <- plot_df$percent / 100
+plot_df$percent <- paste0(round(plot_df$percent, 1), "%\n(", plot_df$count, ")")
+plot_df$label_inside  <- ifelse(plot_df$share < PIE_SMALL_SLICE, "", plot_df$percent)
+plot_df$label_outside <- ifelse(plot_df$share < PIE_SMALL_SLICE, plot_df$percent, "")
 
-ggplot(plot_df, aes(x = "", y = count, fill = Method_Category)) +
-  geom_bar(stat = "identity", width = 1, color = "white") +
-  geom_text(aes(label = percent), position = position_stack(vjust = 0.5),
-            size = 6, fontface = "bold") +
+ggplot(plot_df, aes(x = "", y = count, fill = Methodological_Category)) +
+  geom_bar(stat = "identity", width = 1, color = "black", linewidth = OUTLINE_WIDTH) +
+  # Labels sit part-way out from the centre (x = 1.2), clear of the slice edges. Small slices
+  # are labelled outside the pie instead (x = 1.75). Both pies have both layers, so they
+  # keep the same size.
+  geom_text(aes(x = 1.2, label = label_inside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
+  geom_text(aes(x = 1.75, label = label_outside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
   coord_polar(theta = "y", direction = -1, clip = "off") +
-  scale_fill_manual(values = METHOD_CATEGORY_COLOURS) +
-  labs(fill = "Method Categories") + theme_ambilogue_pie() -> method_categories_pie
+  # long legend labels wrap onto two lines so the legend stays inside the cell
+  scale_fill_manual(values = METHODOLOGICAL_CATEGORY_COLOURS, labels = function(x) wrap_text(x, LEGEND_WRAP)) +
+  labs(fill = "Methodological Category") + theme_ambilogue_pie() -> methodological_categories_pie
 
-save_plot(method_categories_pie, "method_categories_pie", width=8, height=8)
+methodological_categories_pie_grob <- set_panel_size(methodological_categories_pie, PIE_SIZE)
+save_plot(methodological_categories_pie_grob, "methodological_categories_pie", width = 11, height = 7)
 
-# SOFTWARE ECOSYSTEM
+## Software ecosystem ----------------------------------------------------------
+
+# A tool that runs in two ecosystems is counted once in each
 plot_df <- split_multi(ambilogue, "Ecosystem")
 
 # Show Cell Ranger without the version number
 plot_df$Ecosystem <- sub("^Cell Ranger.*$", "Cell Ranger", plot_df$Ecosystem)
 plot_df <- plot_df %>% group_by(Ecosystem) %>% summarise(count = n())
 plot_df$percent <- plot_df$count / sum(plot_df$count) * 100
-plot_df$percent <- paste0(round(plot_df$percent, 1), "% (", plot_df$count, ")")
+plot_df$share <- plot_df$percent / 100
+plot_df$percent <- paste0(round(plot_df$percent, 1), "%\n(", plot_df$count, ")")
+plot_df$label_inside  <- ifelse(plot_df$share < PIE_SMALL_SLICE, "", plot_df$percent)
+plot_df$label_outside <- ifelse(plot_df$share < PIE_SMALL_SLICE, plot_df$percent, "")
 
 ggplot(plot_df, aes(x = "", y = count, fill = Ecosystem)) +
-  geom_bar(stat = "identity", width = 1, color = "white") +
-  geom_text(aes(label = percent), position = position_stack(vjust = 0.5),
-            size = 6, fontface = "bold") +
+  geom_bar(stat = "identity", width = 1, color = "black", linewidth = OUTLINE_WIDTH) +
+  # Labels sit part-way out from the centre (x = 1.2), clear of the slice edges. Small slices
+  # are labelled outside the pie instead (x = 1.75). Both pies have both layers, so they
+  # keep the same size.
+  geom_text(aes(x = 1.2, label = label_inside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
+  geom_text(aes(x = 1.75, label = label_outside), position = position_stack(vjust = 0.5),
+            size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
   coord_polar(theta = "y", direction = -1, clip = "off") +
   scale_fill_manual(values = ECOSYSTEM_COLOURS) +
-  labs(fill = "Ecosystem") + theme_ambilogue_pie()-> ecosystem_pie
+  labs(fill = "Ecosystem", subtitle = "Tools can have multiple ecosystems") + theme_ambilogue_pie() -> ecosystem_pie
 
-save_plot(ecosystem_pie, "ecosystem_pie", width=8, height=8)
+ecosystem_pie_grob <- set_panel_size(ecosystem_pie, PIE_SIZE)
+save_plot(ecosystem_pie_grob, "ecosystem_pie", width = 11, height = 7)
 
-# DATA TYPE
+## Data type -------------------------------------------------------------------
+
 official  <- split_multi(ambilogue, "Technology_Suitability")
 community <- split_multi(ambilogue, "Technology_Suitability_Community")
 
@@ -241,60 +373,67 @@ plot_df$Data_Type <- factor(plot_df$Data_Type,
 plot_df$Support <- factor(plot_df$Support,
                           levels = c("Community supported", "Officially supported"))
 
-SUPPORT_COLOURS <- c("Officially supported" = "#93c5fd",
-                     "Community supported"  = "#fdba74")
-
 ggplot(plot_df, aes(x = Data_Type, fill = Support)) +
-  geom_bar() + xlab("Data Type") + ylab("Number of methods") +
-  geom_text(stat = "count", aes(label = after_stat(count)), size = 5,
+  geom_bar(colour = "black", linewidth = OUTLINE_WIDTH) + xlab("Data Type") + ylab("Number of tools") +
+  geom_text(stat = "count", aes(label = after_stat(count)), size = 5 * FONT_SCALE,
             position = position_stack(vjust = 0.5), fontface = "bold") +
   scale_fill_manual(values = SUPPORT_COLOURS) +
   guides(fill = guide_legend(reverse = TRUE)) +   # legend: official first, then community
   labs(fill = "Support") +
   theme_ambilogue_bar() +
-  # extra left margin so the long, angled first label is not cut off
+  # extra left margin so the long, angled first label is not cut off (raise l if it still is)
   theme(legend.position = "bottom",
-        plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 70)) -> technology_suitability_bar
+        plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 68 * FONT_SCALE)) -> technology_suitability_bar
 
-save_plot(technology_suitability_bar, "technology_suitability_bar", width=12, height=8)
+save_plot(technology_suitability_bar, "technology_suitability_bar", width = 16, height = 12)
 
-# AMBIENT FEATURES
+## Ambient features ------------------------------------------------------------
+
 plot_df <- ambilogue
 plot_df <- plot_df %>% pivot_longer(cols = starts_with("Can_"), names_to = "Feature")
+# Tools that estimate contamination both per droplet and globally get their own category, rather
+# than being counted once as per-droplet and once as global (so each tool is counted once)
+plot_df$value <- ifelse(plot_df$Feature == "Can_Ambient_Estimate_Droplets" &
+                          grepl("Per-Droplet", plot_df$value) & grepl("Global", plot_df$value),
+                        "Both per-droplet and global", plot_df$value)
 plot_df <- split_multi(plot_df, "value")
 plot_df <- plot_df %>% filter(value != "No")
 plot_df[which(plot_df$Feature == "Can_Ambient_Correct" & plot_df$value == "Yes"), "value"] <- "All genes"
 plot_df$value <- ifelse(plot_df$value == "Yes", "Has this feature", plot_df$value)
 plot_df$Feature <- relabel(plot_df$Feature, FEATURE_LABELS)
-plot_df$value <- factor(plot_df$value, levels = c("Has this feature", "Per-Droplet", "Global",
+# Legend order: the three ways of estimating contamination together, then the plain "has this
+# feature", then the two kinds of correction together
+plot_df$value <- factor(plot_df$value, levels = c("Per-Droplet", "Global", "Both per-droplet and global",
+                                                  "Has this feature",
                                                   "All genes", "Selected genes only"))
 
 ggplot(plot_df, aes(x = Feature, fill = value)) +
-  geom_bar() + xlab("Feature") + ylab("Number of methods") +
-  geom_text(stat = "count", aes(label = after_stat(count)), size = 5,
-            position = position_stack(vjust = 0), vjust = -0.5, fontface = "bold") +
+  geom_bar(colour = "black", linewidth = OUTLINE_WIDTH) + xlab("Feature") + ylab("Number of tools") +
+  geom_text(stat = "count", aes(label = after_stat(count)), size = 5 * FONT_SCALE,
+            position = position_stack(vjust = 0), vjust = -0.25, fontface = "bold") +
   scale_fill_manual(values = FEATURE_DETAILED_COLOURS) +
   labs(fill = "Details") + theme_ambilogue_bar() +
   # same extra left margin as the data types plot so the two look alike
   theme(legend.position = "bottom",
-        plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 70)) -> ambient_feature_bar
+        plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 68 * FONT_SCALE)) -> ambient_feature_bar
 
-save_plot(ambient_feature_bar, "ambient_feature_bar", width=12, height=8)
+save_plot(ambient_feature_bar, "ambient_feature_bar", width = 16, height = 12)
 
-# METHODS PER YEAR
+## Tools per year ------------------------------------------------------------
+
 plot_df <- ambilogue
 plot_df$Preprint_Year <- replace_na(plot_df$Preprint_Year, +.Machine$integer.max)
 plot_df$First_Version_Year <- ifelse(plot_df$Preprint_Year <= plot_df$Publication_Year,
                                    plot_df$Preprint_Year, plot_df$Publication_Year)
-plot_df <- plot_df %>% group_by(First_Version_Year) %>% summarise(YearMethods = n()) %>% 
-                mutate(CumSumMethods = cumsum(YearMethods))
+plot_df <- plot_df %>% group_by(First_Version_Year) %>% summarise(YearTools = n()) %>%
+                mutate(CumSumTools = cumsum(YearTools))
 plot_df$Current_Year <- ifelse(plot_df$First_Version_Year == PLOT_YEAR, TRUE, FALSE)
 
 if (!any(plot_df$Current_Year)) {
-  cumsum_max <- max(plot_df$CumSumMethods)
+  cumsum_max <- max(plot_df$CumSumTools)
   plot_df <- plot_df %>% add_row(First_Version_Year = PLOT_YEAR,
-                                 YearMethods = 0,
-                                 CumSumMethods = cumsum_max,
+                                 YearTools = 0,
+                                 CumSumTools = cumsum_max,
                                  Current_Year = TRUE)
 }
 
@@ -303,33 +442,39 @@ last_full_year <- max(plot_df$First_Version_Year[!plot_df$Current_Year])
 line_solid  <- plot_df[!plot_df$Current_Year, ]
 line_dashed <- plot_df[plot_df$Current_Year | plot_df$First_Version_Year == last_full_year, ]
 
-CURRENT_YEAR_COLOURS <- c("TRUE" = "#9FBEE0", "FALSE" = "#2A6FBB")
 ggplot(plot_df, aes(x = First_Version_Year, fill = Current_Year)) +
-  geom_bar(stat = "identity", aes(y = YearMethods)) +
-  geom_line(data = line_solid, aes(y = CumSumMethods, group = 1, linetype = "Full year")) +
-  geom_line(data = line_dashed, aes(y = CumSumMethods, group = 1, linetype = "Year-to-date")) +
-  geom_point(data = line_solid, aes(y = CumSumMethods), size = 4, show.legend = FALSE) +
-  geom_point(data = plot_df[plot_df$Current_Year, ], aes(y = CumSumMethods),
+  # year-to-date bar has a dashed outline (one linetype per bar, so no extra legend)
+  geom_bar(stat = "identity", aes(y = YearTools), colour = "black", linewidth = OUTLINE_WIDTH,
+           linetype = ifelse(plot_df$Current_Year, "dashed", "solid")) +
+  geom_line(data = line_solid, aes(y = CumSumTools, group = 1, linetype = "Full year"), linewidth = 1) +
+  geom_line(data = line_dashed, aes(y = CumSumTools, group = 1, linetype = "Year-to-date"), linewidth = 1) +
+  geom_point(data = line_solid, aes(y = CumSumTools), size = 4, show.legend = FALSE) +
+  geom_point(data = plot_df[plot_df$Current_Year, ], aes(y = CumSumTools),
              shape = 21, fill = "white", size = 4, stroke = 0.8, show.legend = FALSE) +   # open circle for the year-to-date point
-  ylab("Number of methods") +
+  ylab("Number of tools") +
   xlab("Year") +
-  geom_text(stat = "identity", aes(label = YearMethods, y = YearMethods), size = 5,
-            position = position_stack(vjust = 0), vjust = -0.5, fontface = "bold") +
+  # Counts sit inside every bar, close to the bottom (vjust = -0.25; it was -0.5) so that even the
+  # one-tool bars have room for the number between their top and bottom outlines.
+  geom_text(stat = "identity", aes(label = YearTools, y = YearTools), size = 5 * FONT_SCALE,
+            position = position_stack(vjust = 0), vjust = -0.25, fontface = "bold") +
   scale_fill_manual(values = CURRENT_YEAR_COLOURS,
                     breaks = c("FALSE", "TRUE"),
                     labels = c("Full year", "Year-to-date"),
-                    name = "New methods published") +
+                    name = pad_title("New tools published", "Cumulative number of tools", 15 * FONT_SCALE)) +
   scale_linetype_manual(values = c("Full year" = "solid", "Year-to-date" = "dashed"),
-                        name = "Cumulative number of methods") +
+                        name = "Cumulative number of tools") +
   guides(fill = guide_legend(order = 1), linetype = guide_legend(order = 2)) +
   scale_x_continuous(breaks = min(plot_df$First_Version_Year):max(plot_df$First_Version_Year)) +
   theme_ambilogue_bar() +
   theme(legend.position = "bottom",
-        axis.text.x = element_text(angle = 0, hjust = 0.5)) -> method_year_bar
+        legend.box = "vertical",   # stack the two legends so they stay inside the plot area
+        axis.text.x = element_text(angle = 0, hjust = 0.5)) -> tool_year_bar
 
-save_plot(method_year_bar, "method_year_bar", width=12, height=8)
+tool_year_bar_grob <- set_panel_size(tool_year_bar, PAIR_PANEL_WIDTH, PAIR_PANEL_HEIGHT)
+save_plot(tool_year_bar_grob, "tool_year_bar", width = PAIR_FIG_WIDTH, height = PAIR_FIG_HEIGHT)
 
-# Date the method plots were last drawn; plots.html reads this file.
-writeLines(format(PLOT_DATE, "%Y-%m-%d"), file.path(out_dir, "methods_last_updated.txt"))
+# Date the tool plots were last drawn; plots.html reads this file.
+writeLines(format(PLOT_DATE, "%Y-%m-%d"), file.path(out_dir, "tools_last_updated.txt"))
 
+invisible(grDevices::graphics.off())
 message("Done: figures are in ", normalizePath(out_dir))

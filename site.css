@@ -152,7 +152,7 @@ footer.site-footer .info-block a:hover { color: #CCCCCC; text-decoration-color: 
 /* line under the footer headings */
 footer.site-footer .info-block h2 { padding-bottom: 0.4rem; margin-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.45); }
 
-/* method count: fade and rise in while the number counts up */
+/* tool count: fade and rise in while the number counts up */
 body.simple .hero .count.count-in { animation: count-in 0.7s ease-out both; }
 body.simple .count-num { font-variant-numeric: tabular-nums; }
 @keyframes count-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

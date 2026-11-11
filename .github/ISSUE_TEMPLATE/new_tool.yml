@@ -1,20 +1,20 @@
-name: Submit a New Method
-description: Submit a new ambient RNA method for inclusion in the Ambilogue
-title: "[New Method]: "
-labels: ["new method submission"]
+name: Submit a New Tool
+description: Submit a new ambient RNA tool for inclusion in the Ambilogue
+title: "[New Tool]: "
+labels: ["new tool submission"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for submitting a method to the Ambilogue! Please fill in as much detail as possible.
+        Thank you for submitting a tool to the Ambilogue! Please fill in as much detail as possible.
         Fields marked as required must be completed. Optional fields can be left blank.
         
         If you have any other questions or suggestions for the Ambilogue, please submit these as a general GitHub issue.
 
   - type: input
-    id: method
+    id: tool
     attributes:
-      label: Method Name
+      label: Tool Name
       placeholder: e.g. SoupX
     validations:
       required: true
@@ -34,7 +34,7 @@ body:
     id: author
     attributes:
       label: Author(s) and Publication Year
-      description: "Format: Surname et al. (Year) or Surname and Surname (Year). Can write lab name if method is unpublished."
+      description: "Format: Surname et al. (Year) or Surname and Surname (Year). Can write lab name if tool is unpublished."
       placeholder: e.g. Young and Behjati (2020)
     validations:
       required: true
@@ -43,7 +43,7 @@ body:
     id: doi
     attributes:
       label: Publication DOI
-      description: This should be the DOI of the primary publication. Write N/A if the method is unpublished.
+      description: This should be the DOI of the primary publication. Write N/A if the tool is unpublished.
       placeholder: e.g. https://doi.org/10.1093/gigascience/giaa151
     validations:
       required: true
@@ -61,7 +61,7 @@ body:
     id: preprint_doi
     attributes:
       label: Preprint DOI
-      description: If the method was posted as a preprint before it was published, add the preprint DOI here. Leave blank if there is no separate preprint, or if the method is still a preprint (the publication fields above already cover it).
+      description: If the tool was posted as a preprint before it was published, add the preprint DOI here. Leave blank if there is no separate preprint, or if the tool is still a preprint (the publication fields above already cover it).
       placeholder: e.g. https://doi.org/10.1101/303727
 
   - type: input
@@ -141,7 +141,7 @@ body:
     id: requires_empties
     attributes:
       label: Requires Empty Droplets?
-      description: Does the method require empty droplets to be present in the input data?
+      description: Does the tool require empty droplets to be present in the input data?
       options:
         - Required
         - Optional
@@ -210,7 +210,7 @@ body:
     id: ambient_basis
     attributes:
       label: Ambient Basis
-      description: What does the method use as a basis for estimating ambient RNA?
+      description: What does the tool use as a basis for estimating ambient RNA?
       placeholder: e.g. Low total UMI count droplets
     validations:
       required: true
@@ -218,12 +218,12 @@ body:
   - type: checkboxes
     id: category
     attributes:
-      label: Method Category
+      label: Methodological Category
       description: "Select all that apply. Please see our publication for definitions of these categories: (coming soon)"
       options:
-        - label: Empty droplet-like
-        - label: Expression profiling-like
-        - label: Demultiplexing-like
+        - label: Empty droplet-based
+        - label: Expression-based
+        - label: Variant-based
         - label: Other
     validations:
       required: true
@@ -231,7 +231,7 @@ body:
   - type: input
     id: category_other
     attributes:
-      label: "Other: Method Category"
+      label: "Other: Methodological Category"
       description: "If you selected \"Other\" above, please specify:"
       placeholder: e.g. Simulation-based
 
@@ -239,7 +239,7 @@ body:
     id: approach
     attributes:
       label: Approach Description
-      description: Brief description of how the method works
+      description: Brief description of how the tool works
       placeholder: e.g. Maximum likelihood used to estimate contamination then subtract this from counts
     validations:
       required: true
@@ -257,7 +257,7 @@ body:
     id: filter_empties
     attributes:
       label: Can filter empty droplets?
-      description: Can the method classify empty and cell-containing droplets?
+      description: Can the tool classify empty and cell-containing droplets?
       default: 1
       options:
         - "Yes"
@@ -269,7 +269,7 @@ body:
     id: estimate_droplets
     attributes:
       label: Can estimate ambient contamination in droplets?
-      description: Can the method estimate ambient contamination level per droplet or globally in the dataset?
+      description: Can the tool estimate ambient contamination level per droplet or globally in the dataset?
       default: 0
       options:
         - "No"
@@ -283,7 +283,7 @@ body:
     id: estimate_genes
     attributes:
       label: Can identify genes driving ambient contamination?
-      description: Can the method identify which genes contribute most to ambient RNA contamination?
+      description: Can the tool identify which genes contribute most to ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -295,7 +295,7 @@ body:
     id: correct
     attributes:
       label: Can correct ambient contamination?
-      description: Can the method correct ambient RNA contamination in the count matrix?
+      description: Can the tool correct ambient RNA contamination in the count matrix?
       default: 1
       options:
         - "Yes"
@@ -308,7 +308,7 @@ body:
     id: qc_plot
     attributes:
       label: Can generate ambient contamination QC plots?
-      description: Does the method produce QC plots related to ambient RNA contamination?
+      description: Does the tool produce QC plots related to ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -320,7 +320,7 @@ body:
     id: simulate
     attributes:
       label: Can simulate datasets with ambient contamination?
-      description: Can the method simulate datasets that contain ambient RNA contamination?
+      description: Can the tool simulate datasets that contain ambient RNA contamination?
       default: 1
       options:
         - "Yes"
@@ -339,4 +339,4 @@ body:
     id: notes
     attributes:
       label: Notes
-      description: Any additional notes or caveats about the method. Leave blank if none.
+      description: Any additional notes or caveats about the tool. Leave blank if none.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fetches the citations per year for every method in Ambilogue.csv (OpenAlex)
+# Fetches the citations per year for every tool in Ambilogue.csv (OpenAlex)
 # and writes the CSVs used by plot_citations.R.
 #
 # Usage (from anywhere):

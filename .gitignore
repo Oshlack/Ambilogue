@@ -5,3 +5,6 @@ test_local_site.sh
 .Rhistory
 *.Rproj
 .RData
+analysis/ambilogue_poster/
+analysis/ambilogue_paper/
+__pycache__/

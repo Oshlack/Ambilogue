@@ -1,4 +1,4 @@
-name: Update Ambilogue Method Plots
+name: Update Ambilogue Tool Plots
 
 # Redraws the plots made by analysis/plot_ambilogue.R:
 #   - on every push to main,
@@ -15,7 +15,7 @@ on:
   workflow_dispatch:        # Allow manual trigger from the GitHub Actions tab
 
 concurrency:
-  group: ambilogue-method-plots
+  group: ambilogue-tool-plots
   cancel-in-progress: false
 
 jobs:
@@ -51,7 +51,10 @@ jobs:
         shell: Rscript {0}
         run: renv::restore()
 
-      - name: Draw method figures
+      - name: Install the website font (Open Sans)
+        run: sudo apt-get update && sudo apt-get install -y fonts-open-sans
+
+      - name: Draw tool figures
         working-directory: analysis
         run: Rscript plot_ambilogue.R
 
@@ -61,9 +64,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add analysis/plots
           if git diff --staged --quiet; then
-            echo "Method figures unchanged — nothing to commit."
+            echo "Tool figures unchanged — nothing to commit."
           else
-            git commit -m "chore: update Ambilogue method plots $(date -u '+%Y-%m-%d')"
+            git commit -m "chore: update Ambilogue tool plots $(date -u '+%Y-%m-%d')"
             git pull --rebase
             git push
           fi

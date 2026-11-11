@@ -16,7 +16,7 @@ REPO = "Oshlack/Ambilogue"
 REPO_ROOT = Path(__file__).parent.parent
 PENDING_CSV = REPO_ROOT / "pending_community_input.csv"
 
-CSV_COLUMNS = ["Method", "Technology_Suitability_Community", "Evidence", "Issue_Number", "Issue_URL"]
+CSV_COLUMNS = ["Tool", "Technology_Suitability_Community", "Evidence", "Issue_Number", "Issue_URL"]
 
 
 def fetch_issue(issue_number):
@@ -71,22 +71,22 @@ def main():
     print(f"Title: {title}")
     parsed = parse_body(body)
 
-    method = parsed.get("Method Name", "").strip()
+    tool = parsed.get("Tool Name", "").strip()
     technology = parse_checkboxes(parsed.get("Input Type(s) Used", ""))
     other = parsed.get("Other: Input Type(s) Used", "").strip()
     if other:
         technology = f"{technology}; {other}" if technology else other
     evidence = parsed.get("Evidence", "").strip()
 
-    if not method:
-        print("Error: could not find a Method Name in the issue body.")
+    if not tool:
+        print("Error: could not find a Tool Name in the issue body.")
         sys.exit(1)
     if not technology:
         print("Error: no input types were selected in the issue body.")
         sys.exit(1)
 
     row = {
-        "Method": method,
+        "Tool": tool,
         "Technology_Suitability_Community": technology,
         "Evidence": evidence,
         "Issue_Number": issue_number,
@@ -99,7 +99,7 @@ def main():
         writer.writerow(row)
 
     print(f"\nWritten to {PENDING_CSV.name}")
-    print(f"  Method:      {method}")
+    print(f"  Tool:      {tool}")
     print(f"  Input types: {technology}")
     print(f"  Evidence:    {evidence or '(none provided)'}")
     print("\nReview pending_community_input.csv, then run:")

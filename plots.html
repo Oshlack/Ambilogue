@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Summary plots for the Ambilogue: the ecosystems, categories, features and data types of ambient RNA contamination methods, and how often they are cited." />
+  <meta name="description" content="Summary plots for the Ambilogue: the ecosystems, categories, features and data types of ambient RNA contamination tools, and how often they are cited." />
   <title>Stats — Ambilogue</title>
   <meta property="og:title" content="Stats — Ambilogue" />
   <meta property="og:url" content="https://oshlacklab.com/Ambilogue/plots.html" />
@@ -206,7 +206,7 @@
   <div class="header-right"></div>
   <nav class="site-nav" aria-label="Main">
     <a class="nav-link" href="index.html">Home</a>
-    <a class="nav-link" href="table.html">Catalogue</a>
+    <a class="nav-link" href="catalogue.html">Catalogue</a>
     <a class="nav-link" href="plots.html" aria-current="page">Stats</a>
     <a class="nav-link" href="submit.html">Submit</a>
     <a class="nav-github" href="https://github.com/Oshlack/Ambilogue" target="_blank" rel="noopener" aria-label="Ambilogue on GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="nav-github-icon"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
@@ -216,34 +216,34 @@
 <main>
   <div class="page-intro">
     <h1 class="page-title">Stats</h1>
-    <p class="subtitle">Explore stats about methods in the Ambilogue, including how often they are cited.</p>
+    <p class="subtitle">Explore stats about tools in the Ambilogue, including how often they are cited.</p>
   </div>
-  <h2 class="section-title">Methods Overview</h2>
-  <p class="section-note"><span class="updated" id="methods-updated" hidden></span> Many methods fall into more than one group, so totals can exceed the number of methods.</p>
+  <h2 class="section-title">Tools Overview</h2>
+  <p class="section-note"><span class="updated" id="tools-updated" hidden></span> Many tools fall into more than one group, so totals can exceed the number of tools.</p>
   <div class="plot-grid">
     <figure class="card">
-      <figcaption><strong class="card-title">Ecosystems</strong>The software ecosystems methods use.</figcaption>
-      <button type="button" class="thumb" data-title="Ecosystems"><img src="analysis/plots/ecosystem_pie.png" alt="Pie chart of the ecosystems (R, Python, command line, Cell Ranger) the methods run in" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Ecosystems</strong>The software ecosystems tools use.</figcaption>
+      <button type="button" class="thumb" data-title="Ecosystems"><img src="analysis/plots/ecosystem_pie.png" alt="Pie chart of the ecosystems (R, Python, command line, Cell Ranger) the tools run in" loading="lazy" /></button>
     </figure>
     <figure class="card">
-      <figcaption><strong class="card-title">Method Categories</strong>How methods infer the ambient profile.</figcaption>
-      <button type="button" class="thumb" data-title="Method Category"><img src="analysis/plots/method_categories_pie.png" alt="Pie chart of the method categories" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Methodological Categories</strong>How tools infer the ambient profile.</figcaption>
+      <button type="button" class="thumb" data-title="Methodological Category"><img src="analysis/plots/methodological_categories_pie.png" alt="Pie chart of the methodological categories" loading="lazy" /></button>
     </figure>
     <figure class="card">
-      <figcaption><strong class="card-title">Data Types</strong>Number of methods that support each data type, either officially or via the community.</figcaption>
-      <button type="button" class="thumb" data-title="Data Types"><img src="analysis/plots/technology_suitability_bar.png" alt="Stacked bar chart of the data types the methods support, split into officially supported and community supported" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Data Types</strong>Number of tools that support each data type, either officially or via the community.</figcaption>
+      <button type="button" class="thumb" data-title="Data Types"><img src="analysis/plots/technology_suitability_bar.png" alt="Stacked bar chart of the data types the tools support, split into officially supported and community supported" loading="lazy" /></button>
     </figure>
     <figure class="card">
-      <figcaption><strong class="card-title">Method Features</strong>The features available by methods.</figcaption>
-      <button type="button" class="thumb" data-title="Method features"><img src="analysis/plots/ambient_feature_bar.png" alt="Stacked bar chart of the features offered by the methods" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Tool Features</strong>The features available in tools.</figcaption>
+      <button type="button" class="thumb" data-title="Tool features"><img src="analysis/plots/ambient_feature_bar.png" alt="Stacked bar chart of the features offered by the tools" loading="lazy" /></button>
     </figure>
     <figure class="card">
-      <figcaption><strong class="card-title">Publication Status</strong>Whether methods are published or preprints.</figcaption>
-      <button type="button" class="thumb" data-title="Publication Status"><img src="analysis/plots/publication_status_pie.png" alt="Pie chart of how many methods are published and how many are preprints" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Publication Status</strong>Whether tools are published or preprints.</figcaption>
+      <button type="button" class="thumb" data-title="Publication Status"><img src="analysis/plots/publication_status_pie.png" alt="Pie chart of how many tools are published and how many are preprints" loading="lazy" /></button>
     </figure>
     <figure class="card">
-      <figcaption><strong class="card-title">Method Timeline</strong>Number of methods published by year.</figcaption>
-      <button type="button" class="thumb" data-title="Method Timeline"><img src="analysis/plots/method_year_bar.png" alt="Bar chart of the number of methods published each year" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Tool Timeline</strong>Number of tools published by year.</figcaption>
+      <button type="button" class="thumb" data-title="Tool Timeline"><img src="analysis/plots/tool_year_bar.png" alt="Bar chart of the number of tools published each year" loading="lazy" /></button>
     </figure>
   </div>
 
@@ -251,12 +251,12 @@
   <p class="section-note"><span class="updated" id="citations-updated" hidden></span> Citations are obtained using the <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API. Pale bars and dashed lines mark the current year to date.</p>
   <div class="plot-grid">
     <figure class="card wide">
-      <figcaption><strong class="card-title">Papers citing ambient contamination tools</strong>Bars show new unique papers citing methods included in the Ambilogue, split by year. Lines show the running total of citations, both as unique papers and as the sum of all paper citations (double-counting papers citing multiple methods).</figcaption>
-      <button type="button" class="thumb" data-title="Papers citing ambient contamination tools"><img src="analysis/plots/citations_overall.png" alt="Bar chart of new unique citing papers per year across all methods, with lines for the cumulative totals" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Papers citing ambient contamination tools</strong>Bars show new unique papers citing tools included in the Ambilogue, split by year. Lines show the running total of citations, both as unique papers and as the sum of all paper citations (double-counting papers citing multiple tools).</figcaption>
+      <button type="button" class="thumb" data-title="Papers citing ambient contamination tools"><img src="analysis/plots/citations_overall.png" alt="Bar chart of new unique citing papers per year across all tools, with lines for the cumulative totals" loading="lazy" /></button>
     </figure>
     <figure class="card wide large">
-      <figcaption><strong class="card-title">Citations by method</strong>Methods are ordered by publication year, with preprint periods also indicated if relevant. Bars show new citations each year and the line shows the running total. The y-axis scale differs between panels.</figcaption>
-      <button type="button" class="thumb" data-title="Citations by method"><img src="analysis/plots/citations_by_method.png" alt="Small-multiple bar charts of new citations per year for each method, with a cumulative line and the publication year marked" loading="lazy" /></button>
+      <figcaption><strong class="card-title">Citations by tool</strong>Tools are ordered by publication year, with preprint periods also indicated if relevant. Bars show new citations each year and the line shows the running total. The y-axis scale differs between panels.</figcaption>
+      <button type="button" class="thumb" data-title="Citations by tool"><img src="analysis/plots/citations_by_tool.png" alt="Small-multiple bar charts of new citations per year for each tool, with a cumulative line and the publication year marked" loading="lazy" /></button>
     </figure>
   </div>
 </main>
@@ -324,7 +324,7 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso).trim());
     return m ? parseInt(m[3], 10) + " " + MONTHS[parseInt(m[2], 10) - 1] + " " + m[1] : null;
   }
-  [["analysis/plots/methods_last_updated.txt", "methods-updated"],
+  [["analysis/plots/tools_last_updated.txt", "tools-updated"],
    ["analysis/plots/citations_last_updated.txt", "citations-updated"]].forEach(function (pair) {
     fetch(pair[0], { cache: "no-cache" })
       .then(function (r) { return r.ok ? r.text() : Promise.reject(); })

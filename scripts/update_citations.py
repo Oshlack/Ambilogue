@@ -60,15 +60,15 @@ def main():
     skipped = 0
 
     for row in rows:
-        method = row.get('Method', '').strip()
+        tool = row.get('Tool', '').strip()
         doi = row.get('Publication_DOI', '').strip()
 
         if not doi or not doi.startswith('http'):
-            print(f'  [skip] {method} — no DOI')
+            print(f'  [skip] {tool} — no DOI')
             skipped += 1
             continue
 
-        print(f'  Querying {method}...')
+        print(f'  Querying {tool}...')
         count = get_citation_count(doi)
 
         if count is not None:
@@ -77,9 +77,9 @@ def main():
             if str(old).strip() != new_val:
                 row['Citations'] = new_val
                 updated += 1
-                print(f'    {method}: {old!r} → {new_val!r}')
+                print(f'    {tool}: {old!r} → {new_val!r}')
             else:
-                print(f'    {method}: {count} (no change)')
+                print(f'    {tool}: {count} (no change)')
 
         time.sleep(0.15)  # Stay within OpenAlex rate limits
 

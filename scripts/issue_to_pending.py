@@ -18,7 +18,7 @@ AMBILOGUE_CSV = REPO_ROOT / "Ambilogue.csv"
 
 # Maps issue template field labels to CSV column names
 FIELD_MAP = {
-    "Method Name": "Method",
+    "Tool Name": "Tool",
     "Author(s) and Publication Year": "Author",
     "Publication DOI": "Publication_DOI",
     "Publication Date": "Publication_Date",
@@ -31,7 +31,7 @@ FIELD_MAP = {
     "Officially Supported Input Types": "Technology_Suitability",
     "Additional Input Types Used by the Community": "Technology_Suitability_Community",
     "Ambient Basis": "Ambient_Basis",
-    "Method Category": "Method_Category",
+    "Methodological Category": "Methodological_Category",
     "Approach Description": "Approach_Description",
     "Benchmarking Summary": "Benchmarking_Summary",
     "Can filter empty droplets?": "Can_Filter_Empties",
@@ -54,7 +54,7 @@ def load_columns():
 
 
 # Fields rendered as checkboxes (multiple selections joined by "; ")
-CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Technology_Suitability_Community", "Method_Category"}
+CHECKBOX_FIELDS = {"Ecosystem", "Availability", "Technology_Suitability", "Technology_Suitability_Community", "Methodological_Category"}
 
 # Form option wording that differs from the value used in Ambilogue.csv
 VALUE_MAP = {
@@ -67,7 +67,7 @@ OTHER_FIELDS = {
     "Other: Software Availability": "Availability",
     "Other: Officially Supported Input Types": "Technology_Suitability",
     "Other: Additional Input Types Used by the Community": "Technology_Suitability_Community",
-    "Other: Method Category": "Method_Category",
+    "Other: Methodological Category": "Methodological_Category",
 }
 
 
@@ -161,7 +161,7 @@ def main():
         writer.writerow(row)
 
     print(f"\nWritten to {PENDING_CSV.name}")
-    print(f"  Method:  {row.get('Method', '(unknown)')}")
+    print(f"  Tool:  {row.get('Tool', '(unknown)')}")
     print(f"  Author:  {row.get('Author', '(unknown)')}")
     print(f"  DOI:     {row.get('Publication_DOI', '(unknown)')}")
     print("\nReview and edit pending_submission.csv if needed, then run:")
