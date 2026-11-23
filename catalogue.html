@@ -368,7 +368,7 @@
 
     /* ── Methodological Category colours ── */
     .tag-methcat-empty { background: #dbeafe; color: #1e40af; }  /* Empty droplet-based → blue     */
-    .tag-methcat-demux { background: #fce7f3; color: #9d174d; }  /* Variant-based → pink           */
+    .tag-methcat-demux { background: #fce7f3; color: #9d174d; }  /* Genotype-based → pink          */
     .tag-methcat-expr  { background: #ede9fe; color: #5b21b6; }  /* Expression-based → purple     */
 
     /* ── Column header help button + popover ── */
@@ -712,11 +712,24 @@ var TAG_COLOURS = {
   'find donor proportions':           'tag-feat-donor',
   /* Methodological Category */
   'empty droplet-based':              'tag-methcat-empty',
-  'variant-based':                    'tag-methcat-demux',
+  'genotype-based':                   'tag-methcat-demux',
   'expression-based':                 'tag-methcat-expr',
 };
+/* Methodological categories can carry extra wording after the category name (e.g.
+   "Expression-based (alternative mode)"), so a tag that starts with one of these names
+   takes that category's colour when there is no exact match */
+var METHCAT_PREFIXES = [
+  ['empty droplet-based', 'tag-methcat-empty'],
+  ['genotype-based',      'tag-methcat-demux'],
+  ['expression-based',    'tag-methcat-expr'],
+];
 function tagClass(val) {
-  return TAG_COLOURS[val.toLowerCase()] || '';
+  var v = val.toLowerCase();
+  if (TAG_COLOURS[v]) return TAG_COLOURS[v];
+  for (var i = 0; i < METHCAT_PREFIXES.length; i++) {
+    if (v.indexOf(METHCAT_PREFIXES[i][0]) === 0) return METHCAT_PREFIXES[i][1];
+  }
+  return '';
 }
 
 function tagFormatter(cell) {

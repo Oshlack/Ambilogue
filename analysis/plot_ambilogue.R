@@ -177,7 +177,7 @@ CURRENT_YEAR_COLOURS <- c("TRUE" = "#E4F0FC",
 
 METHODOLOGICAL_CATEGORY_COLOURS <- c("Empty droplet-based" = "#B697F1",
                              "Expression-based" = "#FEF5A8",
-                             "Variant-based" = "#F2CAE0")
+                             "Genotype-based" = "#F2CAE0")
 
 # Colours for categories that are not listed above (e.g. a new category added to the CSV), used in order
 NEW_CATEGORY_COLOURS <- c("#C9E4B7", "#F6B8B8", "#FFE2A8", "#BFEAE0", "#D9C7F0")

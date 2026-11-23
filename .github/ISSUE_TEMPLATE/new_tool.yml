@@ -223,7 +223,7 @@ body:
       options:
         - label: Empty droplet-based
         - label: Expression-based
-        - label: Variant-based
+        - label: Genotype-based
         - label: Other
     validations:
       required: true
