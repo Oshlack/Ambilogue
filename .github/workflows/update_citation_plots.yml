@@ -47,6 +47,9 @@ jobs:
           key: ${{ runner.os }}-renv-${{ hashFiles('analysis/renv.lock') }}
           restore-keys: ${{ runner.os }}-renv-
 
+      - name: Install system libraries for the R font packages
+        run: sudo apt-get update && sudo apt-get install -y libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev
+
       # Starting R inside analysis/ runs .Rprofile, which activates the renv project.
       - name: Restore R packages from renv.lock
         working-directory: analysis
@@ -58,7 +61,7 @@ jobs:
 
       - name: Draw figures
         working-directory: analysis
-        run: Rscript plot_citations.R --dir=. --out=plots --format=png,svg
+        run: Rscript plot_citations.R --dir=. --out=plots --format=png
 
       - name: Commit and push if CSVs or figures changed
         run: |

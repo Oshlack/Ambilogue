@@ -10,7 +10,7 @@
 #
 # Usage:
 #   Rscript plot_ambilogue.R
-#   Rscript plot_ambilogue.R --csv=path/to/Ambilogue.csv --out=path/to/figures --format=png,svg
+#   Rscript plot_ambilogue.R --csv=path/to/Ambilogue.csv --out=path/to/figures --format=png
 #
 # Defaults: --csv = ../Ambilogue.csv relative to this script (or to the working
 #           directory when sourced in RStudio), --out = <script folder>/plots,
@@ -19,7 +19,6 @@
 
 suppressPackageStartupMessages({
   library(ggplot2)
-  library(svglite)
   library(dplyr)
   library(ggtext)
   library(tidyr)

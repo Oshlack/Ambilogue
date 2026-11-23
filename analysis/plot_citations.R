@@ -10,7 +10,7 @@
 #
 # Usage:
 #   Rscript plot_citations.R
-#   Rscript plot_citations.R --dir=path/to/csvs --out=path/to/figures --format=png,svg --csv=path/to/Ambilogue.csv
+#   Rscript plot_citations.R --dir=path/to/csvs --out=path/to/figures --format=png --csv=path/to/Ambilogue.csv
 #
 # Defaults: --dir = the folder containing this script, --out = <script folder>/plots,
 #           --format = png.
@@ -18,7 +18,6 @@
 
 suppressPackageStartupMessages({
   library(ggplot2)
-  library(svglite)
   library(dplyr)
   library(ggtext)
 })

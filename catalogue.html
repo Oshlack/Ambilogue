@@ -908,6 +908,9 @@ function bulletFmt(cell) {
 
 var REQ_CLASS = {
   'bam file':                         'tag-req-blue',
+  'bam files':                        'tag-req-blue',
+  'fraction of unspliced reads per droplet':       'tag-req-blue',
+  'bam file (to compute unspliced read fraction)': 'tag-req-blue',
   'gene gtf file':                    'tag-req-teal',
   'genome fasta file':                'tag-req-sky',
   'peak bed file':                    'tag-req-lime',
@@ -916,6 +919,7 @@ var REQ_CLASS = {
   'pre-clustering (optional)':        'tag-req-fuchsia',
   'pre-clustering (required)':        'tag-req-violet',
   'reads containing allele variants': 'tag-req-rose',
+  'dataset containing multiple distinct genomes': 'tag-req-rose',
   'will not install on r 4.6.0+':                                    'tag-req-orange',
   'requires numpy<2.0':                                               'tag-req-orange',
   'not compatible with file structure of cell ranger 3.0.0+':         'tag-req-orange',
