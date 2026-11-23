@@ -177,8 +177,10 @@ CURRENT_YEAR_COLOURS <- c("TRUE" = "#E4F0FC",
 
 METHODOLOGICAL_CATEGORY_COLOURS <- c("Empty droplet-based" = "#B697F1",
                              "Expression-based" = "#FEF5A8",
-                             "Variant-based" = "#F2CAE0",
-                             "Empty droplet-based (with alternative expression-based mode)" = "#F4C7A1")
+                             "Variant-based" = "#F2CAE0")
+
+# Colours for categories that are not listed above (e.g. a new category added to the CSV), used in order
+NEW_CATEGORY_COLOURS <- c("#C9E4B7", "#F6B8B8", "#FFE2A8", "#BFEAE0", "#D9C7F0")
 
 ECOSYSTEM_COLOURS <- c("R" = "#BEE9C1",
                        "Python" = "#A6D3D1",
@@ -289,19 +291,35 @@ save_plot(publication_status_pie_grob, "publication_status_pie", width = 11, hei
 
 ## Methodological category -------------------------------------------------------------
 
-# Tools with two categories get their own combined slice ("Empty droplet-based (with alternative
-# expression-based mode)") instead of being counted once in each category, so every tool is counted once
+# A tool with more than one category (';'-separated in the CSV) gets one combined slice instead of
+# being counted once in each category, so every tool is counted once. The category text is used
+# exactly as written in the CSV and joined neatly: "A", "A and B", "A, B and C".
+join_categories <- function(x) {
+  vapply(strsplit(as.character(x), ";"), function(v) {
+    v <- trimws(v)
+    v <- v[nzchar(v)]
+    n <- length(v)
+    if (n == 0) NA_character_
+    else if (n == 1) v
+    else paste0(paste(v[-n], collapse = ", "), " and ", v[n])
+  }, character(1))
+}
 plot_df <- ambilogue
-plot_df$Methodological_Category <- gsub("\\s*;\\s*", " and ", plot_df$Methodological_Category)
-# Name of the combined slice
-plot_df$Methodological_Category[plot_df$Methodological_Category == "Empty droplet-based and Expression-based"] <-
-  "Empty droplet-based (with alternative expression-based mode)"
+plot_df$Methodological_Category <- join_categories(plot_df$Methodological_Category)
 plot_df <- plot_df %>% group_by(Methodological_Category) %>% summarise(count = n())
-# Order of the slices (clockwise from the top), which is also the order of the legend: the three
-# single categories, then the combined (orange) one last
+# Order of the slices (clockwise from the top), which is also the order of the legend: the categories
+# listed in METHODOLOGICAL_CATEGORY_COLOURS first, in that order, then any new category alphabetically
+new_categories <- sort(setdiff(na.omit(as.character(plot_df$Methodological_Category)),
+                               names(METHODOLOGICAL_CATEGORY_COLOURS)))
 plot_df$Methodological_Category <- factor(plot_df$Methodological_Category,
-                                  levels = c("Empty droplet-based", "Expression-based", "Variant-based",
-                                             "Empty droplet-based (with alternative expression-based mode)"))
+                                          levels = c(names(METHODOLOGICAL_CATEGORY_COLOURS), new_categories))
+# A new category gets the next colour from NEW_CATEGORY_COLOURS, so it never goes missing from the pie
+category_colours <- METHODOLOGICAL_CATEGORY_COLOURS
+if (length(new_categories)) {
+  category_colours[new_categories] <- rep_len(NEW_CATEGORY_COLOURS, length(new_categories))
+  message("New methodological categories (add them to METHODOLOGICAL_CATEGORY_COLOURS to choose their colour): ",
+          paste(new_categories, collapse = "; "))
+}
 plot_df$percent <- plot_df$count / sum(plot_df$count) * 100
 plot_df$share <- plot_df$percent / 100
 plot_df$percent <- paste0(round(plot_df$percent, 1), "%\n(", plot_df$count, ")")
@@ -319,7 +337,7 @@ ggplot(plot_df, aes(x = "", y = count, fill = Methodological_Category)) +
             size = 5 * FONT_SCALE, fontface = "bold", lineheight = 0.8) +
   coord_polar(theta = "y", direction = -1, clip = "off") +
   # long legend labels wrap onto two lines so the legend stays inside the cell
-  scale_fill_manual(values = METHODOLOGICAL_CATEGORY_COLOURS, labels = function(x) wrap_text(x, LEGEND_WRAP)) +
+  scale_fill_manual(values = category_colours, labels = function(x) wrap_text(x, LEGEND_WRAP)) +
   labs(fill = "Methodological Category") + theme_ambilogue_pie() -> methodological_categories_pie
 
 methodological_categories_pie_grob <- set_panel_size(methodological_categories_pie, PIE_SIZE)
