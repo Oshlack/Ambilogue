@@ -33,7 +33,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Ambilogue.csv
+          git add Ambilogue.csv benchmarking.csv
           if git diff --staged --quiet; then
             echo "Citation counts unchanged — nothing to commit."
           else

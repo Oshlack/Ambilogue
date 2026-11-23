@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Published and preprint studies that benchmark ambient RNA contamination tools, with the tools tested, data types, ground truth approaches and key results." />
+  <title>Benchmarking — Ambilogue</title>
+  <meta property="og:title" content="Benchmarking — Ambilogue" />
+  <meta property="og:url" content="https://oshlacklab.com/Ambilogue/benchmarking.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://oshlacklab.com/Ambilogue/AmbilogueAmbigramLogo.png" />
+  <link rel="canonical" href="https://oshlacklab.com/Ambilogue/benchmarking.html" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="AmbilogueMiniLogo.png" />
+  <link rel="apple-touch-icon" href="AmbilogueMiniLogo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="site.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body class="simple">
+
+<header>
+  <a class="logo-link" href="index.html" aria-label="Ambilogue home"><img src="AmbilogueAmbigramLogo.png" alt="Ambilogue" class="site-logo" /></a>
+  <div class="header-right"></div>
+  <nav class="site-nav" aria-label="Main">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="catalogue.html">Catalogue</a>
+    <a class="nav-link" href="plots.html">Stats</a>
+    <a class="nav-link" href="benchmarking.html" aria-current="page">Benchmarking</a>
+    <a class="nav-link" href="submit.html">Submit</a>
+    <a class="nav-github" href="https://github.com/Oshlack/Ambilogue" target="_blank" rel="noopener" aria-label="Ambilogue on GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="nav-github-icon"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  </nav>
+</header>
+
+<main class="bench">
+  <div class="page-intro">
+    <h1 class="page-title">Benchmarking</h1>
+    <p class="subtitle">Overview of studies that have benchmarked ambient RNA contamination tools.</p>
+  </div>
+
+  <section class="cards four" id="bench-cards" aria-label="Benchmarking papers"></section>
+
+  <section aria-label="Benchmarking studies table">
+    <div class="bench-table-wrap">
+      <table class="bench-table" id="bench-table">
+        <thead>
+          <tr>
+            <th>Study</th>
+            <th>Title</th>
+            <th>Year published</th>
+            <th class="bm-center">Citations</th>
+            <th class="bm-center">Benchmarks ambient correction?</th>
+            <th class="bm-center">Benchmarks ambient estimation?</th>
+            <th>Data types considered</th>
+            <th>Tools tested</th>
+            <th>Ground truth approach</th>
+            <th>Key results</th>
+            <th>Links</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="bench-error" id="bench-error" hidden>Could not load <strong>benchmarking.csv</strong>.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-blocks">
+    <div class="info-block">
+      <h2>Cite us</h2>
+      <p>If you find the Ambilogue useful for your work please cite our publication.<br><em>It is coming soon, so stay tuned.</em></p>
+    </div>
+    <div class="info-block">
+      <h2>About</h2>
+      <p>The Ambilogue is created by <a href="https://linktr.ee/calandragrima" target="_blank" rel="noopener">Calandra Grima</a>, who is a PhD student in the <a href="https://oshlacklab.com/" target="_blank" rel="noopener">Oshlack Lab</a> (Melbourne, Australia). Citation counts are refreshed daily using the <a href="https://openalex.org/" target="_blank" rel="noopener">OpenAlex</a> API. Questions or problems? Open an issue on <a href="https://github.com/Oshlack/Ambilogue/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+(function () {
+  var EXT_ICON = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+  var ARROW_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+
+  /* Colours for data types match the catalogue's technology suitability tags */
+  var DATA_TYPE_CLASS = {
+    'droplet-based scrna-seq': 'bm-tag-scrna',
+    'droplet-based snrna-seq': 'bm-tag-snrna',
+    'droplet-based scrna+atac-seq multiome': 'bm-tag-multiome',
+    'well-plate-based scrna-seq': 'bm-tag-well',
+    'well-plate scrna-seq': 'bm-tag-well'
+  };
+
+  /* Colours for tools tested and ground truth approaches (indexes into the .bm-pal-N palette in site.css).
+     Anything not listed here (e.g. a newly added tool) gets a colour picked from its name. */
+  var TOOL_COLOURS = {
+    'cellbender': 0, 'cellclear': 1, 'decontx': 2, 'fastcar': 3,
+    'scar': 4, 'soupx': 5, 'sccdc': 6
+  };
+  var TRUTH_COLOURS = {
+    'genetic information': 7,
+    'simulated data': 8,
+    'negative control data': 9,
+    'known marker genes and cell types': 10
+  };
+  var PALETTE_SIZE = 11;
+  function paletteClass(map, name) {
+    var key = name.toLowerCase();
+    var i = map[key];
+    if (i === undefined) {
+      var h = 0;
+      for (var c = 0; c < key.length; c++) h = (h * 31 + key.charCodeAt(c)) % 1000003;
+      i = h % PALETTE_SIZE;
+    }
+    return 'bm-pal-' + i;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  /* escape first, then turn *text* into italics (used for tool names in Key_Results) */
+  function inline(s) { return esc(s).replace(/\*([^*]+)\*/g, '<em>$1</em>'); }
+  function trim(s) { return String(s == null ? '' : s).trim(); }
+  function list(s) {
+    return trim(s).split(';').map(trim).filter(Boolean);
+  }
+  function doiHref(v) {
+    v = trim(v);
+    if (!v) return '';
+    return /^https?:\/\//i.test(v) ? v : 'https://doi.org/' + v;
+  }
+  /* D/M/YYYY, or ISO YYYY / YYYY-MM / YYYY-MM-DD */
+  function yearOf(val) {
+    var s = trim(val);
+    var iso = s.match(/^(\d{4})(?:-\d{2}(?:-\d{2})?)?$/);
+    if (iso) return iso[1];
+    var parts = s.split('/');
+    if (parts.length >= 3 && parts[parts.length - 1].length === 4) return parts[parts.length - 1];
+    return '';
+  }
+
+  /* Preprint / Published tag, same colours as the catalogue */
+  function statusTag(status) {
+    status = trim(status);
+    if (!status) return '';
+    var cls = status === 'Preprint' ? ' preprint' : (status === 'Published' ? ' published' : '');
+    return '<span class="bm-status' + cls + '">Status: ' + esc(status) + '</span>';
+  }
+
+  /* Which links a study has. A preprint-only study has just one DOI, shown as "Preprint". */
+  function links(row) {
+    var pub = doiHref(row.Publication_DOI);
+    var pre = doiHref(row.Preprint_DOI);
+    var isPreprint = trim(row.Publication_Status) === 'Preprint';
+    var out = [];
+    if (pub) out.push({ href: pub, label: isPreprint ? 'Preprint' : 'Publication' });
+    if (pre && pre !== pub) out.push({ href: pre, label: 'Preprint' });
+    return out;
+  }
+
+  function badge(val) {
+    val = trim(val);
+    if (!val) return '';
+    var cls = val === 'Yes' ? ' yes' : (val === 'No' ? ' no' : '');
+    return '<span class="bm-badge' + cls + '">' + esc(val) + '</span>';
+  }
+
+  function tags(items, classFor) {
+    return items.map(function (v) {
+      return '<span class="bm-tag ' + classFor(v) + '">' + esc(v) + '</span>';
+    }).join(' ');
+  }
+
+  function card(row) {
+    var ls = links(row);
+    var href = ls.length ? ls[0].href : '';
+    var isPreprint = trim(row.Publication_Status) === 'Preprint';
+    var inner =
+      '<h2>' + esc(trim(row.Author)) + '</h2>' +
+      '<p>' + esc(trim(row.Title)) + '</p>' +
+      '<span class="card-link">' + (isPreprint ? 'Read the preprint ' : 'Read the paper ') + ARROW_ICON + '</span>';
+    return href
+      ? '<a class="action-card bm-card" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + inner + '</a>'
+      : '<div class="action-card static bm-card">' + inner + '</div>';
+  }
+
+  function tableRow(row) {
+    var year = yearOf(row.Publication_Date);
+    var preYear = yearOf(row.Preprint_Date);
+    var dateCell = esc(year) + (year ? '<br>' : '') + statusTag(row.Publication_Status);
+    if (preYear) dateCell += '<br><span class="bm-note">(preprint released ' + esc(preYear) + ')</span>';
+
+    var linkCell = links(row).map(function (l) {
+      return '<a class="bm-btn" href="' + esc(l.href) + '" target="_blank" rel="noopener noreferrer">' + EXT_ICON + esc(l.label) + '</a>';
+    }).join('');
+
+    var results = list(row.Key_Results);
+    var resultsCell = results.length
+      ? '<ul class="bm-results">' + results.map(function (r) { return '<li>' + inline(r) + '</li>'; }).join('') + '</ul>'
+      : '';
+
+    return '<tr>' +
+      '<td class="bm-study">' + esc(trim(row.Author)) + '</td>' +
+      '<td class="bm-title">' + esc(trim(row.Title)) + '</td>' +
+      '<td class="bm-date">' + dateCell + '</td>' +
+      '<td class="bm-center">' + esc(trim(row.Citations)) + '</td>' +
+      '<td class="bm-center">' + badge(row.Benchmark_Ambient_Correction) + '</td>' +
+      '<td class="bm-center">' + badge(row.Benchmark_Ambient_Estimation) + '</td>' +
+      '<td>' + tags(list(row.Data_Types_Considered), function (v) { return DATA_TYPE_CLASS[v.toLowerCase()] || ''; }) + '</td>' +
+      '<td>' + tags(list(row['Tools Tested']), function (v) { return paletteClass(TOOL_COLOURS, v); }) + '</td>' +
+      '<td>' + tags(list(row['Ground Truth Approach']), function (v) { return paletteClass(TRUTH_COLOURS, v); }) + '</td>' +
+      '<td class="bm-results-cell">' + resultsCell + '</td>' +
+      '<td><div class="bm-links">' + linkCell + '</div></td>' +
+      '</tr>';
+  }
+
+  function fail() { document.getElementById('bench-error').hidden = false; }
+
+  if (!window.Papa) { fail(); return; }
+  Papa.parse('benchmarking.csv', {
+    download: true,
+    header: true,
+    skipEmptyLines: 'greedy',
+    transformHeader: function (h) { return h.replace(/^﻿/, '').trim(); },
+    complete: function (res) {
+      var rows = res.data.filter(function (r) { return trim(r.Title); });
+      if (!rows.length) { fail(); return; }
+      document.getElementById('bench-cards').innerHTML = rows.map(card).join('');
+      document.querySelector('#bench-table tbody').innerHTML = rows.map(tableRow).join('');
+    },
+    error: fail
+  });
+})();
+</script>
+
+</body>
+</html>

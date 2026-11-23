@@ -19,7 +19,7 @@ header > a.logo-link { display: flex; flex-shrink: 0; }
 .nav-github { display: inline-flex; align-items: center; color: #2B2A25; margin-left: 0.25rem; }
 .nav-github:hover { color: #808080; }
 .nav-github-icon { width: 24px; height: 24px; fill: currentColor; }
-@media (max-width: 800px) { .site-nav { flex-wrap: wrap; gap: 0.75rem 1rem; } }
+@media (max-width: 800px) { .site-nav { flex-wrap: wrap; gap: 0.75rem 1rem; flex-shrink: 1; min-width: 0; max-width: 100%; } }
 
 /* ── Simple pages (landing, submit) ── */
 body.simple *, body.simple *::before, body.simple *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -182,3 +182,87 @@ html body .page-intro { text-align: center; max-width: 780px; margin: 0 auto; pa
 html body .page-intro .page-title { font-size: 2.8rem; line-height: 1.2; font-weight: 700; }
 html body .page-intro .subtitle { font-size: 1rem; line-height: 1.6; margin-top: 0.6rem; color: #2B2A25; font-weight: normal; }
 body.simple .cards.two { margin-top: 0.5rem; }
+
+/* ── Benchmarking page ── */
+body.simple main.bench { max-width: 1400px; }
+body.simple .cards.four { grid-template-columns: repeat(4, 1fr); margin-top: 0.5rem; }
+@media (max-width: 1100px) { body.simple .cards.four { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 800px)  { body.simple .cards.four { grid-template-columns: 1fr; } }
+body.simple .bm-card { gap: 0.5rem; }
+body.simple .bm-card h2 { font-size: 1.15rem; }
+body.simple .bm-card p { font-size: 0.85rem; }
+
+.bench-table-wrap { overflow-x: auto; border: 1.5px solid #EDEDED; border-radius: 10px; margin-bottom: 1rem; }
+.bench-table { border-collapse: collapse; width: 100%; min-width: 1500px; font-size: 0.84rem; }
+.bench-table th {
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.75rem 0.8rem;
+  background: #F7F7F5;
+  border-bottom: 2px solid #2B2A25;
+  vertical-align: bottom;
+}
+.bench-table td { padding: 0.8rem; vertical-align: top; border-bottom: 1px solid #EDEDED; line-height: 1.5; }
+.bench-table tbody tr:last-child td { border-bottom: none; }
+.bench-table .bm-center { text-align: center; }
+.bench-table th:first-child,
+.bench-table td:first-child { position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0 #EDEDED; }
+.bench-table td:first-child { background: #FFFFFF; }
+.bench-table th:first-child { background: #F7F7F5; }
+.bench-table .bm-study { font-family: var(--font-heading); font-weight: 700; font-size: 0.9rem; min-width: 140px; }
+.bench-table .bm-title { min-width: 230px; }
+.bench-table .bm-date { min-width: 135px; }
+.bench-table .bm-results-cell { min-width: 320px; }
+.bench-table ul.bm-results { padding-left: 1.1rem; margin: 0; }
+.bench-table ul.bm-results li { margin-bottom: 0.3rem; }
+.bench-table ul.bm-results li:last-child { margin-bottom: 0; }
+
+/* Preprint / Published tag (same colours as the catalogue) */
+body.simple .bm-status {
+  display: inline-block; padding: 2px 7px; border-radius: 4px;
+  background: #e2e8f0; color: #64748b; font-size: 0.68rem; font-style: italic; vertical-align: middle; white-space: nowrap;
+}
+body.simple .bm-status.preprint  { background: #ffedd5; color: #9a3412; }
+body.simple .bm-status.published { background: #dbeafe; color: #1e40af; }
+.bm-note { font-size: 0.8em; color: #6b7280; font-style: italic; }
+
+/* Publication / Preprint link buttons (same look as the catalogue) */
+.bm-links { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+a.bm-btn {
+  display: inline-flex; align-items: center; justify-content: flex-start; gap: 4px;
+  padding: 0 9px; height: 24px; min-width: 108px;
+  color: #2B2A25; background: #fff; border: 1.5px solid #2B2A25; border-radius: 999px;
+  text-decoration: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
+  transition: background 0.15s, color 0.15s;
+}
+a.bm-btn:hover { background: #2B2A25; color: #fff; }
+
+/* Yes / No badges */
+body.simple .bm-badge { display: inline-block; padding: 2px 9px; border-radius: 5px; font-size: 0.74rem; font-weight: 500; line-height: 1.4; background: #e2e8f0; color: #475569; }
+body.simple .bm-badge.yes { background: #dcfce7; color: #15803d; }
+body.simple .bm-badge.no  { background: #f1f5f9; color: #9ca3af; }
+
+/* Tags for data types, tools and ground truth */
+body.simple .bm-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; margin: 1px 3px 1px 0; white-space: nowrap; background: #e0f2fe; color: #0369a1; }
+body.simple .bm-tag-scrna    { background: #dbeafe; color: #1d4ed8; }
+body.simple .bm-tag-snrna    { background: #ede9fe; color: #7c3aed; }
+body.simple .bm-tag-multiome { background: #ccfbf1; color: #0f766e; }
+body.simple .bm-tag-well     { background: #d9f99d; color: #3f6212; }
+
+/* Colour palette for tools tested and ground truth approaches (picked per name in benchmarking.html) */
+body.simple .bm-pal-0 { background: #dbeafe; color: #1d4ed8; }  /* blue */
+body.simple .bm-pal-1 { background: #ccfbf1; color: #0f766e; }  /* teal */
+body.simple .bm-pal-2 { background: #fce7f3; color: #9d174d; }  /* pink */
+body.simple .bm-pal-3 { background: #ffedd5; color: #c2410c; }  /* orange */
+body.simple .bm-pal-4 { background: #ede9fe; color: #6d28d9; }  /* violet */
+body.simple .bm-pal-5 { background: #fef9c3; color: #854d0e; }  /* yellow */
+body.simple .bm-pal-6 { background: #d1fae5; color: #065f46; }  /* green */
+body.simple .bm-pal-7 { background: #e0e7ff; color: #4338ca; }  /* indigo */
+body.simple .bm-pal-8 { background: #fee2e2; color: #b91c1c; }  /* red */
+body.simple .bm-pal-9 { background: #e2e8f0; color: #475569; }  /* slate */
+body.simple .bm-pal-10 { background: #e0f2fe; color: #0369a1; }  /* sky */
+
+.bench-error { text-align: center; font-size: 0.9rem; color: #991b1b; margin: 1rem 0; }
+.bench-error[hidden] { display: none; }
