@@ -32,7 +32,7 @@ body:
         - label: Droplet-based scATAC-seq
         - label: Droplet-based CITE-seq
         - label: Droplet-based scCRISPR-seq
-        - label: Droplet-based scRNA+ATAC multiome
+        - label: Droplet-based scRNA+ATAC-seq multiome
         - label: Droplet-based single-cell omics
         - label: Well-plate scRNA-seq
         - label: Spatial transcriptomics
