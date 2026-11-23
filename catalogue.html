@@ -983,6 +983,12 @@ function multiValFilter(headerValue, rowValue) {
   });
 }
 
+/* Methodological category filter: same as multiValFilter, but ignores any text in brackets
+   in the cell, so "Genotype-based (ambient estimation)" is found by selecting "Genotype-based" */
+function methCatFilter(headerValue, rowValue) {
+  return multiValFilter(headerValue, stripBracketText(rowValue == null ? '' : rowValue));
+}
+
 /* Supported data types filter: matches against the union of the official and
    community-reported columns, so filtering by a technology finds a tool
    regardless of which column it came from. */
@@ -1152,14 +1158,20 @@ function reqFilterFunc(headerValue, rowValue) {
 }
 
 /* Extract sorted unique individual values (split on sep) from a field */
-function getUniqueVals(data, fields) {
+/* Removes any text in brackets, e.g. "Genotype-based (ambient estimation)" -> "Genotype-based" */
+function stripBracketText(str) {
+  return String(str).replace(/\s*\([^)]*\)/g, '');
+}
+
+/* stripBrackets: list the values without their bracketed text (used by the methodological category filter) */
+function getUniqueVals(data, fields, stripBrackets) {
   var fieldList = Array.isArray(fields) ? fields : [fields];
   var set = new Set();
   data.forEach(function(row) {
     fieldList.forEach(function(field) {
       var val = row[field];
       if (val) {
-        String(val).split(';').forEach(function(v) {
+        (stripBrackets ? stripBracketText(val) : String(val)).split(';').forEach(function(v) {
           var t = v.trim();
           if (t) set.add(t);
         });
@@ -1234,7 +1246,7 @@ Papa.parse('Ambilogue.csv', {
     /* Pre-compute unique values for dropdown (list) header filters */
     var ecosystemVals       = getUniqueVals(data, 'Ecosystem');
     var techSuitVals        = getUniqueVals(data, ['Technology_Suitability', 'Technology_Suitability_Community']);
-    var toolCatVals       = getUniqueVals(data, 'Methodological_Category');
+    var toolCatVals       = getUniqueVals(data, 'Methodological_Category', true);
     var availabilityVals    = getUniqueVals(data, 'Availability');
     var otherFeaturesVals   = getUniqueVals(data, 'Other_Features');
     var additionalReqVals   = getUniqueVals(data, 'Additional_Requirements');
@@ -1305,7 +1317,7 @@ Papa.parse('Ambilogue.csv', {
         formatter: tagFormatter,
         headerFilter: multiSelectDropdownEditor,
         headerFilterParams: { values: toolCatVals },
-        headerFilterFunc: multiValFilter,
+        headerFilterFunc: methCatFilter,
       },
       {
         title: 'Software details',
