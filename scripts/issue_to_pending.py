@@ -44,6 +44,7 @@ FIELD_MAP = {
     "Notes": "Notes",
     "Bioconductor Link": "Bioconductor_Link",
     "GitHub Link": "GitHub_Link",
+    "GitHub Port Link": "GitHub_Port_Link",
     "Publication DOI Notes": "Notes_Publication_DOI",
 }
 

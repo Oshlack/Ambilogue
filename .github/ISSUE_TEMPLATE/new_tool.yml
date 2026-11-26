@@ -85,6 +85,13 @@ body:
       placeholder: e.g. https://github.com/constantAmateur/SoupX
 
   - type: input
+    id: github_port
+    attributes:
+      label: GitHub Port Link
+      description: GitHub repository URL of a third-party Python port of this R tool, if one exists
+      placeholder: e.g. https://github.com/username/python-port
+
+  - type: input
     id: bioconductor
     attributes:
       label: Bioconductor Link
@@ -99,6 +106,7 @@ body:
       options:
         - label: R
         - label: Python
+        - label: Python (Port)
         - label: Command Line
         - label: Cell Ranger
         - label: Other
@@ -121,6 +129,7 @@ body:
         - label: Bioconductor
         - label: CRAN
         - label: pip
+        - label: pip (Port)
         - label: conda
         - label: GitHub
         - label: Docker
