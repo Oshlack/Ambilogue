@@ -1303,13 +1303,12 @@ Papa.parse('Ambilogue.csv', {
           var extIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
           var html = author ? escHtml(author) : '';
           var btnWrap = '';
-          if (doi) {
-            var href = doi.startsWith('http') ? doi : 'https://doi.org/' + doi;
-            btnWrap += '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">' + extIcon + 'Publication</a> ';
-          }
-          if (preprintDoi) {
-            var preprintHref = preprintDoi.startsWith('http') ? preprintDoi : 'https://doi.org/' + preprintDoi;
-            btnWrap += '<a class="doi-link" href="' + escHtml(preprintHref) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(preprintHref) + '">' + extIcon + 'Preprint</a> ';
+          /* One "Manuscript" link: the published paper if there is one, otherwise the preprint */
+          var isPublished = String(d.Publication_Status || '').trim() === 'Published';
+          var manuscript = isPublished ? (doi || preprintDoi) : (preprintDoi || doi);
+          if (manuscript) {
+            var href = manuscript.startsWith('http') ? manuscript : 'https://doi.org/' + manuscript;
+            btnWrap += '<a class="doi-link" href="' + escHtml(href) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(href) + '">' + extIcon + 'Manuscript</a> ';
           }
           if (bioc) {
             btnWrap += '<a class="doi-link" href="' + escHtml(bioc) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(bioc) + '">' + extIcon + 'Bioconductor</a> ';
