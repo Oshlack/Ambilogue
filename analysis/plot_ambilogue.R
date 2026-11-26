@@ -184,6 +184,7 @@ NEW_CATEGORY_COLOURS <- c("#C9E4B7", "#F6B8B8", "#FFE2A8", "#BFEAE0", "#D9C7F0")
 
 ECOSYSTEM_COLOURS <- c("R" = "#BEE9C1",
                        "Python" = "#A6D3D1",
+                       "Python (Port)" = "#D5EEEC",
                        "Command Line" = "#B1BAD1",
                        "Cell Ranger" = "#E3E3E3")
 

@@ -691,7 +691,9 @@ function escHtml(str) {
 var TAG_COLOURS = {
   'r':             'tag-r',
   'python':        'tag-python',
+  'python (port)': 'tag-python',
   'pip':           'tag-python',
+  'pip (port)':    'tag-python',
   'bioconductor':  'tag-bioc',
   'cran':          'tag-cran',
   'pypi':          'tag-pypi',
@@ -1170,16 +1172,24 @@ function reqFilterFunc(headerValue, rowValue) {
 function stripBracketText(str) {
   return String(str).replace(/\s*\([^)]*\)/g, '');
 }
+/* "(Port)" variants (Python (Port), pip (Port)) are ignored by the Ecosystem and Availability
+   dropdowns: the options list only Python, pip etc., and picking one also matches its Port rows */
+function stripPort(str) {
+  return String(str).replace(/\s*\(Port\)/gi, '');
+}
+function portFilter(headerValue, rowValue) {
+  return multiValFilter(headerValue, stripPort(rowValue == null ? '' : rowValue));
+}
 
 /* stripBrackets: list the values without their bracketed text (used by the methodological category filter) */
-function getUniqueVals(data, fields, stripBrackets) {
+function getUniqueVals(data, fields, stripBrackets, stripPorts) {
   var fieldList = Array.isArray(fields) ? fields : [fields];
   var set = new Set();
   data.forEach(function(row) {
     fieldList.forEach(function(field) {
       var val = row[field];
       if (val) {
-        (stripBrackets ? stripBracketText(val) : String(val)).split(';').forEach(function(v) {
+        (stripBrackets ? stripBracketText(val) : stripPorts ? stripPort(val) : String(val)).split(';').forEach(function(v) {
           var t = v.trim();
           if (t) set.add(t);
         });
@@ -1252,10 +1262,10 @@ Papa.parse('Ambilogue.csv', {
     });
 
     /* Pre-compute unique values for dropdown (list) header filters */
-    var ecosystemVals       = getUniqueVals(data, 'Ecosystem');
+    var ecosystemVals       = getUniqueVals(data, 'Ecosystem', false, true);
     var techSuitVals        = getUniqueVals(data, ['Technology_Suitability', 'Technology_Suitability_Community']);
     var toolCatVals       = getUniqueVals(data, 'Methodological_Category', true);
-    var availabilityVals    = getUniqueVals(data, 'Availability');
+    var availabilityVals    = getUniqueVals(data, 'Availability', false, true);
     var otherFeaturesVals   = getUniqueVals(data, 'Other_Features');
     var additionalReqVals   = getUniqueVals(data, 'Additional_Requirements');
     var publishedYears = [''].concat(
@@ -1289,6 +1299,7 @@ Papa.parse('Ambilogue.csv', {
           var preprintDoi = String(d.Preprint_DOI || '').trim();
           var bioc  = String(d.Bioconductor_Link || '').trim();
           var gh    = String(d.GitHub_Link       || '').trim();
+          var ghPort = String(d.GitHub_Port_Link || '').trim();
           var extIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
           var html = author ? escHtml(author) : '';
           var btnWrap = '';
@@ -1304,7 +1315,10 @@ Papa.parse('Ambilogue.csv', {
             btnWrap += '<a class="doi-link" href="' + escHtml(bioc) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(bioc) + '">' + extIcon + 'Bioconductor</a> ';
           }
           if (gh) {
-            btnWrap += '<a class="doi-link" href="' + escHtml(gh) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(gh) + '">' + extIcon + 'GitHub</a>';
+            btnWrap += '<a class="doi-link" href="' + escHtml(gh) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(gh) + '">' + extIcon + 'GitHub</a> ';
+          }
+          if (ghPort) {
+            btnWrap += '<a class="doi-link" href="' + escHtml(ghPort) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(ghPort) + '">' + extIcon + 'GitHub (Port)</a>';
           }
           if (btnWrap) html += '<br><span style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">' + btnWrap + '</span>';
           return html;
@@ -1335,14 +1349,14 @@ Papa.parse('Ambilogue.csv', {
             formatter: tagFormatter,
             headerFilter: multiSelectDropdownEditor,
             headerFilterParams: { values: ecosystemVals },
-            headerFilterFunc: multiValFilter,
+            headerFilterFunc: portFilter,
           },
           {
             title: 'Availability', field: 'Availability', width: 175,
             formatter: tagFormatter,
             headerFilter: multiSelectDropdownEditor,
             headerFilterParams: { values: availabilityVals },
-            headerFilterFunc: multiValFilter,
+            headerFilterFunc: portFilter,
           },
         ],
       },
